@@ -7,7 +7,7 @@
     "format": "prettier --write ."
   },
   "engines": {
-    "node": ">=22.13.1",
+    "node": ">=22.14.0",
     "npm": ">=11.1.0"
   },
   "repository": {
