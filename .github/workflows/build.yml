@@ -17,7 +17,6 @@ permissions:
   packages: write
 
 env:
-  CARGO_TERM_COLOR: always
   # just a name, but storing it separately as we're nice people
   RUSTFLAGS: --deny=warnings
 
@@ -52,7 +51,7 @@ jobs:
     needs:
       - changes
     outputs:
-      version: ${{ steps.version.outputs.next_version }}
+      version: ${{ steps.version.outputs.version }}
     if: |
       github.event_name == 'pull_request' &&
       fromJSON(needs.changes.outputs.code) == true
@@ -86,14 +85,17 @@ jobs:
           rm ${HOME}/.cargo/bin/rust-analyzer
           rm ${HOME}/.cargo/bin/rustfmt
 
+          rustup self update
           rustup update
+          rustup show active-toolchain || rustup toolchain install
+          rustup show
 
           cargo --version
 
       - name: Get binstall
         shell: bash
+        working-directory: /tmp
         run: |
-          cd /tmp
           archive="cargo-binstall-x86_64-unknown-linux-musl.tgz"
           wget "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/${archive}"
 
@@ -126,7 +128,7 @@ jobs:
           VERSION="${VERSION//v/}"
 
           # store
-          echo "next_version=${VERSION}" >> ${GITHUB_OUTPUT}
+          echo "version=${VERSION}" >> ${GITHUB_OUTPUT}
 
   cargo-build:
     name: Cargo build
@@ -165,7 +167,10 @@ jobs:
           rm ${HOME}/.cargo/bin/rust-analyzer
           rm ${HOME}/.cargo/bin/rustfmt
 
+          rustup self update
           rustup update
+          rustup show active-toolchain || rustup toolchain install
+          rustup show
 
           cargo --version
 
@@ -211,9 +216,20 @@ jobs:
           rm ${HOME}/.cargo/bin/rust-analyzer
           rm ${HOME}/.cargo/bin/rustfmt
 
+          rustup self update
           rustup update
+          rustup show active-toolchain || rustup toolchain install
+          rustup show
 
           cargo --version
+
+      - name: Install rustfmt
+        shell: bash
+        run: |
+          rustup component add rustfmt
+
+          # restore symlinks
+          rustup update
 
       - name: Check formatting
         shell: bash
@@ -252,7 +268,10 @@ jobs:
           rm ${HOME}/.cargo/bin/rust-analyzer
           rm ${HOME}/.cargo/bin/rustfmt
 
+          rustup self update
           rustup update
+          rustup show active-toolchain || rustup toolchain install
+          rustup show
 
           cargo --version
 
@@ -261,11 +280,15 @@ jobs:
         run: |
           rustup component add llvm-tools-preview
 
+          # restore symlinks
+          rustup update
+
       - name: Get binstall
         shell: bash
+        working-directory: /tmp
         run: |
           archive="cargo-binstall-x86_64-unknown-linux-musl.tgz"
-          wget "https://github.com/ryankurte/cargo-binstall/releases/latest/download/${archive}"
+          wget "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/${archive}"
 
           tar -xvf "./${archive}"
 
@@ -378,7 +401,10 @@ jobs:
           rm ${HOME}/.cargo/bin/rust-analyzer
           rm ${HOME}/.cargo/bin/rustfmt
 
+          rustup self update
           rustup update
+          rustup show active-toolchain || rustup toolchain install
+          rustup show
 
           cargo --version
 
