@@ -39,16 +39,21 @@ jobs:
       - name: Set up toolchain
         shell: bash
         run: |
-          rm ${HOME}/.cargo/bin/rustfmt
           rm ${HOME}/.cargo/bin/cargo-fmt
+          rm ${HOME}/.cargo/bin/rust-analyzer
+          rm ${HOME}/.cargo/bin/rustfmt
+
+          rustup self update
           rustup update
+          rustup show active-toolchain || rustup toolchain install
+          rustup show
 
           cargo --version
 
       - name: Get binstall
         shell: bash
+        working-directory: /tmp
         run: |
-          cd /tmp
           archive="cargo-binstall-x86_64-unknown-linux-musl.tgz"
           wget "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/${archive}"
 
