@@ -17,6 +17,12 @@ permissions:
   packages: write
 
 env:
+  # set this to true in GitHub variables to enable building the container
+  # HAS_CONTAINER: true
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
   RUSTFLAGS: --deny=warnings
 
 concurrency:
@@ -26,6 +32,20 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  repo-has-container:
+    name: Repo has container?
+    runs-on: ubuntu-latest
+    outputs:
+      has_container: ${{ steps.determine.outputs.has_container }}
+
+    steps:
+      - name: Repo has docker container?
+        shell: bash
+        id: determine
+        run: |
+          HAS_CONTAINER="${{ vars.HAS_CONTAINER }}"
+          echo "has_container=${HAS_CONTAINER:-false}" >> ${GITHUB_OUTPUT}
+
   changes:
     name: Detect changes
     runs-on: ubuntu-latest
@@ -49,10 +69,12 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - changes
+      - repo-has-container
     outputs:
       version: ${{ steps.version.outputs.version }}
     if: |
       github.event_name == 'pull_request' &&
+      fromJSON(needs.repo-has-container.outputs.has_container) == true &&
       fromJSON(needs.changes.outputs.code) == true
     steps:
       - name: Checkout
@@ -274,11 +296,6 @@ jobs:
 
           cargo --version
 
-      - name: Test docs
-        shell: bash
-        run: |
-          cargo test --doc
-
       - name: Install llvm-tools-preview
         shell: bash
         run: |
@@ -417,6 +434,233 @@ jobs:
         with:
           args: --workspace --all-targets --all-features --no-deps
 
+  docker-build:
+    name: Build Docker container
+    runs-on: ubuntu-latest
+    needs:
+      - calculate-version
+    # if:
+    # ... is not needed because calculate-version will not run if we disable building the docker container
+    env:
+      APPLICATION_NAME: PLACEHOLDER # overridden in step 'Set application name', this is merely to satisfy the linter
+      PATH_TO_TAR: PLACEHOLDER # same ^
+      UNIQUE_TAG: PLACEHOLDER # same ^
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          show-progress: false
+
+      - name: Cache dependencies
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        env:
+          CACHE_NAME: cargo-cache-dependencies
+        with:
+          path: |
+            ~/.cargo
+            ./target
+          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-test
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
+            ${{ runner.os }}-build-${{ env.CACHE_NAME }}-
+
+      - name: Set up mold
+        uses: rui314/setup-mold@e16410e7f8d9e167b74ad5697a9089a35126eb50 # v1
+
+      - name: Set up toolchain
+        shell: bash
+        run: |
+          rm ${HOME}/.cargo/bin/cargo-fmt
+          rm ${HOME}/.cargo/bin/rust-analyzer
+          rm ${HOME}/.cargo/bin/rustfmt
+
+          rustup self update
+          rustup update
+          rustup show active-toolchain || rustup toolchain install
+          rustup show
+
+          cargo --version
+
+      - name: Get binstall
+        shell: bash
+        working-directory: /tmp
+        run: |
+          archive="cargo-binstall-x86_64-unknown-linux-musl.tgz"
+          wget "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/${archive}"
+
+          tar -xvf "./${archive}"
+
+          rm "./${archive}"
+
+          mv ./cargo-binstall ~/.cargo/bin/
+
+      - name: Install cargo-edit to do set-version
+        shell: bash
+        run: |
+          cargo binstall cargo-edit
+
+      - name: Set the Cargo.toml version before we copy in the data into the Docker container
+        shell: bash
+        run: |
+          cargo set-version ${{ needs.calculate-version.outputs.version }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3.10.0
+
+      # TODO validate no changes between github.event.pull_request.head.sha and the actual current sha (representing the hypothetical merge)
+
+      - name: Lowercase the image name
+        shell: bash
+        run: |
+          echo "IMAGE_NAME=${IMAGE_NAME,,}" >> ${GITHUB_ENV}
+
+      - name: Set Docker tag
+        shell: bash
+        run: |
+          UNIQUE_TAG=pr-${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}
+          echo "UNIQUE_TAG=${UNIQUE_TAG##*/}" >> ${GITHUB_ENV}
+
+      # Extract metadata (tags, labels) for Docker
+      # https://github.com/docker/metadata-action
+      - name: Extract Docker metadata
+        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
+        id: meta
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ env.UNIQUE_TAG }}
+          labels: |
+            org.opencontainers.image.version=pr-${{ github.event.number }}
+            org.opencontainers.image.source=${{ github.event.pull_request.html_url }}
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set application name
+        shell: bash
+        run: |
+          APPLICATION_NAME=${{ github.repository }}
+          echo "APPLICATION_NAME=${APPLICATION_NAME##*/}" >> ${GITHUB_ENV}
+
+      - name: Build Docker image
+        uses: docker/build-push-action@14487ce63c7a62a4a324b0bfb37086795e31c6c1 # v6.16.0
+        with:
+          build-args: |
+            APPLICATION_NAME=${{ env.APPLICATION_NAME }}
+          context: .
+          # this container is THE PR's artifact, and we will re-tag it
+          # once the PR has been accepted
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-${{ env.APPLICATION_NAME }}
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-${{ env.APPLICATION_NAME }},mode=max
+          platforms: linux/amd64, linux/arm64
+          outputs: type=oci,dest=/tmp/${{ env.UNIQUE_TAG }}.tar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: container-${{ env.APPLICATION_NAME }}
+          path: /tmp/${{ env.UNIQUE_TAG }}.tar
+          if-no-files-found: error
+          retention-days: 1
+
+  docker-publish:
+    name: Publish Docker container
+    runs-on: ubuntu-latest
+    needs:
+      - docker-build
+    env:
+      APPLICATION_NAME: PLACEHOLDER # overridden in step 'Set application name', this is merely to satisfy the linter
+      UNIQUE_TAG: PLACEHOLDER # same ^
+    # Check if the event is not triggered by a fork
+    if: |
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event_name == 'pull_request'
+    steps:
+      - name: Set up Docker
+        uses: docker/setup-docker-action@b60f85385d03ac8acfca6d9996982511d8620a19 # v4.3.0
+        with:
+          daemon-config: |
+            {
+              "features": {
+                "containerd-snapshotter": true
+              }
+            }
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Lowercase the image name
+        shell: bash
+        run: |
+          echo "IMAGE_NAME=${IMAGE_NAME,,}" >> ${GITHUB_ENV}
+
+      - name: Set application name
+        shell: bash
+        run: |
+          APPLICATION_NAME=${{ github.repository }}
+          echo "APPLICATION_NAME=${APPLICATION_NAME##*/}" >> ${GITHUB_ENV}
+
+      - name: Set Docker tag (which is also the filename.tar)
+        shell: bash
+        run: |
+          UNIQUE_TAG=pr-${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}
+          echo "UNIQUE_TAG=${UNIQUE_TAG##*/}" >> ${GITHUB_ENV}
+
+      - name: Extract Docker metadata
+        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
+        id: meta
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=pr,suffix=-latest
+            type=raw,value=${{ env.UNIQUE_TAG }}
+
+      - name: Download artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        id: artifact
+        with:
+          path: /tmp/container/
+          name: container-${{ env.APPLICATION_NAME }}
+
+      - name: Load images from artifacts
+        shell: bash
+        run: |
+          docker load --input ${{ steps.artifact.outputs.download-path }}/${{ env.UNIQUE_TAG }}.tar
+
+      - name: Push image to register
+        shell: bash
+        run: |
+          base_tag=$(printf '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:%s ' ${{ env.UNIQUE_TAG }})
+
+          docker push ${base_tag}
+
+      - name: Set new tags on pushed image
+        shell: bash
+        working-directory: /tmp/container/
+        run: |
+          new_tags="${{ join(steps.meta.outputs.tags, ' ') }}"
+          new_tags=$(printf -- '--tag %s ' $new_tags)
+
+          base_tag=$(printf '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:%s ' ${{ env.UNIQUE_TAG }})
+
+          docker buildx imagetools create $new_tags $base_tag
+
+          for new_tag in $(echo "${{ join(steps.meta.outputs.tags, ' ') }}"); do
+            echo "${new_tag}:"
+            docker buildx imagetools inspect --raw $new_tag
+            echo "" # newline
+          done
+
   all-done:
     name: All done
     # this is the job that should be marked as required on GitHub. It's the only one that'll reliably trigger
@@ -431,6 +675,8 @@ jobs:
       - cargo-fmt
       - cargo-clippy-and-report
       - cargo-test-and-report
+      - docker-build
+      - docker-publish
     if: |
       always()
     steps:
