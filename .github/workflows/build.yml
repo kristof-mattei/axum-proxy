@@ -17,7 +17,6 @@ permissions:
   packages: write
 
 env:
-  # just a name, but storing it separately as we're nice people
   RUSTFLAGS: --deny=warnings
 
 concurrency:
