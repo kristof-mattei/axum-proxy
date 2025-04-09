@@ -274,6 +274,11 @@ jobs:
 
           cargo --version
 
+      - name: Test docs
+        shell: bash
+        run: |
+          cargo test --doc
+
       - name: Install llvm-tools-preview
         shell: bash
         run: |
