@@ -46,6 +46,7 @@ const prettierConfig = {
             },
         },
     ],
+    plugins: ["prettier-plugin-sh"],
 };
 
 module.exports = prettierConfig;

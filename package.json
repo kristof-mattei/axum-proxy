@@ -21,8 +21,8 @@
   },
   "homepage": "https://github.com/kristof-mattei/axum-proxy#readme",
   "devDependencies": {
-    "@actions/tool-cache": "2.0.2",
-    "prettier": "3.5.0"
+    "prettier": "3.5.3",
+    "prettier-plugin-sh": "0.17.0"
   },
   "publishConfig": {
     "access": "restricted"
