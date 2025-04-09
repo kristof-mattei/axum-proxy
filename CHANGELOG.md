@@ -1,4 +1,10 @@
 - - -
+## [v0.4.1](https://github.com/kristof-mattei/axum-proxy/compare/b8de394fcd5b3a0feb68bf7776b10b2bde218bb8..v0.4.1) - 2025-04-09
+#### Bug Fixes
+- also test docs - ([b8de394](https://github.com/kristof-mattei/axum-proxy/commit/b8de394fcd5b3a0feb68bf7776b10b2bde218bb8)) - [@kristof-mattei](https://github.com/kristof-mattei)
+
+- - -
+
 ## [v0.4.0](https://github.com/kristof-mattei/axum-proxy/compare/f27df3f806bb36e82f6e974aedb9013da50d1c31..v0.4.0) - 2025-04-09
 #### Bug Fixes
 - **(deps)** update rust crate hyper-util to v0.1.11 - ([2ff618f](https://github.com/kristof-mattei/axum-proxy/commit/2ff618f3a3d52852f16f246fb19b43c1b1cff259)) - renovate[bot]
