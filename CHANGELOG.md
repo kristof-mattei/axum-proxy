@@ -1,4 +1,24 @@
 - - -
+## [v0.4.2](https://github.com/kristof-mattei/axum-proxy/compare/165fef6a4d00ff543fe7b87cdc0b0d6663329e5c..v0.4.2) - 2025-04-30
+#### Bug Fixes
+- **(deps)** update rust crate axum to v0.8.4 - ([ac5a297](https://github.com/kristof-mattei/axum-proxy/commit/ac5a297a8e16ad7508f5dbf9cb184dc56a2f1698)) - renovate[bot]
+#### Miscellaneous Chores
+- **(deps)** update returntocorp/semgrep docker tag to v1.120.1 - ([168ce9a](https://github.com/kristof-mattei/axum-proxy/commit/168ce9aa7d95c4ff25c12fe697b1202736ccc80d)) - renovate[bot]
+- **(deps)** lock file maintenance - ([2c57263](https://github.com/kristof-mattei/axum-proxy/commit/2c57263c4657e453989b663d93f4cbd2db0b0cb6)) - renovate[bot]
+- **(deps)** update github/codeql-action action to v3.28.16 - ([ff9b8c4](https://github.com/kristof-mattei/axum-proxy/commit/ff9b8c4c607c4ed5e7f69322ec671d9ef68d979c)) - renovate[bot]
+- **(deps)** update node.js to v22.15.0 - ([1e0bcd4](https://github.com/kristof-mattei/axum-proxy/commit/1e0bcd49cb482b71fb4435877bb0dd20e6c35e18)) - renovate[bot]
+- **(deps)** update returntocorp/semgrep docker tag to v1.120.0 - ([582a55a](https://github.com/kristof-mattei/axum-proxy/commit/582a55a818a604bbd2144613cb5da6a65b43426b)) - renovate[bot]
+- **(deps)** lock file maintenance - ([de6f9d8](https://github.com/kristof-mattei/axum-proxy/commit/de6f9d8184ef23e7039a874006a76e5ae621c4a2)) - renovate[bot]
+- **(deps)** update softprops/action-gh-release action to v2.2.2 - ([f286af8](https://github.com/kristof-mattei/axum-proxy/commit/f286af81d91b6b8396f224144f101486c9803d68)) - renovate[bot]
+- **(deps)** update returntocorp/semgrep docker tag to v1.119.0 - ([6652e4f](https://github.com/kristof-mattei/axum-proxy/commit/6652e4ff14e64eef9312c97c565fdf301f37294a)) - renovate[bot]
+- **(deps)** update codecov/codecov-action action to v5.4.2 - ([35f1b82](https://github.com/kristof-mattei/axum-proxy/commit/35f1b82cb4ed5760ecd3ed45b6ba8d4fde2db19c)) - renovate[bot]
+- **(deps)** lock file maintenance - ([68ca037](https://github.com/kristof-mattei/axum-proxy/commit/68ca037e9945733cd31ffdfc5a208f2bbfe73c2a)) - renovate[bot]
+- **(deps)** update actions/setup-node action to v4.4.0 - ([f164bda](https://github.com/kristof-mattei/axum-proxy/commit/f164bdadb3896485c42b65dedf2c669615a0c741)) - renovate[bot]
+- **(deps)** update mcr.microsoft.com/devcontainers/rust:1-1-bullseye docker digest to a87c2e8 - ([840b1c4](https://github.com/kristof-mattei/axum-proxy/commit/840b1c4b5c4bcc6257056d91fbfaa464333596d3)) - renovate[bot]
+- **(deps)** update returntocorp/semgrep docker tag to v1.118.0 - ([165fef6](https://github.com/kristof-mattei/axum-proxy/commit/165fef6a4d00ff543fe7b87cdc0b0d6663329e5c)) - renovate[bot]
+
+- - -
+
 ## [v0.4.1](https://github.com/kristof-mattei/axum-proxy/compare/b8de394fcd5b3a0feb68bf7776b10b2bde218bb8..v0.4.1) - 2025-04-09
 #### Bug Fixes
 - also test docs - ([b8de394](https://github.com/kristof-mattei/axum-proxy/commit/b8de394fcd5b3a0feb68bf7776b10b2bde218bb8)) - [@kristof-mattei](https://github.com/kristof-mattei)
