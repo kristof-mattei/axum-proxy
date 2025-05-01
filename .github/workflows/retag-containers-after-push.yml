@@ -1,0 +1,195 @@
+name: Retag containers after new push / PR
+
+env:
+  # set this to true in GitHub variables to enable building the container
+  # HAS_CONTAINER: true
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
+
+concurrency:
+  group: "${{ github.workflow }}" # last one must win
+  cancel-in-progress: false # no we need them
+
+on:
+  # Triggers the workflow pushes to main. They can be either direct pushes, or PRs being merged
+  push:
+    branches: [main]
+
+  # note how we're not doing
+  # pull_request_target, as it isn't what we need.
+  # we need the push event to make it show up nicely in the UI
+  # this however brings a whole new slew of problems, like how do we identify the
+  # incoming PR's artifacts?
+  # well, we set a tag on that PR's artifact, in the form of
+  # pr-{head_of_pr}-{pr_head_of_main}
+  # when with git rev-parse HEAD^2 we can find the incoming PR's head
+  # Problem solved
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  repo-has-container:
+    name: Repo has container?
+    runs-on: ubuntu-latest
+    outputs:
+      has_container: ${{ steps.determine.outputs.has_container }}
+
+    steps:
+      - name: Repo has docker container?
+        id: determine
+        shell: bash
+        run: |
+          HAS_CONTAINER="${{ vars.HAS_CONTAINER }}"
+          echo "has_container=${HAS_CONTAINER:-false}" >> ${GITHUB_OUTPUT}
+
+  retag-containers:
+    name: Retag the containers
+    runs-on: ubuntu-latest
+    needs:
+      - repo-has-container
+    if: |
+      fromJSON(needs.repo-has-container.outputs.has_container) == true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          show-progress: false
+          fetch-depth: 2
+
+      - name: Find out if current commit is a merge
+        shell: bash
+        run: |
+          EXIT_CODE=0
+          # a commit always has a parent, but if it has 2, the commit is a merge
+          # so lets see if we have one
+          # since we're listening to the push event we have to do this manually
+          PARENT2=$(git rev-parse "HEAD^2" --quiet 2>/dev/null) || EXIT_CODE=$?
+
+          if [ ${EXIT_CODE} -eq 0 ]
+          then
+            echo "The head of the incoming PR is ${PARENT2}"
+            echo "INCOMING_PR_HEAD_COMMIT=${PARENT2}" >> ${GITHUB_ENV}
+
+          else
+            echo "The incoming push isn't a merge, ergo it's not a PR"
+          fi
+
+      - name: Download crane tar, extract, and add folder to path.
+        shell: bash
+        run: |
+          # name of the file in releases we're looking for
+          file_name=go-containerregistry_Linux_x86_64.tar.gz
+
+          # temp location
+          temp_path=$(mktemp --directory --tmpdir=${RUNNER_TEMP})
+
+          # where to download the releases to
+          json_path=${temp_path}/releases.json
+
+          # where to download the archive to
+          archive_path=${temp_path}/${file_name}
+
+          # fetch releases
+          curl \
+            --silent \
+            --location \
+            --output ${json_path}\
+            https://api.github.com/repos/google/go-containerregistry/releases/latest
+
+          url_to_krane=$(cat ${json_path} |\
+            jq \
+              --raw-output \
+              ".assets.[] | select(.browser_download_url | contains(\"${file_name}\")) | .browser_download_url"
+          )
+
+          # Download archive
+          curl \
+            --silent \
+            --location \
+            --output ${archive_path} \
+            $url_to_krane
+
+          cd ${temp_path}
+
+          # extract archive
+          tar \
+            --verbose \
+            --extract \
+            --gunzip \
+            --file ./${file_name}
+
+          # append to path
+          echo "${temp_path}" >> ${GITHUB_PATH}
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set full image name
+        shell: bash
+        run: |
+          echo "FULL_IMAGE_NAME=${REGISTRY,,}/${IMAGE_NAME,,}" >> ${GITHUB_ENV}
+
+      - name: Find all tags for ${{ env.FULL_IMAGE_NAME }}
+        shell: bash
+        run: |
+          crane ls ${FULL_IMAGE_NAME} >> existing_tags
+
+          echo "These are the existing tags on ${FULL_IMAGE_NAME}:"
+          cat existing_tags
+
+      - name: Check if the incoming PR has a Docker container, which will be our old tag, if not, or if it's just a push, find the appropriate old tag
+        env:
+          PR_TAG: "pr-${{ github.event.before }}-${{ env.INCOMING_PR_HEAD_COMMIT }}"
+        shell: bash
+        run: |
+          # search for the tag, there can only be zero or one match
+          # we need the || true because otherwise grep returns exit code 1 and github actions then dies
+          pr_tag_found=$(cat existing_tags | grep -c "^${PR_TAG}\$") || true
+
+          if [ $pr_tag_found -eq 1 ]
+          then
+            echo "Incoming PR produced a Docker image"
+
+            echo "OLD_TAG=${PR_TAG}" >> ${GITHUB_ENV}
+            echo "SUFFIX=actual" >> ${GITHUB_ENV}
+          else
+            # If we don't have an old tag, then the incoming PR didn't produce a container.
+            # In which case we're going to find the container referenced to the base commit, and add our current sha as a tag to it
+
+            echo "Incoming PR produced nothing, or there was just a push to main"
+
+            # so we find the last commit that github processed before this one
+            # which will have gone through the same retagging process
+            # and use that sha as our key to find the Docker container related to that commit
+            old_tag=$(cat existing_tags | grep "^sha-${{ github.event.before }}-.*\$") # .* is actual or retag
+
+            echo "OLD_TAG=${old_tag}" >> ${GITHUB_ENV}
+            echo "SUFFIX=retag" >> ${GITHUB_ENV}
+          fi
+
+      - name: Set the new TAGs
+        id: meta
+        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
+        with:
+          images: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+          flavor: |
+            latest=false
+          tags: |
+            type=edge,branch=main
+            type=sha,format=long,prefix=sha-,suffix=-${{ env.SUFFIX }}
+
+      - name: Actually re-tag the container
+        shell: bash
+        run: |
+          echo "${{ steps.meta.outputs.tags }}" | while read new_tag
+          do
+            crane cp "${FULL_IMAGE_NAME}:${OLD_TAG}" ${new_tag}
+          done

@@ -1,0 +1,134 @@
+name: Update semantic tags on repo & image after release
+
+env:
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
+
+concurrency:
+  group: "${{ github.workflow }}"
+  cancel-in-progress: false # last one must win in case of multiple releases
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  repo-has-container:
+    name: Repo has container?
+    runs-on: ubuntu-latest
+    outputs:
+      has_container: ${{ steps.determine.outputs.has_container }}
+
+    steps:
+      - name: Repo has docker container?
+        id: determine
+        shell: bash
+        run: |
+          HAS_CONTAINER="${{ vars.HAS_CONTAINER }}"
+          echo "has_container=${HAS_CONTAINER:-false}" >> ${GITHUB_OUTPUT}
+
+  retag-containers:
+    name: Retag the containers
+    runs-on: ubuntu-latest
+    needs:
+      - repo-has-container
+    if: |
+      fromJSON(needs.repo-has-container.outputs.has_container) == true
+    steps:
+      - name: Download crane tar, extract, and add folder to path.
+        shell: bash
+        run: |
+          # name of the file in releases we're looking for
+          file_name=go-containerregistry_Linux_x86_64.tar.gz
+
+          # temp location
+          temp_path=$(mktemp --directory --tmpdir=${RUNNER_TEMP})
+
+          # where to download the releases to
+          json_path=${temp_path}/releases.json
+
+          # where to download the archive to
+          archive_path=${temp_path}/${file_name}
+
+          # fetch releases
+          curl \
+            --silent \
+            --location \
+            --output ${json_path}\
+            https://api.github.com/repos/google/go-containerregistry/releases/latest
+
+          url_to_krane=$(cat ${json_path} |\
+            jq \
+              --raw-output \
+              ".assets.[] | select(.browser_download_url | contains(\"${file_name}\")) | .browser_download_url"
+          )
+
+          # Download archive
+          curl \
+            --silent \
+            --location \
+            --output ${archive_path} \
+            $url_to_krane
+
+          cd ${temp_path}
+
+          # extract archive
+          tar \
+            --verbose \
+            --extract \
+            --gunzip \
+            --file ./${file_name}
+
+          # append to path
+          echo "${temp_path}" >> ${GITHUB_PATH}
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set full image name
+        shell: bash
+        run: |
+          echo "FULL_IMAGE_NAME=${REGISTRY,,}/${IMAGE_NAME,,}" >> ${GITHUB_ENV}
+
+      - name: Find all tags for ${{ env.FULL_IMAGE_NAME }}
+        shell: bash
+        run: |
+          crane ls ${FULL_IMAGE_NAME} >> existing_tags
+
+          echo "These are the existing tags on ${FULL_IMAGE_NAME}:"
+          cat existing_tags
+
+      - name: Check if the incoming PR has a Docker container, which will be our old tag
+        shell: bash
+        run: |
+          old_tag=$(cat existing_tags | grep "^sha-${{ github.sha }}-.*\$") # .* is actual or retag
+
+          echo "OLD_TAG=${old_tag}" >> ${GITHUB_ENV}
+
+      - name: Set the new TAGs
+        id: meta
+        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
+        with:
+          images: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+          tags: |
+            type=raw,value=latest
+            type=semver,pattern=v{{version}}
+
+      - name: Actually re-tag the container
+        shell: bash
+        run: |
+          echo "${{ steps.meta.outputs.tags }}" | while read new_tag
+          do
+            crane cp "${FULL_IMAGE_NAME}:${OLD_TAG}" ${new_tag}
+          done
