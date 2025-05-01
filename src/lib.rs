@@ -177,6 +177,15 @@ pub use reused::ReusedService;
 #[cfg_attr(docsrs, doc(cfg(any(feature = "http1", feature = "http2"))))]
 pub use reused::{builder, builder_http};
 
+#[cfg(not(feature = "http1"))]
+compile_error!("http1 is a mandatory feature");
+
+#[cfg(all(
+    any(feature = "rustls-ring", feature = "rustls-aws-lc"),
+    not(any(feature = "rustls-webpki-roots", feature = "rustls-native-roots"))
+))]
+compile_error!("When enabling rustls-ring and/or rustls-aws-lc, you must enable rustls-webpki-roots and/or rustls-native-roots");
+
 #[cfg(test)]
 mod test_helper {
     use std::convert::Infallible;
