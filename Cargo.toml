@@ -1,23 +1,34 @@
 [package]
 name = "axum-proxy"
-version = "0.3.0"
+# don't change this, it's updated before an actual build by update-version.sh
+version = "0.0.0-development"
 edition = "2021"
 rust-version = "1.83.0"
 authors = ["Kristof Mattei", "Masato Nakata <masaton@naughie.com>"]
 description = "Tower service for reverse proxy"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/kristof-mattei/axum-proxy"
-documentation = "https://docs.rs/axum-proxy"
 keywords = ["http", "tower", "axum", "reverse", "proxy"]
 categories = ["asynchronous", "web-programming", "web-programming::http-server"]
+repository = "https://github.com/kristof-mattei/axum-proxy"
+documentation = "https://docs.rs/axum-proxy"
 readme = "README.md"
 include = ["src/", "LICENSE-*", "README.md"]
 
 [lints.clippy]
 # don't stop from compiling / running
 all = "warn"
-pedantic = "warn"
 cargo = "warn"
+complexity = "warn"
+correctness = "warn"
+pedantic = "warn"
+perf = "warn"
+# restriction = "warn"
+style = "warn"
+suspicious = "warn"
+
+# this one is debatable. continue is used in places to be explicit, and to guard against
+# issues when refactoring
+needless_continue = { level = "allow", priority = 127 }
 # this one causes confusion when combining variables (`foo`) and
 # dereferenced variables (`foo.bar`). The latter cannot be inlined
 # so we don't inline anything
@@ -48,7 +59,7 @@ http = "1.2.0"
 http-body = "1.0.1"
 hyper = { version = "1.5.2", features = ["client"] }
 
-axum = { version = "0.8.1", features = [], optional = true }
+axum = { version = "0.8.3", features = [], optional = true }
 
 hyper-tls = { version = "0.6.0", optional = true }
 hyper-rustls = { version = "0.27.5", optional = true, default-features = false, features = [

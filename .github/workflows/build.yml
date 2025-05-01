@@ -17,8 +17,6 @@ permissions:
   packages: write
 
 env:
-  CARGO_TERM_COLOR: always
-  # just a name, but storing it separately as we're nice people
   RUSTFLAGS: --deny=warnings
 
 concurrency:
@@ -52,7 +50,7 @@ jobs:
     needs:
       - changes
     outputs:
-      version: ${{ steps.version.outputs.next_version }}
+      version: ${{ steps.version.outputs.version }}
     if: |
       github.event_name == 'pull_request' &&
       fromJSON(needs.changes.outputs.code) == true
@@ -64,7 +62,7 @@ jobs:
           fetch-depth: 0
 
       - name: Cache dependencies
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         env:
           CACHE_NAME: cargo-cache-dependencies
         with:
@@ -77,7 +75,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.CACHE_NAME }}-
 
       - name: Set up mold
-        uses: rui314/setup-mold@f80524ca6eeaa76759b57fb78ddce5d87a20c720 # v1
+        uses: rui314/setup-mold@e16410e7f8d9e167b74ad5697a9089a35126eb50 # v1
 
       - name: Set up toolchain
         shell: bash
@@ -86,14 +84,17 @@ jobs:
           rm ${HOME}/.cargo/bin/rust-analyzer
           rm ${HOME}/.cargo/bin/rustfmt
 
+          rustup self update
           rustup update
+          rustup show active-toolchain || rustup toolchain install
+          rustup show
 
           cargo --version
 
       - name: Get binstall
         shell: bash
+        working-directory: /tmp
         run: |
-          cd /tmp
           archive="cargo-binstall-x86_64-unknown-linux-musl.tgz"
           wget "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/${archive}"
 
@@ -126,7 +127,7 @@ jobs:
           VERSION="${VERSION//v/}"
 
           # store
-          echo "next_version=${VERSION}" >> ${GITHUB_OUTPUT}
+          echo "version=${VERSION}" >> ${GITHUB_OUTPUT}
 
   cargo-build:
     name: Cargo build
@@ -143,7 +144,7 @@ jobs:
           show-progress: false
 
       - name: Cache dependencies
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         env:
           CACHE_NAME: cargo-cache-dependencies
         with:
@@ -156,7 +157,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.CACHE_NAME }}-
 
       - name: Set up mold
-        uses: rui314/setup-mold@f80524ca6eeaa76759b57fb78ddce5d87a20c720 # v1
+        uses: rui314/setup-mold@e16410e7f8d9e167b74ad5697a9089a35126eb50 # v1
 
       - name: Set up toolchain
         shell: bash
@@ -165,7 +166,10 @@ jobs:
           rm ${HOME}/.cargo/bin/rust-analyzer
           rm ${HOME}/.cargo/bin/rustfmt
 
+          rustup self update
           rustup update
+          rustup show active-toolchain || rustup toolchain install
+          rustup show
 
           cargo --version
 
@@ -189,7 +193,7 @@ jobs:
           show-progress: false
 
       - name: Cache dependencies
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         env:
           CACHE_NAME: cargo-cache-dependencies
         with:
@@ -202,7 +206,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.CACHE_NAME }}-
 
       - name: Set up mold
-        uses: rui314/setup-mold@f80524ca6eeaa76759b57fb78ddce5d87a20c720 # v1
+        uses: rui314/setup-mold@e16410e7f8d9e167b74ad5697a9089a35126eb50 # v1
 
       - name: Set up toolchain
         shell: bash
@@ -211,9 +215,20 @@ jobs:
           rm ${HOME}/.cargo/bin/rust-analyzer
           rm ${HOME}/.cargo/bin/rustfmt
 
+          rustup self update
           rustup update
+          rustup show active-toolchain || rustup toolchain install
+          rustup show
 
           cargo --version
+
+      - name: Install rustfmt
+        shell: bash
+        run: |
+          rustup component add rustfmt
+
+          # restore symlinks
+          rustup update
 
       - name: Check formatting
         shell: bash
@@ -230,7 +245,7 @@ jobs:
           show-progress: false
 
       - name: Cache dependencies
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         env:
           CACHE_NAME: cargo-cache-dependencies
         with:
@@ -243,7 +258,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.CACHE_NAME }}-
 
       - name: Set up mold
-        uses: rui314/setup-mold@f80524ca6eeaa76759b57fb78ddce5d87a20c720 # v1
+        uses: rui314/setup-mold@e16410e7f8d9e167b74ad5697a9089a35126eb50 # v1
 
       - name: Set up toolchain
         shell: bash
@@ -252,20 +267,32 @@ jobs:
           rm ${HOME}/.cargo/bin/rust-analyzer
           rm ${HOME}/.cargo/bin/rustfmt
 
+          rustup self update
           rustup update
+          rustup show active-toolchain || rustup toolchain install
+          rustup show
 
           cargo --version
+
+      - name: Test docs
+        shell: bash
+        run: |
+          cargo test --doc
 
       - name: Install llvm-tools-preview
         shell: bash
         run: |
           rustup component add llvm-tools-preview
 
+          # restore symlinks
+          rustup update
+
       - name: Get binstall
         shell: bash
+        working-directory: /tmp
         run: |
           archive="cargo-binstall-x86_64-unknown-linux-musl.tgz"
-          wget "https://github.com/ryankurte/cargo-binstall/releases/latest/download/${archive}"
+          wget "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/${archive}"
 
           tar -xvf "./${archive}"
 
@@ -301,7 +328,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload test results
-        uses: EnricoMi/publish-unit-test-result-action@170bf24d20d201b842d7a52403b73ed297e6645b # v2.18.0
+        uses: EnricoMi/publish-unit-test-result-action@afb2984f4d89672b2f9d9c13ae23d53779671984 # v2.19.0
         with:
           check_name: Test results
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -313,7 +340,7 @@ jobs:
           grcov $(find profiling -name "profile-*.profraw" -print) --source-dir . --binary-path ./target/debug/ --output-type lcov --branch --ignore-not-existing --llvm --keep-only "src/**" --keep-only "tests/**" --output-path ./reports/lcov.info
 
       - name: Upload coverage results (to Codecov.io)
-        uses: codecov/codecov-action@13ce06bfc6bbe3ecf90edbbf1bc32fe5978ca1d3 # v5.3.1
+        uses: codecov/codecov-action@ad3126e916f78f00edff4ed0317cf185271ccc2d # v5.4.2
         with:
           disable_search: true
           fail_ci_if_error: true
@@ -322,7 +349,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload test results to Codecov
-        uses: codecov/test-results-action@44ecb3a270cd942bdf0fa8f2ce14cb32493e810a # v1.0.3
+        uses: codecov/test-results-action@f2dba722c67b86c6caa034178c6e4d35335f6706 # v1.1.0
         with:
           disable_search: true
           fail_ci_if_error: true
@@ -356,7 +383,7 @@ jobs:
           show-progress: false
 
       - name: Cache dependencies
-        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         env:
           CACHE_NAME: cargo-cache-dependencies
         with:
@@ -369,7 +396,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.CACHE_NAME }}-
 
       - name: Set up mold
-        uses: rui314/setup-mold@f80524ca6eeaa76759b57fb78ddce5d87a20c720 # v1
+        uses: rui314/setup-mold@e16410e7f8d9e167b74ad5697a9089a35126eb50 # v1
 
       - name: Set up toolchain
         shell: bash
@@ -378,12 +405,15 @@ jobs:
           rm ${HOME}/.cargo/bin/rust-analyzer
           rm ${HOME}/.cargo/bin/rustfmt
 
+          rustup self update
           rustup update
+          rustup show active-toolchain || rustup toolchain install
+          rustup show
 
           cargo --version
 
       - name: Run Clippy for GitHub Actions report
-        uses: actions-rs-plus/clippy-check@30fef0f891edb491831cd248156cfb18d7d12fda # v2.2.0
+        uses: actions-rs-plus/clippy-check@0d83844d8ff1a67b11d384d9dd6adcdcf142a8a7 # v2.2.1
         with:
           args: --workspace --all-targets --all-features --no-deps
 
