@@ -1,4 +1,17 @@
 - - -
+## [v0.5.0](https://github.com/kristof-mattei/axum-proxy/compare/0944b892b968e26c241689b3028d8744ed2eaccf..v0.5.0) - 2025-05-01
+#### Bug Fixes
+- add flags to prevent bad configuration - ([cf960c7](https://github.com/kristof-mattei/axum-proxy/commit/cf960c745da3eda31ea53fe2df85f054c078922c)) - [@kristof-mattei](https://github.com/kristof-mattei)
+- split tls backends into 2 options - ([6f08860](https://github.com/kristof-mattei/axum-proxy/commit/6f088608dec706083d023c8ab2a34ea3ef3810f0)) - [@kristof-mattei](https://github.com/kristof-mattei)
+#### Features
+- add features for ring and aws-lc - ([d446879](https://github.com/kristof-mattei/axum-proxy/commit/d446879bc03146be77c5cbe862d0a2885201546f)) - [@kristof-mattei](https://github.com/kristof-mattei)
+#### Miscellaneous Chores
+- **(deps)** disable aws-lc-rs by default - ([5eaabd4](https://github.com/kristof-mattei/axum-proxy/commit/5eaabd43d8f830f57ba5c8f3661e648e0c7e6281)) - Joe Grund
+- **(deps)** lock file maintenance - ([0944b89](https://github.com/kristof-mattei/axum-proxy/commit/0944b892b968e26c241689b3028d8744ed2eaccf)) - renovate[bot]
+- update build patterns - ([658bfaa](https://github.com/kristof-mattei/axum-proxy/commit/658bfaa9775234ec76a3654ae43d1433dae70141)) - [@kristof-mattei](https://github.com/kristof-mattei)
+
+- - -
+
 ## [v0.4.2](https://github.com/kristof-mattei/axum-proxy/compare/165fef6a4d00ff543fe7b87cdc0b0d6663329e5c..v0.4.2) - 2025-04-30
 #### Bug Fixes
 - **(deps)** update rust crate axum to v0.8.4 - ([ac5a297](https://github.com/kristof-mattei/axum-proxy/commit/ac5a297a8e16ad7508f5dbf9cb184dc56a2f1698)) - renovate[bot]
