@@ -92,10 +92,22 @@ where
     B::Data: Send,
 {
     let conn = hyper_rustls::HttpsConnectorBuilder::new();
-    #[cfg(feature = "rustls-webpki-roots")]
+    #[cfg(all(
+        any(feature = "rustls-ring", feature = "rustls-aws-lc"),
+        feature = "rustls-webpki-roots"
+    ))]
     let conn = conn.with_webpki_roots();
-    #[cfg(all(not(feature = "rustls-webpki-roots"), feature = "rustls-native-roots"))]
-    let conn = conn.with_native_roots();
+    #[cfg(all(
+        any(feature = "rustls-ring", feature = "rustls-aws-lc"),
+        all(not(feature = "rustls-webpki-roots"), feature = "rustls-native-roots")
+    ))]
+    let conn = conn
+        .with_native_roots()
+        .expect("no native root CA certificates found");
+    #[cfg(all(
+        any(feature = "rustls-ring", feature = "rustls-aws-lc"),
+        any(feature = "rustls-webpki-roots", feature = "rustls-native-roots")
+    ))]
     let conn = conn.https_only();
     #[cfg(feature = "http1")]
     let conn = conn.enable_http1();
