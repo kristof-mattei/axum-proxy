@@ -2,8 +2,8 @@
 name = "axum-proxy"
 # don't change this, it's updated before an actual build by update-version.sh
 version = "0.0.0-development"
-edition = "2021"
-rust-version = "1.83.0"
+edition = "2024"
+rust-version = "1.85.0"
 authors = ["Kristof Mattei", "Masato Nakata <masaton@naughie.com>"]
 description = "Tower service for reverse proxy"
 license = "MIT OR Apache-2.0"
