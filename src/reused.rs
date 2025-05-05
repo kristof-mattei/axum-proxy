@@ -194,7 +194,6 @@ where
 /// let _res = svc2.call(req).await.unwrap();
 /// # }
 /// ```
-#[expect(clippy::module_name_repetitions)]
 #[derive(Debug)]
 pub struct ReusedService<Pr, C, B = Incoming> {
     client: Arc<Client<C, B>>,
