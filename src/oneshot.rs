@@ -39,7 +39,6 @@ type BoxErr = Box<dyn std::error::Error + Send + Sync>;
 /// let _res = svc.call(req).await.unwrap();
 /// # }
 /// ```
-#[expect(clippy::module_name_repetitions)]
 pub struct OneshotService<Pr, C = HttpConnector, B = Incoming> {
     client: Client<C, B>,
     scheme: Scheme,

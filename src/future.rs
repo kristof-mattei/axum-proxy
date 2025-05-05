@@ -14,7 +14,6 @@ use crate::rewrite::PathRewriter;
 
 type BoxErr = Box<dyn std::error::Error + Send + Sync>;
 
-#[expect(clippy::module_name_repetitions)]
 pub struct RevProxyFuture {
     inner: Result<ResponseFuture, Option<HttpError>>,
 }
