@@ -143,6 +143,12 @@ pub use oneshot::OneshotService;
 
 #[cfg(any(feature = "http1", feature = "http2"))]
 mod reused;
+#[cfg(any(feature = "http1", feature = "http2"))]
+#[cfg_attr(docsrs, doc(cfg(any(feature = "http1", feature = "http2"))))]
+pub use reused::Builder as ReusedServiceBuilder;
+#[cfg(any(feature = "http1", feature = "http2"))]
+#[cfg_attr(docsrs, doc(cfg(any(feature = "http1", feature = "http2"))))]
+pub use reused::ReusedService;
 #[cfg(all(
     any(feature = "http1", feature = "http2"),
     any(feature = "https", feature = "nativetls")
@@ -169,12 +175,6 @@ pub use reused::builder_nativetls;
 pub use reused::builder_rustls;
 #[cfg(any(feature = "http1", feature = "http2"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "http1", feature = "http2"))))]
-pub use reused::Builder as ReusedServiceBuilder;
-#[cfg(any(feature = "http1", feature = "http2"))]
-#[cfg_attr(docsrs, doc(cfg(any(feature = "http1", feature = "http2"))))]
-pub use reused::ReusedService;
-#[cfg(any(feature = "http1", feature = "http2"))]
-#[cfg_attr(docsrs, doc(cfg(any(feature = "http1", feature = "http2"))))]
 pub use reused::{builder, builder_http};
 
 #[cfg(not(feature = "http1"))]
@@ -184,7 +184,9 @@ compile_error!("http1 is a mandatory feature");
     any(feature = "rustls-ring", feature = "rustls-aws-lc"),
     not(any(feature = "rustls-webpki-roots", feature = "rustls-native-roots"))
 ))]
-compile_error!("When enabling rustls-ring and/or rustls-aws-lc, you must enable rustls-webpki-roots and/or rustls-native-roots");
+compile_error!(
+    "When enabling rustls-ring and/or rustls-aws-lc, you must enable rustls-webpki-roots and/or rustls-native-roots"
+);
 
 #[cfg(test)]
 mod test_helper {
@@ -204,11 +206,11 @@ mod test_helper {
         expected: (StatusCode, &str),
     ) where
         S: Service<
-            Request<String>,
-            Response = Result<Response<Incoming>, Error>,
-            Error = Infallible,
-            Future = RevProxyFuture,
-        >,
+                Request<String>,
+                Response = Result<Response<Incoming>, Error>,
+                Error = Infallible,
+                Future = RevProxyFuture,
+            >,
         B: Into<String>,
     {
         let mut builder = Request::builder()
@@ -236,11 +238,11 @@ mod test_helper {
     pub async fn match_path<S>(server: &mut ServerGuard, svc: &mut S)
     where
         S: Service<
-            Request<String>,
-            Response = Result<Response<Incoming>, Error>,
-            Error = Infallible,
-            Future = RevProxyFuture,
-        >,
+                Request<String>,
+                Response = Result<Response<Incoming>, Error>,
+                Error = Infallible,
+                Future = RevProxyFuture,
+            >,
     {
         let _mk = server
             .mock("GET", "/goo/bar/goo/baz/goo")
@@ -266,11 +268,11 @@ mod test_helper {
     pub async fn match_query<S>(server: &mut ServerGuard, svc: &mut S)
     where
         S: Service<
-            Request<String>,
-            Response = Result<Response<Incoming>, Error>,
-            Error = Infallible,
-            Future = RevProxyFuture,
-        >,
+                Request<String>,
+                Response = Result<Response<Incoming>, Error>,
+                Error = Infallible,
+                Future = RevProxyFuture,
+            >,
     {
         let _mk = server
             .mock("GET", "/goo")
@@ -297,11 +299,11 @@ mod test_helper {
     pub async fn match_post<S>(server: &mut ServerGuard, svc: &mut S)
     where
         S: Service<
-            Request<String>,
-            Response = Result<Response<Incoming>, Error>,
-            Error = Infallible,
-            Future = RevProxyFuture,
-        >,
+                Request<String>,
+                Response = Result<Response<Incoming>, Error>,
+                Error = Infallible,
+                Future = RevProxyFuture,
+            >,
     {
         let _mk = server
             .mock("POST", "/goo")
@@ -330,11 +332,11 @@ mod test_helper {
     pub async fn match_header<S>(server: &mut ServerGuard, svc: &mut S)
     where
         S: Service<
-            Request<String>,
-            Response = Result<Response<Incoming>, Error>,
-            Error = Infallible,
-            Future = RevProxyFuture,
-        >,
+                Request<String>,
+                Response = Result<Response<Incoming>, Error>,
+                Error = Infallible,
+                Future = RevProxyFuture,
+            >,
     {
         let _mk = server
             .mock("POST", "/goo")

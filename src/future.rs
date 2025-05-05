@@ -9,8 +9,8 @@ use hyper::body::{Body as HttpBody, Incoming};
 use hyper_util::client::legacy::connect::Connect;
 use hyper_util::client::legacy::{Client, ResponseFuture};
 
-use crate::rewrite::PathRewriter;
 use crate::Error;
+use crate::rewrite::PathRewriter;
 
 type BoxErr = Box<dyn std::error::Error + Send + Sync>;
 

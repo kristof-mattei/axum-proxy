@@ -10,13 +10,13 @@ use http::{Error as HttpError, Request, Response};
 use hyper::body::{Body as HttpBody, Incoming};
 #[cfg(feature = "nativetls")]
 use hyper_tls::HttpsConnector as NativeTlsConnector;
-use hyper_util::client::legacy::connect::Connect;
 use hyper_util::client::legacy::Client;
+use hyper_util::client::legacy::connect::Connect;
 use tower_service::Service;
 
 use crate::future::RevProxyFuture;
 use crate::rewrite::PathRewriter;
-use crate::{client, Error};
+use crate::{Error, client};
 
 type BoxErr = Box<dyn std::error::Error + Send + Sync>;
 
@@ -250,7 +250,7 @@ mod test {
     use mockito::ServerGuard;
 
     use super::*;
-    use crate::{test_helper, ReplaceAll};
+    use crate::{ReplaceAll, test_helper};
 
     async fn make_svc() -> (
         ServerGuard,
