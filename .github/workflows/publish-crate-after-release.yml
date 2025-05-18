@@ -50,10 +50,10 @@ jobs:
           path: |
             ~/.cargo
             ./target
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-test
+          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-test
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
-            ${{ runner.os }}-build-${{ env.CACHE_NAME }}-
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
 
       - name: Set up mold
         uses: rui314/setup-mold@e16410e7f8d9e167b74ad5697a9089a35126eb50 # v1
@@ -72,23 +72,10 @@ jobs:
 
           cargo --version
 
-      - name: Get binstall
-        shell: bash
-        working-directory: /tmp
-        run: |
-          archive="cargo-binstall-x86_64-unknown-linux-musl.tgz"
-          wget "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/${archive}"
-
-          tar -xvf "./${archive}"
-
-          rm "./${archive}"
-
-          mv ./cargo-binstall ~/.cargo/bin/
-
-      - name: Install binstall to do set-version
+      - name: Install cargo-edit to do set-version
         shell: bash
         run: |
-          cargo binstall cargo-edit
+          cargo install cargo-edit
 
       - name: Set version in Cargo.toml / Cargo.lock
         shell: bash

@@ -91,10 +91,10 @@ jobs:
           path: |
             ~/.cargo
             ./target
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-cocogitto
+          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-cocogitto
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
-            ${{ runner.os }}-build-${{ env.CACHE_NAME }}-
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
 
       - name: Set up mold
         uses: rui314/setup-mold@e16410e7f8d9e167b74ad5697a9089a35126eb50 # v1
@@ -173,10 +173,10 @@ jobs:
           path: |
             ~/.cargo
             ./target
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-build
+          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-build
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
-            ${{ runner.os }}-build-${{ env.CACHE_NAME }}-
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
 
       - name: Set up mold
         uses: rui314/setup-mold@e16410e7f8d9e167b74ad5697a9089a35126eb50 # v1
@@ -222,10 +222,10 @@ jobs:
           path: |
             ~/.cargo
             ./target
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-fmt
+          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-fmt
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
-            ${{ runner.os }}-build-${{ env.CACHE_NAME }}-
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
 
       - name: Set up mold
         uses: rui314/setup-mold@e16410e7f8d9e167b74ad5697a9089a35126eb50 # v1
@@ -274,10 +274,10 @@ jobs:
           path: |
             ~/.cargo
             ./target
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-test
+          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-test
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
-            ${{ runner.os }}-build-${{ env.CACHE_NAME }}-
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
 
       - name: Set up mold
         uses: rui314/setup-mold@e16410e7f8d9e167b74ad5697a9089a35126eb50 # v1
@@ -296,10 +296,10 @@ jobs:
 
           cargo --version
 
-      - name: Install llvm-tools-preview
+      - name: Install llvm-tools
         shell: bash
         run: |
-          rustup component add llvm-tools-preview
+          rustup component add llvm-tools
 
           # restore symlinks
           rustup update
@@ -407,10 +407,10 @@ jobs:
           path: |
             ~/.cargo
             ./target
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-clippy
+          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-clippy
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
-            ${{ runner.os }}-build-${{ env.CACHE_NAME }}-
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
 
       - name: Set up mold
         uses: rui314/setup-mold@e16410e7f8d9e167b74ad5697a9089a35126eb50 # v1
@@ -435,8 +435,13 @@ jobs:
           args: --workspace --all-targets --all-features --no-deps
 
   docker-build:
-    name: Build Docker container
-    runs-on: ubuntu-latest
+    name: Build Docker container on ${{ matrix.runs-on }}
+    strategy:
+      matrix:
+        runs-on:
+          - "ubuntu-latest"
+          - "ubuntu-24.04-arm"
+    runs-on: ${{ matrix.runs-on }}
     needs:
       - calculate-version
     # if:
@@ -459,10 +464,10 @@ jobs:
           path: |
             ~/.cargo
             ./target
-          key: ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-test
+          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-docker
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
-            ${{ runner.os }}-build-${{ env.CACHE_NAME }}-
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
 
       - name: Set up mold
         uses: rui314/setup-mold@e16410e7f8d9e167b74ad5697a9089a35126eb50 # v1
@@ -481,23 +486,10 @@ jobs:
 
           cargo --version
 
-      - name: Get binstall
-        shell: bash
-        working-directory: /tmp
-        run: |
-          archive="cargo-binstall-x86_64-unknown-linux-musl.tgz"
-          wget "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/${archive}"
-
-          tar -xvf "./${archive}"
-
-          rm "./${archive}"
-
-          mv ./cargo-binstall ~/.cargo/bin/
-
       - name: Install cargo-edit to do set-version
         shell: bash
         run: |
-          cargo binstall cargo-edit
+          cargo install cargo-edit
 
       - name: Set the Cargo.toml version before we copy in the data into the Docker container
         shell: bash
@@ -563,6 +555,8 @@ jobs:
 
       - name: Upload artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: |
+          matrix.runs-on == 'ubuntu-latest'
         with:
           name: container-${{ env.APPLICATION_NAME }}
           path: /tmp/${{ env.UNIQUE_TAG }}.tar
