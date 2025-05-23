@@ -55,18 +55,26 @@ jobs:
         working-directory: /tmp
         run: |
           archive="cargo-binstall-x86_64-unknown-linux-musl.tgz"
-          wget "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/${archive}"
-
-          tar -xvf "./${archive}"
-
-          rm "./${archive}"
-
-          mv ./cargo-binstall ~/.cargo/bin/
+          wget \
+            --output-document=- \
+            --timeout=10 \
+            --waitretry=3 \
+            --retry-connrefused \
+            --progress=dot:mega \
+            "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/${archive}" \
+            | tar \
+                --directory=${HOME}/.cargo/bin/ \
+                --strip-components=1 \
+                --no-overwrite-dir \
+                --extract \
+                --verbose \
+                --gunzip \
+                --file=-
 
       - name: Install cocogitto to get the next version number
         shell: bash
         run: |
-          cargo binstall --no-confirm cocogitto --target x86_64-unknown-linux-musl --pkg-url "{ repo }/releases/download/{ version }/{ name }-{ version }-{ target }.tar.gz" --bin-dir "{ bin }" --pkg-fmt tgz
+          cargo binstall --no-confirm cocogitto
 
       - name: Check the commits
         shell: bash

@@ -26,8 +26,8 @@ jobs:
         id: determine
         shell: bash
         run: |
-          HAS_CRATE="${{ vars.HAS_CRATE }}"
-          echo "has_crate=${HAS_CRATE:-false}" >> ${GITHUB_OUTPUT}
+          has_crate="${{ vars.HAS_CRATE }}"
+          echo "has_crate=${has_crate:-false}" >> ${GITHUB_OUTPUT}
 
   publish-crate:
     name: Publish crate
@@ -81,12 +81,12 @@ jobs:
         shell: bash
         id: version
         run: |
-          VERSION="${{ github.ref_name }}"
+          version="${{ github.ref_name }}"
           # remove v
-          VERSION="${VERSION//v/}"
+          version="${version//v/}"
 
           # store
-          cargo set-version ${VERSION}
+          cargo set-version ${version}
 
           # debug
           cat Cargo.toml
