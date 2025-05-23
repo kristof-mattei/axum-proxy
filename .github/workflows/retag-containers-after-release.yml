@@ -31,8 +31,8 @@ jobs:
         id: determine
         shell: bash
         run: |
-          HAS_CONTAINER="${{ vars.HAS_CONTAINER }}"
-          echo "has_container=${HAS_CONTAINER:-false}" >> ${GITHUB_OUTPUT}
+          has_container="${{ vars.HAS_CONTAINER }}"
+          echo "has_container=${has_container:-false}" >> ${GITHUB_OUTPUT}
 
   retag-containers:
     name: Retag the containers
