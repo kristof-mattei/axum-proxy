@@ -1,5 +1,6 @@
 .git
-.github/actions/
+.mypy_cache
+.vscode/rust-prettifier-for-lldb
 CHANGELOG.md
 profiling
 reports
