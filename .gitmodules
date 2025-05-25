@@ -1,0 +1,3 @@
+[submodule ".vscode/rust-prettifier-for-lldb"]
+	path = .vscode/rust-prettifier-for-lldb
+	url = https://github.com/cmrschwarz/rust-prettifier-for-lldb
