@@ -1,7 +1,5 @@
 name: Publish crate
 
-env: {}
-
 concurrency:
   group: "${{ github.workflow }}"
   cancel-in-progress: false # last one must win in case of multiple releases
@@ -13,6 +11,9 @@ on:
 
 permissions:
   contents: read
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
   repo-has-crate:

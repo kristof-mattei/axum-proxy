@@ -1,11 +1,5 @@
 name: Test Release
 
-env:
-  # Use docker.io for Docker Hub if empty
-  REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}
-
 on:
   workflow_dispatch: # releasing is manual as we don't want to release every time
 
@@ -13,6 +7,13 @@ permissions:
   contents: write
   issues: read
   pull-requests: read
+
+env:
+  CARGO_TERM_COLOR: always
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   test-release:
@@ -74,7 +75,7 @@ jobs:
             "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/${archive}" \
             | tar \
                 --directory=${HOME}/.cargo/bin/ \
-                --strip-components=1 \
+                --strip-components=0 \
                 --no-overwrite-dir \
                 --extract \
                 --verbose \

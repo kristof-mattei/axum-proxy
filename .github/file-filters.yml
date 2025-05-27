@@ -1,13 +1,12 @@
 code:
-  - ".nvmrc"
-  - "src/**"
-  - "TAG"
-  - Cargo.lock
-  - "*.toml"
-  - Dockerfile
-  - "tests/**"
-  - ".github/**"
   - ".cargo/**"
+  - ".github/**"
+  - ".nvmrc"
+  - "*.toml"
+  - "build-scripts/**"
+  - Cargo.lock
+  - Dockerfile
+  - "src/**"
+  - "tests/**"
   - "package.json"
   - "package-lock.json"
-  - ".ci"
