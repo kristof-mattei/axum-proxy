@@ -1,11 +1,5 @@
 name: Update semantic tags on repo & image after release
 
-env:
-  # Use docker.io for Docker Hub if empty
-  REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}
-
 concurrency:
   group: "${{ github.workflow }}"
   cancel-in-progress: false # last one must win in case of multiple releases
@@ -18,6 +12,13 @@ on:
 permissions:
   contents: write
   packages: write
+
+env:
+  CARGO_TERM_COLOR: always
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   repo-has-container:

@@ -1,13 +1,5 @@
 name: Retag containers after new push / PR
 
-env:
-  # set this to true in GitHub variables to enable building the container
-  # HAS_CONTAINER: true
-  # Use docker.io for Docker Hub if empty
-  REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}
-
 concurrency:
   group: "${{ github.workflow }}" # last one must win
   cancel-in-progress: false # no we need them
@@ -30,6 +22,15 @@ on:
 permissions:
   contents: write
   packages: write
+
+env:
+  CARGO_TERM_COLOR: always
+  # set this to true in GitHub variables to enable building the container
+  # HAS_CONTAINER: true
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   repo-has-container:
@@ -140,9 +141,9 @@ jobs:
       - name: Find all tags for ${{ env.FULL_IMAGE_NAME }}
         shell: bash
         run: |
-          crane ls ${{ env.FULL_IMAGE_NAME }} >> existing_tags
+          crane ls ${FULL_IMAGE_NAME} >> existing_tags
 
-          echo "These are the existing tags on ${{ env.FULL_IMAGE_NAME }}:"
+          echo "These are the existing tags on ${FULL_IMAGE_NAME}:"
           cat existing_tags
 
       - name: Check if the incoming PR has a Docker container, which will be our old tag, if not, or if it's just a push, find the appropriate old tag
@@ -191,5 +192,5 @@ jobs:
         run: |
           echo "${{ steps.meta.outputs.tags }}" | while read new_tag
           do
-            crane cp "${{ env.FULL_IMAGE_NAME }}:${{ env.OLD_TAG }}" ${new_tag}
+            crane cp "${FULL_IMAGE_NAME}:${OLD_TAG}" ${new_tag}
           done
