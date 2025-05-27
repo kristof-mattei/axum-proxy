@@ -1,4 +1,39 @@
 - - -
+## [v0.5.1](https://github.com/kristof-mattei/axum-proxy/compare/6ba6df545e87f1e6676e3c8c4daa9fc3cd8cfc0d..v0.5.1) - 2025-05-27
+#### Bug Fixes
+- **(deps)** update rust crate hyper-util to v0.1.13 - ([5dfa4c1](https://github.com/kristof-mattei/axum-proxy/commit/5dfa4c14ecc7a880e727f1ff74a9746658b7204b)) - renovate[bot]
+- **(deps)** update rust crate hyper-rustls to v0.27.6 - ([185d299](https://github.com/kristof-mattei/axum-proxy/commit/185d2999bd09f93e2b21282172b35bd1555811e9)) - renovate[bot]
+- **(deps)** update rust crate hyper-util to v0.1.12 - ([635d3ec](https://github.com/kristof-mattei/axum-proxy/commit/635d3ecb981b0191c99aa71cb2a2c19c6c43f20d)) - renovate[bot]
+- added arch to buildscripts to fix collisions, removed binstall for where we just use cargo-edit, as it doesn't have a binary available - ([2e990e3](https://github.com/kristof-mattei/axum-proxy/commit/2e990e32aca9e4bca899064dbf429d7f72ebaae2)) - [@kristof-mattei](https://github.com/kristof-mattei)
+- remove unfulfilled lints - ([425ebe9](https://github.com/kristof-mattei/axum-proxy/commit/425ebe9882df61e5c0e1bba10ef2a72abb033745)) - [@kristof-mattei](https://github.com/kristof-mattei)
+#### Miscellaneous Chores
+- **(deps)** update docker/build-push-action action to v6.18.0 - ([8ef41fd](https://github.com/kristof-mattei/axum-proxy/commit/8ef41fda01e4ba3060419974c16bcfe765693a0a)) - renovate[bot]
+- **(deps)** lock file maintenance - ([e5e420b](https://github.com/kristof-mattei/axum-proxy/commit/e5e420bb0c2de9574b78257418bf35185fcfa3ed)) - renovate[bot]
+- **(deps)** update enricomi/publish-unit-test-result-action action to v2.20.0 - ([354e23e](https://github.com/kristof-mattei/axum-proxy/commit/354e23e097f0589fc48a8d6384e72ed374f0ba39)) - renovate[bot]
+- **(deps)** update rust crate tokio to v1.45.1 - ([7994bcd](https://github.com/kristof-mattei/axum-proxy/commit/7994bcdb5e9466ff531321742d9053500f6b03da)) - renovate[bot]
+- **(deps)** update codecov/test-results-action action to v1.1.1 - ([696f2a1](https://github.com/kristof-mattei/axum-proxy/commit/696f2a1c0d6eef9f597ff83c8896fc25205f1779)) - renovate[bot]
+- **(deps)** update npm to >=11.4.1 - ([e1b6601](https://github.com/kristof-mattei/axum-proxy/commit/e1b6601003c169ec500866a47e7b349fe7faab72)) - renovate[bot]
+- **(deps)** update node.js to v22.16.0 - ([284513d](https://github.com/kristof-mattei/axum-proxy/commit/284513dec19fe8de4e7110b9ff1e4ea51b722fd8)) - renovate[bot]
+- **(deps)** update rui314/setup-mold digest to 67424c1 - ([a518dfd](https://github.com/kristof-mattei/axum-proxy/commit/a518dfd684f3bf7d619f0cc70a6e34b2fd2e4a3d)) - renovate[bot]
+- **(deps)** update github/codeql-action action to v3.28.18 - ([ed3fd33](https://github.com/kristof-mattei/axum-proxy/commit/ed3fd3362d32163b8360699f1d87a63a3efc464a)) - renovate[bot]
+- **(deps)** update codecov/codecov-action action to v5.4.3 - ([0022d13](https://github.com/kristof-mattei/axum-proxy/commit/0022d130f8062ee3f28a4172146bdb31a8b4f94a)) - renovate[bot]
+- **(deps)** update npm to >=11.4.0 - ([5954fdb](https://github.com/kristof-mattei/axum-proxy/commit/5954fdbe1c35e52c7f671df0144dc880634bc942)) - renovate[bot]
+- **(deps)** update docker/build-push-action action to v6.17.0 - ([25e5f22](https://github.com/kristof-mattei/axum-proxy/commit/25e5f2221938da18c0f593b23edb0594fcc62df5)) - renovate[bot]
+- **(deps)** update returntocorp/semgrep docker tag to v1.122.0 - ([18562f7](https://github.com/kristof-mattei/axum-proxy/commit/18562f74eb83f6ab4440730b0a22b5b38757cf33)) - renovate[bot]
+- **(deps)** update node.js to v22.15.1 - ([12032ad](https://github.com/kristof-mattei/axum-proxy/commit/12032adf805a81dfe2ba42972a9fc603c80401a8)) - renovate[bot]
+- **(deps)** lock file maintenance - ([d19c084](https://github.com/kristof-mattei/axum-proxy/commit/d19c084514516335ea0894f25429873ed311a7a6)) - renovate[bot]
+- **(deps)** update returntocorp/semgrep docker tag to v1.121.0 - ([a835b40](https://github.com/kristof-mattei/axum-proxy/commit/a835b4062d5c777311047149647139f475404fb4)) - renovate[bot]
+- **(deps)** update mcr.microsoft.com/devcontainers/rust:1-1-bullseye docker digest to d9c118e - ([c98c4f4](https://github.com/kristof-mattei/axum-proxy/commit/c98c4f41b09e23ebf5a40be5c672e293197095d2)) - renovate[bot]
+- **(deps)** update rust crate tokio to v1.45.0 - ([5e41d85](https://github.com/kristof-mattei/axum-proxy/commit/5e41d856ba9dd2a3edc5d6b6220f3c8117d1b439)) - renovate[bot]
+- **(deps)** lock file maintenance - ([1834420](https://github.com/kristof-mattei/axum-proxy/commit/1834420dbdf86b79b9bf604154f140132959429a)) - renovate[bot]
+- **(deps)** update github/codeql-action action to v3.28.17 - ([1863b3f](https://github.com/kristof-mattei/axum-proxy/commit/1863b3f668c56efbd7e7e6f9838cfdeb428222fd)) - renovate[bot]
+- allow windows-sys multiple versions - ([b035e34](https://github.com/kristof-mattei/axum-proxy/commit/b035e34755158255339cfac46431d8fd28914034)) - [@kristof-mattei](https://github.com/kristof-mattei)
+- update from upstream - ([9462bcc](https://github.com/kristof-mattei/axum-proxy/commit/9462bcc7b03ac736a48342b551d18b8777de002c)) - [@kristof-mattei](https://github.com/kristof-mattei)
+- update scripts from upstream - ([6dec586](https://github.com/kristof-mattei/axum-proxy/commit/6dec58662969904b8a3fe7aae8431b39463c07f0)) - [@kristof-mattei](https://github.com/kristof-mattei)
+- fmt - ([6ba6df5](https://github.com/kristof-mattei/axum-proxy/commit/6ba6df545e87f1e6676e3c8c4daa9fc3cd8cfc0d)) - [@kristof-mattei](https://github.com/kristof-mattei)
+
+- - -
+
 ## [v0.5.0](https://github.com/kristof-mattei/axum-proxy/compare/0944b892b968e26c241689b3028d8744ed2eaccf..v0.5.0) - 2025-05-02
 #### Bug Fixes
 - add flags to prevent bad configuration - ([cf960c7](https://github.com/kristof-mattei/axum-proxy/commit/cf960c745da3eda31ea53fe2df85f054c078922c)) - [@kristof-mattei](https://github.com/kristof-mattei)
