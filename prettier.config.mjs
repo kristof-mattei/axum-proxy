@@ -1,36 +1,26 @@
-/**
- * @type { import("prettier").Config }
- */
-const prettierConfig = {
+/** @type {import("prettier").Config} */
+export default {
     arrowParens: "always",
     bracketSpacing: true,
-    printWidth: 80,
+    printWidth: 120,
     quoteProps: "as-needed",
     semi: true,
     singleQuote: false,
-    useTabs: false,
     tabWidth: 4,
     trailingComma: "all",
+    useTabs: false,
     overrides: [
         {
-            files: ["*.ts", "*.tsx"],
+            files: ["**/*.ts", "**/*.tsx"],
             options: {
                 parser: "typescript",
             },
         },
         {
-            files: ["*.cjs"],
-        },
-        {
             files: ["**/*.json"],
             options: {
                 trailingComma: "none",
-            },
-        },
-        {
-            files: ["**/*.json"],
-            options: {
-                trailingComma: "none",
+                printWidth: 80,
             },
         },
         {
@@ -48,5 +38,3 @@ const prettierConfig = {
     ],
     plugins: ["prettier-plugin-sh"],
 };
-
-module.exports = prettierConfig;
