@@ -73,10 +73,31 @@ jobs:
 
           cargo --version
 
+      - name: Get binstall
+        shell: bash
+        working-directory: /tmp
+        run: |
+          archive="cargo-binstall-x86_64-unknown-linux-musl.tgz"
+          wget \
+            --output-document=- \
+            --timeout=10 \
+            --waitretry=3 \
+            --retry-connrefused \
+            --progress=dot:mega \
+            "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/${archive}" \
+            | tar \
+                --directory=${HOME}/.cargo/bin/ \
+                --strip-components=0 \
+                --no-overwrite-dir \
+                --extract \
+                --verbose \
+                --gunzip \
+                --file=-
+
       - name: Install cargo-edit to do set-version
         shell: bash
         run: |
-          cargo install cargo-edit
+          cargo binstall --no-confirm cargo-edit
 
       - name: Set version in Cargo.toml / Cargo.lock
         shell: bash

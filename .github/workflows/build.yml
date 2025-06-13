@@ -10,11 +10,12 @@ on:
       - main
 
 permissions:
-  contents: read
   checks: write
-  pull-requests: write
+  contents: read
+  id-token: write
   issues: write
   packages: write
+  pull-requests: write
 
 env:
   CARGO_TERM_COLOR: always
@@ -369,24 +370,35 @@ jobs:
       - name: Run grcov
         shell: bash
         run: |
-          grcov $(find . -name "profile-*.profraw" -print) --source-dir . --binary-path ./target/debug/ --output-type lcov --branch --ignore-not-existing --llvm --keep-only "src/**" --output-path ./reports/lcov.info
+          grcov $(find . -name "profile-*.profraw" -print) \
+            --binary-path ./target/debug/ \
+            --branch \
+            --keep-only "src/**" \
+            --llvm \
+            --ignore-not-existing \
+            --output-path ./reports/lcov.info \
+            --output-type lcov \
+            --source-dir .
 
       - name: Upload coverage results (to Codecov.io)
         uses: codecov/codecov-action@18283e04ce6e62d37312384ff67231eb8fd56d24 # v5.4.3
         with:
           disable_search: true
+          disable_telem: true
           fail_ci_if_error: true
           files: reports/lcov.info
           plugins: ""
-          token: ${{ secrets.CODECOV_TOKEN }}
+          use_oidc: true
 
       - name: Upload test results to Codecov
         uses: codecov/test-results-action@47f89e9acb64b76debcd5ea40642d25a4adced9f # v1.1.1
         with:
           disable_search: true
+          # doesn't exist here... yet
+          # disable_telem: true
           fail_ci_if_error: true
           files: reports/results.xml
-          token: ${{ secrets.CODECOV_TOKEN }}
+          use_oidc: true
 
       - name: Fail if tests failed
         shell: bash
@@ -450,14 +462,18 @@ jobs:
           args: --workspace --all-targets --all-features --no-deps
 
   docker-build:
-    name: Build Docker container on ${{ matrix.runs-on }}
+    name: Build Docker container on ${{ matrix.runs-on }} for ${{ matrix.platform }}
     strategy:
       matrix:
         runs-on:
           - "ubuntu-latest"
           - "ubuntu-24.04-arm"
+        platform:
+          - "amd64"
+          - "arm64"
     outputs:
       application_name: ${{ steps.variables.outputs.application_name }}
+      description: ${{ steps.variables.outputs.description }}
       full_image_name: ${{ steps.variables.outputs.full_image_name }}
       registry: ${{ steps.variables.outputs.registry }}
       unique_tag: ${{ steps.variables.outputs.unique_tag }}
@@ -502,21 +518,47 @@ jobs:
 
           cargo --version
 
-      - name: Install cargo-edit to do set-version
+      - name: Get binstall
+        shell: bash
+        working-directory: /tmp
+        run: |
+          case ${{ matrix.runs-on }} in
+            ubuntu-latest)
+              full_platform="x86_64"
+              ;;
+            ubuntu-24.04-arm)
+              full_platform="aarch64"
+              ;;
+          esac
+
+          archive="cargo-binstall-${full_platform}-unknown-linux-musl.tgz"
+          wget \
+            --output-document=- \
+            --timeout=10 \
+            --waitretry=3 \
+            --retry-connrefused \
+            --progress=dot:mega \
+            "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/${archive}" \
+            | tar \
+                --directory=${HOME}/.cargo/bin/ \
+                --strip-components=0 \
+                --no-overwrite-dir \
+                --extract \
+                --verbose \
+                --gunzip \
+                --file=-
+
+      - name: Install cargo-edit to do set-version, and cargo-get to get the description
         shell: bash
         run: |
-          cargo install cargo-edit
+          cargo binstall --no-confirm cargo-edit cargo-get
 
       - name: Set the Cargo.toml version before we copy in the data into the Docker container
         shell: bash
         run: |
           cargo set-version ${{ needs.calculate-version.outputs.version }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3.10.0
-
       # TODO validate no changes between github.event.pull_request.head.sha and the actual current sha (representing the hypothetical merge)
-
       - name: Set variables
         shell: bash
         id: variables
@@ -524,6 +566,10 @@ jobs:
           # This is the unique docker tag
           unique_tag=pr-${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}
           echo "unique_tag=${unique_tag}" >> ${GITHUB_OUTPUT}
+
+          # but we're only building 1 arch here, so we need to identify that container (we'll merge them later)
+          unique_tag_arch=${unique_tag}-${{ matrix.platform }}
+          echo "unique_tag_arch=${unique_tag_arch}" >> ${GITHUB_OUTPUT}
 
           # The application name, used in the Dockerfile
           application_name=${{ env.IMAGE_NAME }}
@@ -543,6 +589,10 @@ jobs:
           image_name=${image_name,,}
           echo "full_image_name=${registry}/${image_name}" >> ${GITHUB_OUTPUT}
 
+          # The application's description, from Cargo.toml
+          description=$(cargo get package.description)
+          echo "description=${description}" >> ${GITHUB_OUTPUT}
+
       # Extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
@@ -550,12 +600,13 @@ jobs:
         id: meta
         with:
           labels: |
+            org.opencontainers.image.description=${{ steps.variables.outputs.description }} (${{ matrix.platform }})
             org.opencontainers.image.revision=${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}
             org.opencontainers.image.source=${{ github.event.pull_request.html_url }}
             org.opencontainers.image.version=pr-${{ github.event.number }}
           images: ${{ steps.variables.outputs.full_image_name }}
           tags: |
-            type=raw,value=${{ steps.variables.outputs.unique_tag }}
+            type=raw,value=${{ steps.variables.outputs.unique_tag_arch }}
 
       - name: Log into registry ${{ steps.variables.outputs.registry }}
         uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
@@ -564,19 +615,27 @@ jobs:
           registry: ${{ steps.variables.outputs.registry }}
           username: ${{ github.actor }}
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3.10.0
+
       - name: Build Docker image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        env:
+          BUILDX_NO_DEFAULT_ATTESTATIONS: true
         with:
           build-args: |
             APPLICATION_NAME=${{ steps.variables.outputs.application_name }}
           context: .
           # this container is THE PR's artifact, and we will re-tag it
           # once the PR has been accepted
-          cache-from: type=registry,ref=${{ steps.variables.outputs.full_image_name }}:buildcache-${{ steps.variables.outputs.application_name }}
-          cache-to: type=registry,ref=${{ steps.variables.outputs.full_image_name }}:buildcache-${{ steps.variables.outputs.application_name }},mode=max
+          cache-from: type=registry,ref=${{ steps.variables.outputs.full_image_name }}:buildcache-${{ runner.arch }}-${{ steps.variables.outputs.application_name }}-${{ matrix.platform }}
+          cache-to: type=registry,ref=${{ steps.variables.outputs.full_image_name }}:buildcache-${{ runner.arch }}-${{ steps.variables.outputs.application_name }}-${{ matrix.platform }},mode=max
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=oci,dest=/tmp/${{ steps.variables.outputs.unique_tag }}.tar
-          platforms: linux/amd64, linux/arm64
+          outputs: type=oci,dest=/tmp/${{ steps.variables.outputs.unique_tag_arch }}.tar
+          platforms: linux/${{ matrix.platform }}
           tags: ${{ steps.meta.outputs.tags }}
 
       - name: Upload artifact
@@ -585,8 +644,8 @@ jobs:
           matrix.runs-on == 'ubuntu-latest'
         with:
           if-no-files-found: error
-          name: container-${{ steps.variables.outputs.application_name }}
-          path: /tmp/${{ steps.variables.outputs.unique_tag }}.tar
+          name: container-${{ steps.variables.outputs.application_name }}-${{ matrix.platform }}
+          path: /tmp/${{ steps.variables.outputs.unique_tag_arch }}.tar
           retention-days: 1
 
   docker-publish:
@@ -616,49 +675,63 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Docker metadata
+      - name: Build Docker metadata
         uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
         id: meta
         with:
+          labels: |
+            org.opencontainers.image.description=${{ needs.docker-build.outputs.description }}
+            org.opencontainers.image.revision=${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}
+            org.opencontainers.image.source=${{ github.event.pull_request.html_url }}
+            org.opencontainers.image.version=pr-${{ github.event.number }}
           images: ${{ needs.docker-build.outputs.full_image_name }}
           tags: |
-            type=ref,event=pr,suffix=-latest
             type=raw,value=${{ needs.docker-build.outputs.unique_tag }}
+            type=ref,event=pr,suffix=-latest
 
       - name: Download artifact
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         id: artifact
         with:
+          merge-multiple: true
           path: /tmp/container/
-          name: container-${{ needs.docker-build.outputs.application_name }}
+          pattern: container-${{ needs.docker-build.outputs.application_name }}-*
 
-      - name: Load images from artifacts
+      - name: Load individual platform images from artifacts & push to registry
+        shell: bash
+        working-directory: ${{ steps.artifact.outputs.download-path }}
+        run: |
+          docker load --input ./${{ needs.docker-build.outputs.unique_tag }}-amd64.tar
+          docker push ${{ needs.docker-build.outputs.full_image_name }}:${{ needs.docker-build.outputs.unique_tag }}-amd64
+
+          docker load --input ./${{ needs.docker-build.outputs.unique_tag }}-arm64.tar
+          docker push ${{ needs.docker-build.outputs.full_image_name }}:${{ needs.docker-build.outputs.unique_tag }}-arm64
+
+      - name: Create multiplatform image
         shell: bash
         run: |
-          docker load --input ${{ steps.artifact.outputs.download-path }}/${{ needs.docker-build.outputs.unique_tag }}.tar
+          new_labels=()
+          while IFS= read -r label; do
+            new_labels+=(--annotation)
+            new_labels+=("index:${label}")
+          done <<< "${{ steps.meta.outputs.labels }}"
 
-      - name: Push image to register
-        shell: bash
-        run: |
-          base_tag=$(printf '${{ needs.docker-build.outputs.full_image_name }}:%s ' ${{ needs.docker-build.outputs.unique_tag }})
+          new_tags=()
+          while IFS= read -r tag; do
+            new_tags+=(--tag)
+            new_tags+=(${tag})
+          done <<< "${{ steps.meta.outputs.tags }}"
 
-          docker push ${base_tag}
-
-      - name: Set new tags on pushed image
-        shell: bash
-        working-directory: /tmp/container/
-        run: |
-          new_tags="${{ join(steps.meta.outputs.tags, ' ') }}"
-          new_tags=$(printf -- '--tag %s ' $new_tags)
-
-          base_tag=$(printf '${{ needs.docker-build.outputs.full_image_name }}:%s ' ${{ needs.docker-build.outputs.unique_tag }})
-
-          docker buildx imagetools create $new_tags $base_tag
+          # merge the amd64 and arm64 containers in a new multiplatform one
+          docker buildx imagetools create "${new_tags[@]}" "${new_labels[@]}" \
+            ${{ needs.docker-build.outputs.full_image_name }}:${{ needs.docker-build.outputs.unique_tag }}-amd64 \
+            ${{ needs.docker-build.outputs.full_image_name }}:${{ needs.docker-build.outputs.unique_tag }}-arm64
 
           for new_tag in $(echo "${{ join(steps.meta.outputs.tags, ' ') }}"); do
             echo "${new_tag}:"
-            docker buildx imagetools inspect --raw $new_tag
-            echo "" # newline
+            docker buildx imagetools inspect --raw ${new_tag}
+            # empty to get newline
+            echo ""
           done
 
   all-done:
