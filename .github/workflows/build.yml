@@ -373,9 +373,9 @@ jobs:
           grcov $(find . -name "profile-*.profraw" -print) \
             --binary-path ./target/debug/ \
             --branch \
+            --ignore-not-existing \
             --keep-only "src/**" \
             --llvm \
-            --ignore-not-existing \
             --output-path ./reports/lcov.info \
             --output-type lcov \
             --source-dir .
