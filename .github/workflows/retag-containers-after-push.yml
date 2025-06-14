@@ -98,7 +98,7 @@ jobs:
           curl \
             --silent \
             --location \
-            --output ${json_path}\
+            --output ${json_path} \
             https://api.github.com/repos/google/go-containerregistry/releases/latest
 
           url_to_krane=$(cat ${json_path} |\
