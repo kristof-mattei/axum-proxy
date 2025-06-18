@@ -1,11 +1,11 @@
 name: Release
 
+on:
+  workflow_dispatch: # releasing is manual as we don't want to release every time
+
 concurrency:
   group: "${{ github.workflow }}"
   cancel-in-progress: true # only last step is important, which runs or doesn't
-
-on:
-  workflow_dispatch: # releasing is manual as we don't want to release every time
 
 permissions:
   contents: write # to write tags
