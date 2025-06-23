@@ -9,6 +9,9 @@ on:
     branches:
       - main
 
+env:
+  NPM_CONFIG_FUND: "false"
+
 jobs:
   prettier:
     name: Prettier

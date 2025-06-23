@@ -1,9 +1,5 @@
 name: Retag containers after new push / PR
 
-concurrency:
-  group: "${{ github.workflow }}" # last one must win
-  cancel-in-progress: false # no we need them
-
 on:
   # Triggers the workflow pushes to main. They can be either direct pushes, or PRs being merged
   push:
@@ -18,6 +14,10 @@ on:
   # pr-{head_of_pr}-{pr_head_of_main}
   # when with git rev-parse HEAD^2 we can find the incoming PR's head
   # Problem solved
+
+concurrency:
+  group: "${{ github.workflow }}" # last one must win
+  cancel-in-progress: false # no we need them
 
 permissions:
   contents: write

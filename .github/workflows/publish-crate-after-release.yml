@@ -1,13 +1,12 @@
 name: Publish crate
-
-concurrency:
-  group: "${{ github.workflow }}"
-  cancel-in-progress: false # last one must win in case of multiple releases
-
 on:
   push:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
+
+concurrency:
+  group: "${{ github.workflow }}"
+  cancel-in-progress: false # last one must win in case of multiple releases
 
 permissions:
   contents: read

@@ -6,6 +6,12 @@ on:
     branches:
       - main
 
+concurrency:
+  # each new commit to a PR runs this workflow
+  # so we need to avoid a long running older one from overwriting the "pr-<number>-latest"
+  group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label }}"
+  cancel-in-progress: true
+
 permissions:
   contents: read
   checks: write
@@ -19,12 +25,6 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
-
-concurrency:
-  # each new commit to a PR runs this workflow
-  # so we need to avoid a long running older one from overwriting the "pr-<number>-latest"
-  group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label }}"
-  cancel-in-progress: true
 
 jobs:
   cleanup:
