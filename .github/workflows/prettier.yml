@@ -9,6 +9,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 env:
   NPM_CONFIG_FUND: "false"
 
@@ -27,7 +30,7 @@ jobs:
         with:
           node-version-file: ".nvmrc"
           cache: "npm"
-          cache-dependency-path: "**/package-lock.json"
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         shell: bash

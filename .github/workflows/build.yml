@@ -10,18 +10,14 @@ on:
       - main
 
 permissions:
-  checks: write
   contents: read
-  id-token: write
-  issues: write
-  packages: write
-  pull-requests: write
 
 concurrency:
   # each new commit to a PR runs this workflow
   # so we need to avoid a long running older one from overwriting the "pr-<number>-latest"
   group: "${{ github.workflow }} @ ${{ github.ref_name }}"
   cancel-in-progress: true
+
 env:
   CARGO_TERM_COLOR: always
   # set this to true in GitHub variables to enable building the container
@@ -269,6 +265,10 @@ jobs:
   cargo-test-and-report:
     name: Cargo test (and report)
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      id-token: write
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -477,6 +477,8 @@ jobs:
       registry: ${{ steps.variables.outputs.registry }}
       unique_tag: ${{ steps.variables.outputs.unique_tag }}
     runs-on: ${{ matrix.runs-on }}
+    permissions:
+      packages: write
     needs:
       - calculate-version
     # if:
@@ -650,7 +652,13 @@ jobs:
   docker-publish:
     name: Publish Docker container
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     needs:
+      - cargo-build
+      - cargo-clippy-and-report
+      - cargo-fmt
+      - cargo-test-and-report
       - docker-build
     # Check if the event is not triggered by a fork
     if: |
@@ -744,8 +752,8 @@ jobs:
     needs:
       - calculate-version
       - cargo-build
-      - cargo-fmt
       - cargo-clippy-and-report
+      - cargo-fmt
       - cargo-test-and-report
       - docker-build
       - docker-publish
