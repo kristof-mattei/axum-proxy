@@ -7,3 +7,4 @@ reports
 src   # rust-fmt
 tests # rust-fmt
 target
+pnpm-lock.yaml
