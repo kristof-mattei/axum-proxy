@@ -3,12 +3,13 @@
   "version": "0.0.0-development",
   "description": "It's written in Rust!",
   "main": "src/main.rs",
+  "packageManager": "pnpm@9.15.9",
   "scripts": {
     "format": "prettier --write ."
   },
   "engines": {
-    "node": ">=22.17.0",
-    "npm": ">=11.4.2"
+    "node": "22.17.0",
+    "pnpm": "9.15.9"
   },
   "repository": {
     "type": "git",
@@ -21,8 +22,8 @@
   },
   "homepage": "https://github.com/kristof-mattei/axum-proxy#readme",
   "devDependencies": {
-    "prettier": "3.5.3",
-    "prettier-plugin-sh": "0.17.0"
+    "prettier": "3.6.2",
+    "prettier-plugin-sh": "0.18.0"
   },
   "publishConfig": {
     "access": "restricted"
