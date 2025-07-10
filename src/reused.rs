@@ -31,7 +31,7 @@ pub struct Builder<C = HttpConnector, B = Incoming> {
 impl<C, B> Clone for Builder<C, B> {
     fn clone(&self) -> Self {
         Self {
-            client: self.client.clone(),
+            client: Arc::clone(&self.client),
             scheme: self.scheme.clone(),
             authority: self.authority.clone(),
         }
@@ -206,7 +206,7 @@ impl<Pr: Clone, C, B> Clone for ReusedService<Pr, C, B> {
     #[inline]
     fn clone(&self) -> Self {
         Self {
-            client: self.client.clone(),
+            client: Arc::clone(&self.client),
             scheme: self.scheme.clone(),
             authority: self.authority.clone(),
             path: self.path.clone(),
