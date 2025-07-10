@@ -1,6 +1,5 @@
 [package]
 name = "axum-proxy"
-# don't change this, it's updated before an actual build by update-version.sh
 version = "0.0.0-development"
 edition = "2024"
 rust-version = "1.85.0"
@@ -26,15 +25,21 @@ perf = "warn"
 style = "warn"
 suspicious = "warn"
 
+# ensure we do Arc::clone(&arc) instead of arc.clone()
+clone_on_ref_ptr = { level = "deny", priority = 127 }
+
 # this has 0 performance implications, the binding is compiled away, and it could cause issues
 # when done blindly, plus it makes it harder to debug as you cannot put breakpoints on return
 # values of functions (yet)
 let_and_return = { level = "allow", priority = 127 }
+
 # nothing we can do about multiple crate versions, so this lint just creates noise
 multiple_crate_versions = { level = "allow", priority = 127 }
+
 # this one is debatable. continue is used in places to be explicit, and to guard against
 # issues when refactoring
 needless_continue = { level = "allow", priority = 127 }
+
 # this one causes confusion when combining variables (`foo`) and
 # dereferenced variables (`foo.bar`). The latter cannot be inlined
 # so we don't inline anything
