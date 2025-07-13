@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
-name: Build
+name: CI
 
 on:
   push:
@@ -9,14 +9,14 @@ on:
     branches:
       - main
 
-permissions:
-  contents: read
-
 concurrency:
   # each new commit to a PR runs this workflow
   # so we need to avoid a long running older one from overwriting the "pr-<number>-latest"
   group: "${{ github.workflow }} @ ${{ github.ref_name }}"
   cancel-in-progress: true
+
+permissions:
+  contents: read
 
 env:
   CARGO_TERM_COLOR: always
@@ -473,7 +473,8 @@ jobs:
     outputs:
       application_name: ${{ steps.variables.outputs.application_name }}
       description: ${{ steps.variables.outputs.description }}
-      full_image_name: ${{ steps.variables.outputs.full_image_name }}
+      full_image_name_remote_registry: ${{ steps.variables.outputs.full_image_name_remote_registry }}
+      full_image_name_local_registry: ${{ steps.variables.outputs.full_image_name_local_registry }}
       registry: ${{ steps.variables.outputs.registry }}
       unique_tag: ${{ steps.variables.outputs.unique_tag }}
     runs-on: ${{ matrix.runs-on }}
@@ -585,10 +586,15 @@ jobs:
           registry=${registry,,}
           echo "registry=${registry}" >> ${GITHUB_OUTPUT}
 
-          # The full image name, which is the registry, the owner and the repo name
+          # The final full image name, which is the registry, the owner and the repo name
           image_name=${{ env.IMAGE_NAME }}
           image_name=${image_name,,}
-          echo "full_image_name=${registry}/${image_name}" >> ${GITHUB_OUTPUT}
+          echo "full_image_name_remote_registry=${registry}/${image_name}" >> ${GITHUB_OUTPUT}
+
+          # The local registry to which we'll push
+          local_registry=localhost:5000
+          local_registry=${local_registry,,}
+          echo "full_image_name_local_registry=${local_registry}/${image_name}" >> ${GITHUB_OUTPUT}
 
           # The application's description, from Cargo.toml
           description=$(cargo get package.description)
@@ -605,7 +611,7 @@ jobs:
             org.opencontainers.image.revision=${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}
             org.opencontainers.image.source=${{ github.event.pull_request.html_url }}
             org.opencontainers.image.version=pr-${{ github.event.number }}
-          images: ${{ steps.variables.outputs.full_image_name }}
+          images: ${{ steps.variables.outputs.full_image_name_local_registry }}
           tags: |
             type=raw,value=${{ steps.variables.outputs.unique_tag_arch }}
 
@@ -624,16 +630,14 @@ jobs:
 
       - name: Build Docker image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
-        env:
-          BUILDX_NO_DEFAULT_ATTESTATIONS: true
         with:
           build-args: |
             APPLICATION_NAME=${{ steps.variables.outputs.application_name }}
           context: .
           # this container is THE PR's artifact, and we will re-tag it
           # once the PR has been accepted
-          cache-from: type=registry,ref=${{ steps.variables.outputs.full_image_name }}:buildcache-${{ runner.arch }}-${{ steps.variables.outputs.application_name }}-${{ matrix.platform }}
-          cache-to: type=registry,ref=${{ steps.variables.outputs.full_image_name }}:buildcache-${{ runner.arch }}-${{ steps.variables.outputs.application_name }}-${{ matrix.platform }},mode=max
+          cache-from: type=registry,ref=${{ steps.variables.outputs.full_image_name_remote_registry }}:buildcache-${{ runner.arch }}-${{ steps.variables.outputs.application_name }}-${{ matrix.platform }}
+          cache-to: type=registry,ref=${{ steps.variables.outputs.full_image_name_remote_registry }}:buildcache-${{ runner.arch }}-${{ steps.variables.outputs.application_name }}-${{ matrix.platform }},mode=max
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=oci,dest=/tmp/${{ steps.variables.outputs.unique_tag_arch }}.tar
           platforms: linux/${{ matrix.platform }}
@@ -652,7 +656,14 @@ jobs:
   docker-publish:
     name: Publish Docker container
     runs-on: ubuntu-latest
+    services:
+      registry:
+        image: registry:3@sha256:1fc7de654f2ac1247f0b67e8a459e273b0993be7d2beda1f3f56fbf1001ed3e7
+        ports:
+          - 5000:5000
     permissions:
+      attestations: write
+      id-token: write
       packages: write
     needs:
       - cargo-build
@@ -691,12 +702,12 @@ jobs:
             org.opencontainers.image.revision=${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}
             org.opencontainers.image.source=${{ github.event.pull_request.html_url }}
             org.opencontainers.image.version=pr-${{ github.event.number }}
-          images: ${{ needs.docker-build.outputs.full_image_name }}
+          images: ${{ needs.docker-build.outputs.full_image_name_local_registry }}
           tags: |
             type=raw,value=${{ needs.docker-build.outputs.unique_tag }}
             type=ref,event=pr,suffix=-latest
 
-      - name: Download artifact
+      - name: Download artifacts
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         id: artifact
         with:
@@ -709,30 +720,32 @@ jobs:
         working-directory: ${{ steps.artifact.outputs.download-path }}
         run: |
           docker load --input ./${{ needs.docker-build.outputs.unique_tag }}-amd64.tar
-          docker push ${{ needs.docker-build.outputs.full_image_name }}:${{ needs.docker-build.outputs.unique_tag }}-amd64
+          echo "Pushing amd64:"
+          docker push ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}-amd64
 
           docker load --input ./${{ needs.docker-build.outputs.unique_tag }}-arm64.tar
-          docker push ${{ needs.docker-build.outputs.full_image_name }}:${{ needs.docker-build.outputs.unique_tag }}-arm64
+          echo "Pushing arm64:"
+          docker push ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}-arm64
 
       - name: Create multiplatform image
         shell: bash
         run: |
-          new_labels=()
-          while IFS= read -r label; do
-            new_labels+=(--annotation)
-            new_labels+=("index:${label}")
-          done <<< "${{ steps.meta.outputs.labels }}"
-
           new_tags=()
           while IFS= read -r tag; do
             new_tags+=(--tag)
             new_tags+=(${tag})
           done <<< "${{ steps.meta.outputs.tags }}"
 
+          new_labels=()
+          while IFS= read -r label; do
+            new_labels+=(--annotation)
+            new_labels+=("index:${label}")
+          done <<< "${{ steps.meta.outputs.labels }}"
+
           # merge the amd64 and arm64 containers in a new multiplatform one
           docker buildx imagetools create "${new_tags[@]}" "${new_labels[@]}" \
-            ${{ needs.docker-build.outputs.full_image_name }}:${{ needs.docker-build.outputs.unique_tag }}-amd64 \
-            ${{ needs.docker-build.outputs.full_image_name }}:${{ needs.docker-build.outputs.unique_tag }}-arm64
+            ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}-amd64 \
+            ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}-arm64
 
           for new_tag in $(echo "${{ join(steps.meta.outputs.tags, ' ') }}"); do
             echo "${new_tag}:"
@@ -740,6 +753,33 @@ jobs:
             # empty to get newline
             echo ""
           done
+
+      - name: Get digest of multiplatform image in our local registry
+        shell: bash
+        id: multiplatform_image
+        run: |
+          digest=$(docker buildx imagetools inspect ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }} --format "{{json .}}" | jq --raw-output ".manifest.digest")
+
+          echo "digest=${digest}" >> ${GITHUB_OUTPUT}
+
+      - name: Publish to the actual repo
+        shell: bash
+        run: |
+          docker buildx imagetools create \
+            --tag ${{ needs.docker-build.outputs.full_image_name_remote_registry }}:${{ needs.docker-build.outputs.unique_tag }} \
+            ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}
+
+      # note that we use the digest of the local image
+      # these digests don't change after pushing, but
+      # since we deal with tags (mutable), and the way to get a digest is to use the tag, I prefer
+      # sourcing the digest from the local registry we just spun up (trusted)
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
+        id: attestation
+        with:
+          subject-name: ${{ needs.docker-build.outputs.full_image_name_remote_registry }}
+          subject-digest: ${{ steps.multiplatform_image.outputs.digest }}
+          push-to-registry: true
 
   all-done:
     name: All done

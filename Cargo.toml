@@ -6,12 +6,12 @@ rust-version = "1.85.0"
 authors = ["Kristof Mattei", "Masato Nakata <masaton@naughie.com>"]
 description = "Tower service for reverse proxy"
 license = "MIT OR Apache-2.0"
-keywords = ["http", "tower", "axum", "reverse", "proxy"]
 categories = ["asynchronous", "web-programming", "web-programming::http-server"]
+keywords = ["http", "tower", "axum", "reverse", "proxy"]
 repository = "https://github.com/kristof-mattei/axum-proxy"
 documentation = "https://docs.rs/axum-proxy"
 readme = "README.md"
-include = ["src/", "LICENSE-*", "README.md"]
+include = ["src/**", "/LICENSE", "/LICENSE-*"]
 
 [lints.clippy]
 # don't stop from compiling / running
