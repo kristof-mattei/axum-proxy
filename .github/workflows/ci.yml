@@ -20,8 +20,6 @@ permissions:
 
 env:
   CARGO_TERM_COLOR: always
-  # set this to true in GitHub variables to enable building the container
-  # HAS_CONTAINER: true
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
