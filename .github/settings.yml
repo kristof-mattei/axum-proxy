@@ -142,7 +142,7 @@ branches:
         checks:
           - context: "All done"
             app_id: 15368
-          - context: "Validate formatting"
+          - context: "Format"
             app_id: 15368
           - context: "codecov/project"
             app_id: 254
