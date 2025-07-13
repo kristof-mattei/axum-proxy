@@ -142,6 +142,8 @@ branches:
         checks:
           - context: "All done"
             app_id: 15368
+          - context: "Validate formatting"
+            app_id: 15368
           - context: "codecov/project"
             app_id: 254
       # Commits pushed to matching refs must have verified signatures.
