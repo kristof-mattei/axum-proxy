@@ -9,7 +9,7 @@ use hyper::body::{Body as HttpBody, Incoming};
 use hyper_util::client::legacy::connect::Connect;
 use hyper_util::client::legacy::{Client, ResponseFuture};
 
-use crate::Error;
+use crate::ProxyError;
 use crate::rewrite::PathRewriter;
 
 type BoxErr = Box<dyn std::error::Error + Send + Sync>;
@@ -42,16 +42,16 @@ impl RevProxyFuture {
 }
 
 impl Future for RevProxyFuture {
-    type Output = Result<Result<Response<Incoming>, Error>, Infallible>;
+    type Output = Result<Result<Response<Incoming>, ProxyError>, Infallible>;
 
     fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        match &mut self.inner {
-            Ok(fut) => match Future::poll(Pin::new(fut), cx) {
-                Poll::Ready(res) => Poll::Ready(Ok(res.map_err(Error::RequestFailed))),
+        match self.inner {
+            Ok(ref mut fut) => match Future::poll(Pin::new(fut), cx) {
+                Poll::Ready(res) => Poll::Ready(Ok(res.map_err(ProxyError::RequestFailed))),
                 Poll::Pending => Poll::Pending,
             },
-            Err(e) => match e.take() {
-                Some(e) => Poll::Ready(Ok(Err(Error::InvalidUri(e)))),
+            Err(ref mut e) => match e.take() {
+                Some(e) => Poll::Ready(Ok(Err(ProxyError::InvalidUri(e)))),
                 None => unreachable!("RevProxyFuture::poll() is called after ready"),
             },
         }

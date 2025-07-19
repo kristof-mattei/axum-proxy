@@ -123,7 +123,7 @@
 //! specified.
 
 mod error;
-pub use error::Error;
+pub use error::ProxyError;
 
 #[cfg(any(feature = "http1", feature = "http2"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "http1", feature = "http2"))))]
@@ -193,12 +193,12 @@ mod test_helper {
     use std::convert::Infallible;
 
     use http::{Request, Response, StatusCode};
-    use http_body_util::BodyExt;
+    use http_body_util::BodyExt as _;
     use hyper::body::Incoming;
     use mockito::{Matcher, ServerGuard};
     use tower_service::Service;
 
-    use super::{Error, RevProxyFuture};
+    use super::{ProxyError, RevProxyFuture};
 
     async fn call<S, B>(
         service: &mut S,
@@ -207,7 +207,7 @@ mod test_helper {
     ) where
         S: Service<
                 Request<String>,
-                Response = Result<Response<Incoming>, Error>,
+                Response = Result<Response<Incoming>, ProxyError>,
                 Error = Infallible,
                 Future = RevProxyFuture,
             >,
@@ -219,7 +219,7 @@ mod test_helper {
 
         if let Some(content_type) = content_type {
             builder = builder.header("Content-Type", content_type);
-        };
+        }
 
         let request = builder.body(body.into()).unwrap();
 
@@ -239,7 +239,7 @@ mod test_helper {
     where
         S: Service<
                 Request<String>,
-                Response = Result<Response<Incoming>, Error>,
+                Response = Result<Response<Incoming>, ProxyError>,
                 Error = Infallible,
                 Future = RevProxyFuture,
             >,
@@ -269,7 +269,7 @@ mod test_helper {
     where
         S: Service<
                 Request<String>,
-                Response = Result<Response<Incoming>, Error>,
+                Response = Result<Response<Incoming>, ProxyError>,
                 Error = Infallible,
                 Future = RevProxyFuture,
             >,
@@ -300,7 +300,7 @@ mod test_helper {
     where
         S: Service<
                 Request<String>,
-                Response = Result<Response<Incoming>, Error>,
+                Response = Result<Response<Incoming>, ProxyError>,
                 Error = Infallible,
                 Future = RevProxyFuture,
             >,
@@ -333,7 +333,7 @@ mod test_helper {
     where
         S: Service<
                 Request<String>,
-                Response = Result<Response<Incoming>, Error>,
+                Response = Result<Response<Incoming>, ProxyError>,
                 Error = Infallible,
                 Future = RevProxyFuture,
             >,

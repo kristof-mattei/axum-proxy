@@ -9,29 +9,29 @@ use http::StatusCode;
 use hyper_util::client::legacy::Error as HyperError;
 
 #[derive(Debug)]
-pub enum Error {
+pub enum ProxyError {
     InvalidUri(HttpError),
     RequestFailed(HyperError),
 }
 
-impl fmt::Display for Error {
+impl fmt::Display for ProxyError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::InvalidUri(e) => {
+        match *self {
+            Self::InvalidUri(ref e) => {
                 write!(f, "Invalid uri: {e}")
             },
-            Self::RequestFailed(e) => {
+            Self::RequestFailed(ref e) => {
                 write!(f, "Request failed: {e}")
             },
         }
     }
 }
 
-impl StdError for Error {}
+impl StdError for ProxyError {}
 
 #[cfg(feature = "axum")]
 #[cfg_attr(docsrs, doc(cfg(feature = "axum")))]
-impl IntoResponse for Error {
+impl IntoResponse for ProxyError {
     fn into_response(self) -> Response {
         log::error!("{self}");
         StatusCode::INTERNAL_SERVER_ERROR.into_response()

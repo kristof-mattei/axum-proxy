@@ -16,7 +16,7 @@ use tower_service::Service;
 
 use crate::future::RevProxyFuture;
 use crate::rewrite::PathRewriter;
-use crate::{Error, client};
+use crate::{ProxyError, client};
 
 type BoxErr = Box<dyn std::error::Error + Send + Sync>;
 
@@ -224,7 +224,7 @@ where
     B::Error: Into<BoxErr>,
     Pr: PathRewriter,
 {
-    type Response = Result<Response<Incoming>, Error>;
+    type Response = Result<Response<Incoming>, ProxyError>;
     type Error = Infallible;
     type Future = RevProxyFuture;
 
