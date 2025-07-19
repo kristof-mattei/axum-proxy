@@ -192,13 +192,9 @@ unnecessary_safety_comment = { level = "deny", priority = 127 }
 unnecessary_safety_doc = { level = "deny", priority = 127 }
 unnecessary_self_imports = { level = "deny", priority = 127 }
 unneeded_field_pattern = { level = "deny", priority = 127 }
-# No, to signify invariants
-# unreachable = { level = "deny", priority = 127 }
 unseparated_literal_suffix = { level = "deny", priority = 127 }
 unused_result_ok = { level = "deny", priority = 127 }
 unused_trait_names = { level = "deny", priority = 127 }
-# No, we separate fatal from recoverable
-# unwrap_in_result = { level = "deny", priority = 127 }
 verbose_file_reads = { level = "deny", priority = 127 }
 wildcard_enum_match_arm = { level = "deny", priority = 127 }
 
