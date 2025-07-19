@@ -63,9 +63,9 @@ where
 /// 1. Cert roots
 ///
 /// - if the feature `rustls-webpki-roots` is enabled, then use
-///     [`HttpsConnector::with_webpki_roots()`](hyper_rustls::HttpsConnector::with_webpki_roots());
+///   [`HttpsConnector::with_webpki_roots()`](hyper_rustls::HttpsConnector::with_webpki_roots());
 /// - if `rustls-webpki-roots` is disabled and `rustls-native-roots` enabled, then
-///     [`HttpsConnector::with_native_roots()`](hyper_rustls::HttpsConnector::with_native_roots());
+///   [`HttpsConnector::with_native_roots()`](hyper_rustls::HttpsConnector::with_native_roots());
 /// - otherwise compilation fails.
 ///
 /// The feature `rustls` is equivalent to `rustls-webpki-roots`.
@@ -77,9 +77,9 @@ where
 /// 3. HTTP version
 ///
 /// - if the feature `http1` is enabled, then call
-///     [`HttpsConnector::enable_http1()`](hyper_rustls::HttpsConnector::enable_http1());
+///   [`HttpsConnector::enable_http1()`](hyper_rustls::HttpsConnector::enable_http1());
 /// - if the feature `rustls-http2` is enabled, then call
-///     [`HttpsConnector::enable_http2()`](hyper_rustls::HttpsConnector::enable_http2()).
+///   [`HttpsConnector::enable_http2()`](hyper_rustls::HttpsConnector::enable_http2()).
 ///
 /// This is not exclusive: if both features are enabled, then both methods are called.
 ///
