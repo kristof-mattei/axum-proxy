@@ -89,7 +89,8 @@ allow_attributes = { level = "deny", priority = 127 }
 allow_attributes_without_reason = { level = "deny", priority = 127 }
 # Debatable
 # arithmetic_side_effects = { level = "deny", priority = 127 }
-as_conversions = { level = "deny", priority = 127 }
+# Debatable
+# as_conversions = { level = "deny", priority = 127 }
 as_pointer_underscore = { level = "deny", priority = 127 }
 as_underscore = { level = "deny", priority = 127 }
 assertions_on_result_states = { level = "deny", priority = 127 }
@@ -129,7 +130,6 @@ inline_asm_x86_att_syntax = { level = "deny", priority = 127 }
 # integer_division = { level = "deny", priority = 127 }
 # Debatable
 # integer_division_remainder_used = { level = "deny", priority = 127 }
-iter_over_hash_type = { level = "deny", priority = 127 }
 large_include_file = { level = "deny", priority = 127 }
 let_underscore_must_use = { level = "deny", priority = 127 }
 let_underscore_untyped = { level = "deny", priority = 127 }
