@@ -20,6 +20,7 @@ permissions:
 
 env:
   CARGO_TERM_COLOR: always
+  CARGO_FEATURES: --all-features
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
@@ -44,6 +45,9 @@ jobs:
   changes:
     name: Detect changes
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       code: ${{ steps.filter.outputs.code }}
     steps:
@@ -62,6 +66,8 @@ jobs:
   calculate-version:
     name: Calculate version
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     needs:
       - changes
       - repo-has-container
@@ -201,7 +207,7 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          cargo build --all-features --all-targets --locked --workspace --verbose
+          cargo build ${{ env.CARGO_FEATURES }} --all-targets --locked --workspace --verbose
 
   cargo-fmt:
     name: Cargo fmt
@@ -265,6 +271,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       checks: write
+      contents: read
       id-token: write
       pull-requests: write
     steps:
@@ -344,7 +351,7 @@ jobs:
           # build-* ones are not parsed by grcov
           LLVM_PROFILE_FILE: "profiling/build-%p-%m.profraw"
         run: |
-          cargo build --all-features --all-targets --locked --workspace --verbose
+          cargo build ${{ env.CARGO_FEATURES }} --all-targets --locked --workspace --verbose
 
       - name: Run nextest
         shell: bash
@@ -353,7 +360,7 @@ jobs:
           RUSTFLAGS: "${{ env.RUSTFLAGS }} --allow=warnings -Cinstrument-coverage"
           LLVM_PROFILE_FILE: "profiling/profile-%p-%m.profraw"
         run: |
-          cargo nextest run --profile ci --no-fail-fast --all-targets --all-features --workspace
+          cargo nextest run --profile ci --no-fail-fast ${{ env.CARGO_FEATURES }} --all-targets --workspace
         continue-on-error: true
 
       - name: Upload test results
@@ -456,7 +463,7 @@ jobs:
       - name: Run Clippy for GitHub Actions report
         uses: actions-rs-plus/clippy-check@fe8905c5766416f0593a503a2230a7c83141a8f0 # v2.3.0
         with:
-          args: --all-features --all-targets --locked --workspace --verbose
+          args: ${{ env.CARGO_FEATURES }} --all-targets --locked --workspace --verbose
 
   docker-build:
     name: Build Docker container on ${{ matrix.runs-on }} for ${{ matrix.platform }}
@@ -477,6 +484,7 @@ jobs:
       unique_tag: ${{ steps.variables.outputs.unique_tag }}
     runs-on: ${{ matrix.runs-on }}
     permissions:
+      contents: read
       packages: write
     needs:
       - calculate-version
