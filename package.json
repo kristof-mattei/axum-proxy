@@ -1,10 +1,10 @@
 {
   "name": "axum-proxy",
   "type": "module",
-  "packageManager": "pnpm@10.13.1",
+  "packageManager": "pnpm@10.14.0",
   "engines": {
     "node": "22.17.1",
-    "pnpm": "10.13.1"
+    "pnpm": "10.14.0"
   },
   "scripts": {
     "format": "prettier --write ."
