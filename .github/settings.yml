@@ -144,8 +144,8 @@ branches:
             app_id: 15368
           - context: "Format"
             app_id: 15368
-          - context: "codecov/project"
-            app_id: 254
+          # - context: "codecov/project"
+          #   app_id: 254
       # Commits pushed to matching refs must have verified signatures.
       required_signatures: false
       # Required. Enforce all configured restrictions for administrators. Set to true to enforce required status checks for repository administrators. Set to null to disable.
