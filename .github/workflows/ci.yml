@@ -33,7 +33,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       has_container: ${{ steps.determine.outputs.has_container }}
-
     steps:
       - name: Repo has docker container?
         shell: bash
