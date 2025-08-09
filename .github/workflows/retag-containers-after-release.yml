@@ -59,34 +59,32 @@ jobs:
           # where to download the archive to
           archive_path=${temp_path}/${file_name}
 
-          # fetch releases
-          curl \
-            --silent \
-            --location \
-            --output ${json_path} \
-            https://api.github.com/repos/google/go-containerregistry/releases/latest
+          url_to_krane=$(wget \
+              --output-document=- \
+              --timeout=10 \
+              --waitretry=3 \
+              --retry-connrefused \
+              --progress=dot:mega \
+              "https://api.github.com/repos/google/go-containerregistry/releases/latest" \
+              | jq \
+                  --raw-output \
+                  ".assets.[] | select(.browser_download_url | contains(\"${file_name}\")) | .browser_download_url")
 
-          url_to_krane=$(cat ${json_path} |\
-            jq \
-              --raw-output \
-              ".assets.[] | select(.browser_download_url | contains(\"${file_name}\")) | .browser_download_url"
-          )
-
-          # Download archive
-          curl \
-            --silent \
-            --location \
-            --output ${archive_path} \
-            $url_to_krane
-
-          cd ${temp_path}
-
-          # extract archive
-          tar \
-            --verbose \
-            --extract \
-            --gunzip \
-            --file ./${file_name}
+          wget \
+            --output-document=- \
+            --timeout=10 \
+            --waitretry=3 \
+            --retry-connrefused \
+            --progress=dot:mega \
+            "${url_to_krane}" \
+            | tar \
+                --directory=${temp_path}/ \
+                --strip-components=0 \
+                --no-overwrite-dir \
+                --extract \
+                --verbose \
+                --gunzip \
+                --file=-
 
           # append to path
           echo "${temp_path}" >> ${GITHUB_PATH}
