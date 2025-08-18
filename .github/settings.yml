@@ -116,44 +116,90 @@ repository:
 #     permission: admin
 #   - name: docs
 #     permission: push
+rulesets:
+  - name: Main
+    target: branch
+    source_type: Repository
+    enforcement: active
+    conditions:
+      ref_name:
+        exclude: []
+        include:
+          - ~DEFAULT_BRANCH
+    rules:
+      - type: deletion
+      - type: non_fast_forward
+      - type: code_scanning
+        parameters:
+          code_scanning_tools:
+            - tool: CodeQL
+              security_alerts_threshold: high_or_higher
+              alerts_threshold: errors
+      - type: required_status_checks
+        parameters:
+          strict_required_status_checks_policy: true
+          do_not_enforce_on_create: false
+          required_status_checks:
+            - context: All done
+              integration_id: 15368
+            - context: codecov/patch
+              integration_id: 254
+            - context: codecov/project
+              integration_id: 254
+            - context: Format
+              integration_id: 15368
+            - context: Lint
+              integration_id: 15368
+      - type: pull_request
+        parameters:
+          required_approving_review_count: 0
+          dismiss_stale_reviews_on_push: true
+          require_code_owner_review: false
+          require_last_push_approval: false
+          required_review_thread_resolution: false
+          automatic_copilot_code_review_enabled: false
+          allowed_merge_methods: [merge]
+
+    bypass_actors: []
+    current_user_can_bypass: never
 
 branches:
   - name: main
     # https://docs.github.com/en/rest/reference/repos#update-branch-protection
     # Branch Protection settings. Set to null to disable
-    protection:
-      # Required. Require at least one approving review on a pull request, before merging. Set to null to disable.
-      required_pull_request_reviews:
-        # The number of approvals required. (1-6)
-        required_approving_review_count: 0
-        # Dismiss approved reviews automatically when a new commit is pushed.
-        dismiss_stale_reviews: true
-        # Blocks merge until code owners have reviewed.
-        require_code_owner_reviews: false
-        # Specify which users and teams can dismiss pull request reviews. Pass an empty dismissal_restrictions object to disable. User and team dismissal_restrictions are only available for organization-owned repositories. Omit this parameter for personal repositories.
-        # dismissal_restrictions:
-        #   users: []
-        #   teams: []
-      # Required. Require status checks to pass before merging. Set to null to disable
-      required_status_checks:
-        # Required. Require branches to be up to date before merging.
-        strict: true
-        # Required. The list of status checks to require in order to merge into this branch
-        checks:
-          - context: "All done"
-            app_id: 15368
-          - context: "Format"
-            app_id: 15368
-          # - context: "codecov/project"
-          #   app_id: 254
-      # Commits pushed to matching refs must have verified signatures.
-      required_signatures: false
-      # Required. Enforce all configured restrictions for administrators. Set to true to enforce required status checks for repository administrators. Set to null to disable.
-      enforce_admins: null
-      # Prevent merge commits from being pushed to matching branches
-      required_linear_history: false
-      # Required. Restrict who can push to this branch. Team and user restrictions are only available for organization-owned repositories. Set to null to disable.
-      restrictions: null
-      #   apps: []
-      #   users: []
-      #   teams: []
+    protection: null
+#       # Required. Require at least one approving review on a pull request, before merging. Set to null to disable.
+#       required_pull_request_reviews:
+#         # The number of approvals required. (1-6)
+#         required_approving_review_count: 0
+#         # Dismiss approved reviews automatically when a new commit is pushed.
+#         dismiss_stale_reviews: true
+#         # Blocks merge until code owners have reviewed.
+#         require_code_owner_reviews: false
+#         # Specify which users and teams can dismiss pull request reviews. Pass an empty dismissal_restrictions object to disable. User and team dismissal_restrictions are only available for organization-owned repositories. Omit this parameter for personal repositories.
+#         # dismissal_restrictions:
+#         #   users: []
+#         #   teams: []
+#       # Required. Require status checks to pass before merging. Set to null to disable
+#       required_status_checks:
+#         # Required. Require branches to be up to date before merging.
+#         strict: true
+#         # Required. The list of status checks to require in order to merge into this branch
+#         checks:
+#           - context: "All done"
+#             app_id: 15368
+#           - context: "Format"
+#             app_id: 15368
+#           # - context: "codecov/project"
+#           #   app_id: 254
+#       # Commits pushed to matching refs must have verified signatures.
+#       required_signatures: false
+#       # Required. Enforce all configured restrictions for administrators. Set to true to enforce required status checks for repository administrators. Set to null to disable.
+#       enforce_admins: null
+#       # Prevent merge commits from being pushed to matching branches
+#       required_linear_history: false
+#       # Required. Restrict who can push to this branch. Team and user restrictions are only available for organization-owned repositories. Set to null to disable.
+#       restrictions: null
+#       #   apps: []
+#       #   users: []
+#       #   teams: []
