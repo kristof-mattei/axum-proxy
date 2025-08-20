@@ -14,8 +14,7 @@ RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked \
     && apt-get upgrade --yes \
     && apt-get install --no-install-recommends --yes \
         build-essential \
-        musl-dev \
-        musl-tools
+        musl-dev
 
 FROM rust-base AS rust-linux-amd64
 ARG TARGET=x86_64-unknown-linux-musl
