@@ -101,7 +101,7 @@ jobs:
       - name: Install cargo-edit to do set-version
         shell: bash
         run: |
-          cargo binstall --no-confirm cargo-edit
+          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cargo-edit
 
       - name: Set version in Cargo.toml / Cargo.lock
         shell: bash
