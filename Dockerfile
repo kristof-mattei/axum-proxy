@@ -3,6 +3,8 @@ FROM --platform=${BUILDPLATFORM} rust:1.89.0-trixie@sha256:6e6d04bd50cd4c433a805
 
 ARG APPLICATION_NAME
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN rm -f /etc/apt/apt.conf.d/docker-clean \
     && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
 
@@ -24,10 +26,12 @@ ARG TARGET=aarch64-unknown-linux-musl
 
 FROM rust-${TARGETPLATFORM//\//-} AS rust-cargo-build
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 COPY ./build-scripts /build-scripts
 
-RUN --mount=type=cache,id=apt-cache,from=rust-base,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,id=apt-lib,from=rust-base,target=/var/lib/apt,sharing=locked \
+RUN --mount=type=cache,id=apt-cache-${TARGET},from=rust-base,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,id=apt-lib-${TARGET},from=rust-base,target=/var/lib/apt,sharing=locked \
     /build-scripts/setup-env.sh
 
 RUN rustup target add ${TARGET}
