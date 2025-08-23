@@ -142,7 +142,7 @@ jobs:
       - name: Install cocogitto to get the next version number
         shell: bash
         run: |
-          cargo binstall --no-confirm cocogitto --pkg-url "{ repo }/releases/download/{ version }/{ name }-{ version }-{ target }.tar.gz" --bin-dir "{ target }/{ bin }{ binary-ext }" --target x86_64-unknown-linux-musl --pkg-fmt tgz --bin cog --strategies crate-meta-data
+          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cocogitto --pkg-url "{ repo }/releases/download/{ version }/{ name }-{ version }-{ target }.tar.gz" --bin-dir "{ target }/{ bin }{ binary-ext }" --target x86_64-unknown-linux-musl --pkg-fmt tgz --bin cog --strategies crate-meta-data
 
       - name: Calculate next version
         shell: bash
@@ -246,7 +246,7 @@ jobs:
       - name: Install nextest, custom test runner, with native support for junit and grcov
         shell: bash
         run: |
-          cargo binstall --no-confirm cargo-nextest grcov
+          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cargo-nextest grcov
 
       - name: Build with instrumentation support
         shell: bash
@@ -409,7 +409,7 @@ jobs:
       - name: Install cargo-edit to do set-version, and cargo-get to get the description
         shell: bash
         run: |
-          cargo binstall --no-confirm cargo-edit cargo-get
+          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cargo-edit cargo-get
 
       - name: Set the Cargo.toml version before we copy in the data into the Docker container
         shell: bash
