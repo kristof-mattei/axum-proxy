@@ -100,7 +100,7 @@ jobs:
 
       - &set_up_mold
         name: Set up mold
-        uses: rui314/setup-mold@7344740a9418dcdcb481c7df83d9fbd1d5072d7d # v1
+        uses: rui314/setup-mold@725a8794d15fc7563f59595bd9556495c0564878 # v1
 
       - &set_up_toolchain
         name: Set up toolchain
