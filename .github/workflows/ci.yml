@@ -52,7 +52,7 @@ jobs:
     steps:
       - &checkout
         name: Checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           show-progress: false
 
@@ -79,7 +79,7 @@ jobs:
       fromJSON(needs.changes.outputs.code) == true
     steps:
       - name: Checkout
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           show-progress: false
           fetch-depth: 0
@@ -93,7 +93,7 @@ jobs:
           path: |
             ~/.cargo
             ./target
-          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-${{ env.GITHUB_JOB }}
+          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-${{ github.job }}
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
             ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
@@ -142,7 +142,15 @@ jobs:
       - name: Install cocogitto to get the next version number
         shell: bash
         run: |
-          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cocogitto --pkg-url "{ repo }/releases/download/{ version }/{ name }-{ version }-{ target }.tar.gz" --bin-dir "{ target }/{ bin }{ binary-ext }" --target x86_64-unknown-linux-musl --pkg-fmt tgz --bin cog --strategies crate-meta-data
+          cargo binstall \
+            --github-token ${{ secrets.GITHUB_TOKEN }} \
+            --no-confirm cocogitto \
+            --pkg-url "{ repo }/releases/download/{ version }/{ name }-{ version }-{ target }.tar.gz" \
+            --bin-dir "{ target }/{ bin }{ binary-ext }" \
+            --target x86_64-unknown-linux-musl \
+            --pkg-fmt tgz \
+            --bin cog \
+            --strategies crate-meta-data
 
       - name: Calculate next version
         shell: bash
@@ -342,16 +350,14 @@ jobs:
         with:
           args: ${{ env.CARGO_FEATURES }} --all-targets --locked --workspace --verbose
 
+  # this name is also used in `publish-crate-after-release.yml`
   docker-build:
-    name: Build Docker container on ${{ matrix.runs-on }} for ${{ matrix.platform }}
+    name: Build Docker container on ${{ matrix.runs-on }}
     strategy:
       matrix:
         runs-on:
           - "ubuntu-latest"
           - "ubuntu-24.04-arm"
-        platform:
-          - "amd64"
-          - "arm64"
     outputs:
       application_name: ${{ steps.variables.outputs.application_name }}
       description: ${{ steps.variables.outputs.description }}
@@ -425,10 +431,6 @@ jobs:
           unique_tag=pr-${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}
           echo "unique_tag=${unique_tag}" >> ${GITHUB_OUTPUT}
 
-          # but we're only building 1 arch here, so we need to identify that container (we'll merge them later)
-          unique_tag_arch=${unique_tag}-${{ matrix.platform }}
-          echo "unique_tag_arch=${unique_tag_arch}" >> ${GITHUB_OUTPUT}
-
           # The application name, used in the Dockerfile
           application_name=${{ env.IMAGE_NAME }}
           # split at the last / and keep that (kristof-mattei/repo-name -> repo-name)
@@ -463,13 +465,13 @@ jobs:
         id: meta
         with:
           labels: |
-            org.opencontainers.image.description=${{ steps.variables.outputs.description }} (${{ matrix.platform }})
+            org.opencontainers.image.description=${{ steps.variables.outputs.description }}
             org.opencontainers.image.revision=${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}
             org.opencontainers.image.source=${{ github.event.pull_request.html_url }}
             org.opencontainers.image.version=pr-${{ github.event.number }}
           images: ${{ steps.variables.outputs.full_image_name_local_registry }}
           tags: |
-            type=raw,value=${{ steps.variables.outputs.unique_tag_arch }}
+            type=raw,value=${{ steps.variables.outputs.unique_tag }}
 
       - name: Log into registry ${{ steps.variables.outputs.registry }}
         uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0
@@ -492,11 +494,11 @@ jobs:
           context: .
           # this container is THE PR's artifact, and we will re-tag it
           # once the PR has been accepted
-          cache-from: type=registry,ref=${{ steps.variables.outputs.full_image_name_remote_registry }}:buildcache-${{ runner.arch }}-${{ steps.variables.outputs.application_name }}-${{ matrix.platform }}
-          cache-to: type=registry,ref=${{ steps.variables.outputs.full_image_name_remote_registry }}:buildcache-${{ runner.arch }}-${{ steps.variables.outputs.application_name }}-${{ matrix.platform }},mode=max
+          cache-from: type=registry,ref=${{ steps.variables.outputs.full_image_name_remote_registry }}:buildcache-${{ runner.arch }}-${{ steps.variables.outputs.application_name }}
+          cache-to: type=registry,ref=${{ steps.variables.outputs.full_image_name_remote_registry }}:buildcache-${{ runner.arch }}-${{ steps.variables.outputs.application_name }},mode=max
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=oci,dest=/tmp/${{ steps.variables.outputs.unique_tag_arch }}.tar
-          platforms: linux/${{ matrix.platform }}
+          outputs: type=oci,dest=/tmp/${{ steps.variables.outputs.unique_tag }}.tar
+          platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
 
       - name: Upload artifact
@@ -505,8 +507,8 @@ jobs:
           matrix.runs-on == 'ubuntu-latest'
         with:
           if-no-files-found: error
-          name: container-${{ steps.variables.outputs.application_name }}-${{ matrix.platform }}
-          path: /tmp/${{ steps.variables.outputs.unique_tag_arch }}.tar
+          name: container-${{ steps.variables.outputs.application_name }}
+          path: /tmp/${{ steps.variables.outputs.unique_tag }}.tar
           retention-days: 1
 
   docker-publish:
@@ -564,26 +566,20 @@ jobs:
             type=ref,event=pr,suffix=-latest
 
       - name: Download artifacts
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
         id: artifact
         with:
-          merge-multiple: true
           path: /tmp/container/
-          pattern: container-${{ needs.docker-build.outputs.application_name }}-*
+          name: container-${{ needs.docker-build.outputs.application_name }}
 
-      - name: Load individual platform images from artifacts & push to registry
+      - name: Load image from artifacts & push to registry
         shell: bash
         working-directory: ${{ steps.artifact.outputs.download-path }}
         run: |
-          docker load --input ./${{ needs.docker-build.outputs.unique_tag }}-amd64.tar
-          echo "Pushing amd64:"
-          docker push ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}-amd64
+          docker load --input ./${{ needs.docker-build.outputs.unique_tag }}.tar
+          docker push ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}
 
-          docker load --input ./${{ needs.docker-build.outputs.unique_tag }}-arm64.tar
-          echo "Pushing arm64:"
-          docker push ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}-arm64
-
-      - name: Create multiplatform image
+      - name: Create image in final destination
         shell: bash
         run: |
           new_tags=()
@@ -598,10 +594,9 @@ jobs:
             new_labels+=("index:${label}")
           done <<< "${{ steps.meta.outputs.labels }}"
 
-          # merge the amd64 and arm64 containers in a new multiplatform one
+          # merge labels & annotations
           docker buildx imagetools create "${new_tags[@]}" "${new_labels[@]}" \
-            ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}-amd64 \
-            ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}-arm64
+            ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}
 
           for new_tag in $(echo "${{ join(steps.meta.outputs.tags, ' ') }}"); do
             echo "${new_tag}:"
@@ -610,9 +605,9 @@ jobs:
             echo ""
           done
 
-      - name: Get digest of multiplatform image in our local registry
+      - name: Get digest of image in our local registry
         shell: bash
-        id: multiplatform_image
+        id: local_image
         run: |
           digest=$(docker buildx imagetools inspect ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }} --format "{{json .}}" | jq --raw-output ".manifest.digest")
 
@@ -634,7 +629,7 @@ jobs:
         id: attestation
         with:
           subject-name: ${{ needs.docker-build.outputs.full_image_name_remote_registry }}
-          subject-digest: ${{ steps.multiplatform_image.outputs.digest }}
+          subject-digest: ${{ steps.local_image.outputs.digest }}
           push-to-registry: true
 
   all-done:
