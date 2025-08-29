@@ -376,7 +376,8 @@ jobs:
     steps:
       - *checkout
 
-      - *cache_dependencies
+      # nothing to cache here
+      # - *cache_dependencies
 
       - *set_up_mold
 

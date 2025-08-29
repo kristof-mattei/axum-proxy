@@ -1,9 +1,8 @@
 # Rust toolchain setup
-FROM --platform=${BUILDPLATFORM} rust:1.89.0-trixie@sha256:26318aeddc7e7335b55ab32f943ec2d400bcc024649f8dbdee569bfa85f0c11d AS rust-base
+FROM --platform=${BUILDPLATFORM} rust:1.89.0-trixie@sha256:3329e2de3e9ff2d58da56e95ef99a3180a4e76336a676f3fe2b88f0b0d6bcfbf AS rust-base
 
 ARG APPLICATION_NAME
-
-ENV DEBIAN_FRONTEND=noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 
 RUN rm -f /etc/apt/apt.conf.d/docker-clean \
     && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
@@ -18,6 +17,24 @@ RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked \
         build-essential \
         musl-dev
 
+FROM rust-base AS rust-linux-amd64
+ARG TARGET=x86_64-unknown-linux-musl
+
+FROM rust-base AS rust-linux-arm64
+ARG TARGET=aarch64-unknown-linux-musl
+
+FROM rust-${TARGETPLATFORM//\//-} AS rust-cargo-build
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+COPY ./build-scripts /build-scripts
+
+RUN --mount=type=cache,id=apt-cache-${TARGET},from=rust-base,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,id=apt-lib-${TARGET},from=rust-base,target=/var/lib/apt,sharing=locked \
+    /build-scripts/setup-env.sh
+
+RUN rustup target add ${TARGET}
+
 # The following block
 # creates an empty app, and we copy in Cargo.toml and Cargo.lock as they represent our dependencies
 # This allows us to copy in the source in a different layer which in turn allows us to leverage Docker's layer caching
@@ -29,31 +46,21 @@ RUN cargo init --name ${APPLICATION_NAME}
 COPY ./.cargo ./Cargo.toml ./Cargo.lock ./
 
 # We use `fetch` to pre-download the files to the cache
+# Notice we do this in the target arch specific branch
+# We do this because we want to do it after `setup-env.sh`,
+# as the env is less likely to change than the code
+# We do lock the cache, to avoid corruption when building it for
+# both target platforms. It doesn't matter, as after unlocking the other one
+# just validates, but doesn't need to download anything
 RUN --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git/db,sharing=locked \
-    --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry,sharing=locked \
+    --mount=type=cache,id=cargo-registry-index,target=/usr/local/cargo/registry/index,sharing=locked \
+    --mount=type=cache,id=cargo-registry-cache,target=/usr/local/cargo/registry/cache,sharing=locked \
     cargo fetch
-
-FROM rust-base AS rust-linux-amd64
-ARG TARGET=x86_64-unknown-linux-musl
-
-FROM rust-base AS rust-linux-arm64
-ARG TARGET=aarch64-unknown-linux-musl
-
-FROM rust-${TARGETPLATFORM//\//-} AS rust-cargo-build
-
-ENV DEBIAN_FRONTEND=noninteractive
-
-COPY ./build-scripts /build-scripts
-
-RUN --mount=type=cache,id=apt-cache-${TARGET},from=rust-base,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,id=apt-lib-${TARGET},from=rust-base,target=/var/lib/apt,sharing=locked \
-    /build-scripts/setup-env.sh
-
-RUN rustup target add ${TARGET}
 
 RUN --mount=type=cache,target=/build/target/${TARGET},sharing=locked \
     --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git/db \
-    --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
+    --mount=type=cache,id=cargo-registry-index,target=/usr/local/cargo/registry/index \
+    --mount=type=cache,id=cargo-registry-cache,target=/usr/local/cargo/registry/cache \
     /build-scripts/build.sh build --release --target ${TARGET} --target-dir ./target/${TARGET}
 
 # Rust full build
@@ -70,7 +77,8 @@ RUN touch ./src/main.rs
 # --release not needed, it is implied with install
 RUN --mount=type=cache,target=/build/target/${TARGET},sharing=locked \
     --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git/db \
-    --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
+    --mount=type=cache,id=cargo-registry-index,target=/usr/local/cargo/registry/index \
+    --mount=type=cache,id=cargo-registry-cache,target=/usr/local/cargo/registry/cache \
     /build-scripts/build.sh install --path . --locked --target ${TARGET} --target-dir ./target/${TARGET} --root /output
 
 # Container user setup

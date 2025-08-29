@@ -1,7 +1,7 @@
 {
     "debug.internalConsoleOptions": "neverOpen",
-    "lldb.launch.terminal": "integrated",
     "lldb.launch.expressions": "simple",
+    "lldb.launch.terminal": "integrated",
     "prettier.configPath": "./prettier.config.mjs",
     "rust-analyzer.runnables.extraEnv": {
         "RUST_LOG": "DEBUG,axum_proxy=TRACE"

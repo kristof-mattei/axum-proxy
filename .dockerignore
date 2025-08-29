@@ -1,5 +1,9 @@
-target
-.github
-.git
-.vscode
-Dockerfile
+# Ignore all
+*
+
+# And explicitly include...
+!/.cargo
+!/build-scripts
+!/Cargo.lock
+!/Cargo.toml
+!/src
