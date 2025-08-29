@@ -84,15 +84,19 @@ jobs:
           show-progress: false
           fetch-depth: 0
 
-      - &cache_dependencies
-        name: Cache dependencies
+      - &cache_cargo
+        name: Cache cargo
         uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
         env:
-          CACHE_NAME: cargo-cache-dependencies
+          CACHE_NAME: cargo
         with:
           path: |
-            ~/.cargo
-            ./target
+            ~/.cargo/.crates.toml
+            ~/.cargo/.crates2.json
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
           key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-${{ github.job }}
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
@@ -122,7 +126,16 @@ jobs:
         shell: bash
         working-directory: /tmp
         run: |
-          archive="cargo-binstall-x86_64-unknown-linux-musl.tgz"
+          case ${{ runner.arch }} in
+            X64)
+              full_platform="x86_64"
+              ;;
+            ARM64)
+              full_platform="aarch64"
+              ;;
+          esac
+
+          archive="cargo-binstall-${full_platform}-unknown-linux-musl.tgz"
           wget \
             --output-document=- \
             --timeout=10 \
@@ -183,7 +196,20 @@ jobs:
     steps:
       - *checkout
 
-      - *cache_dependencies
+      - *cache_cargo
+
+      - &cache_target
+        name: Cache target
+        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        env:
+          CACHE_NAME: target
+        with:
+          path: |
+            ./target
+          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-${{ github.job }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
 
       - *set_up_mold
 
@@ -205,7 +231,7 @@ jobs:
     steps:
       - *checkout
 
-      - *cache_dependencies
+      - *cache_cargo
 
       - *set_up_mold
 
@@ -235,7 +261,9 @@ jobs:
     steps:
       - *checkout
 
-      - *cache_dependencies
+      - *cache_cargo
+
+      - *cache_target
 
       - *set_up_mold
 
@@ -339,7 +367,9 @@ jobs:
     steps:
       - *checkout
 
-      - *cache_dependencies
+      - *cache_cargo
+
+      - *cache_target
 
       - *set_up_mold
 
@@ -376,42 +406,13 @@ jobs:
     steps:
       - *checkout
 
-      # nothing to cache here
-      # - *cache_dependencies
+      - *cache_cargo
 
       - *set_up_mold
 
       - *set_up_toolchain
 
-      - name: Get binstall
-        shell: bash
-        working-directory: /tmp
-        run: |
-          case ${{ matrix.runs-on }} in
-            ubuntu-latest)
-              full_platform="x86_64"
-              ;;
-            ubuntu-24.04-arm)
-              full_platform="aarch64"
-              ;;
-          esac
-
-          archive="cargo-binstall-${full_platform}-unknown-linux-musl.tgz"
-          wget \
-            --output-document=- \
-            --timeout=10 \
-            --waitretry=3 \
-            --retry-connrefused \
-            --progress=dot:mega \
-            "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/${archive}" \
-            | tar \
-                --directory=${HOME}/.cargo/bin/ \
-                --strip-components=0 \
-                --no-overwrite-dir \
-                --extract \
-                --verbose \
-                --gunzip \
-                --file=-
+      - *get_binstall
 
       - name: Install cargo-edit to do set-version, and cargo-get to get the description
         shell: bash
