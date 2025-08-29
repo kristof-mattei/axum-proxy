@@ -18,6 +18,21 @@ RUN --mount=type=cache,id=apt-cache,target=/var/cache/apt,sharing=locked \
         build-essential \
         musl-dev
 
+# The following block
+# creates an empty app, and we copy in Cargo.toml and Cargo.lock as they represent our dependencies
+# This allows us to copy in the source in a different layer which in turn allows us to leverage Docker's layer caching
+# That means that if our dependencies don't change rebuilding is much faster
+WORKDIR /build
+
+RUN cargo init --name ${APPLICATION_NAME}
+
+COPY ./.cargo ./Cargo.toml ./Cargo.lock ./
+
+# We use `fetch` to pre-download the files to the cache
+RUN --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git/db,sharing=locked \
+    --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry,sharing=locked \
+    cargo fetch
+
 FROM rust-base AS rust-linux-amd64
 ARG TARGET=x86_64-unknown-linux-musl
 
@@ -36,20 +51,10 @@ RUN --mount=type=cache,id=apt-cache-${TARGET},from=rust-base,target=/var/cache/a
 
 RUN rustup target add ${TARGET}
 
-# The following block
-# creates an empty app, and we copy in Cargo.toml and Cargo.lock as they represent our dependencies
-# This allows us to copy in the source in a different layer which in turn allows us to leverage Docker's layer caching
-# That means that if our dependencies don't change rebuilding is much faster
-WORKDIR /build
-
-RUN cargo init --name ${APPLICATION_NAME}
-
-COPY ./.cargo ./Cargo.toml ./Cargo.lock ./
-
-RUN --mount=type=cache,target=/build/target,sharing=locked \
+RUN --mount=type=cache,target=/build/target/${TARGET},sharing=locked \
     --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git/db \
     --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
-    /build-scripts/build.sh build --release --target ${TARGET}
+    /build-scripts/build.sh build --release --target ${TARGET} --target-dir ./target/${TARGET}
 
 # Rust full build
 FROM rust-cargo-build AS rust-build
@@ -63,10 +68,10 @@ COPY ./src ./src
 RUN touch ./src/main.rs
 
 # --release not needed, it is implied with install
-RUN --mount=type=cache,target=/build/target,sharing=locked \
+RUN --mount=type=cache,target=/build/target/${TARGET},sharing=locked \
     --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git/db \
     --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
-    /build-scripts/build.sh install --path . --locked --target ${TARGET} --root /output
+    /build-scripts/build.sh install --path . --locked --target ${TARGET} --target-dir ./target/${TARGET} --root /output
 
 # Container user setup
 FROM --platform=${BUILDPLATFORM} alpine:3.22.1@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1 AS passwd-build
