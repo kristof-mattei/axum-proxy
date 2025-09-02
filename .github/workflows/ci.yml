@@ -496,8 +496,8 @@ jobs:
           context: .
           # this container is THE PR's artifact, and we will re-tag it
           # once the PR has been accepted
-          cache-from: type=registry,ref=${{ steps.variables.outputs.full_image_name_remote_registry }}:buildcache-${{ runner.arch }}-${{ steps.variables.outputs.application_name }}
-          cache-to: type=registry,ref=${{ steps.variables.outputs.full_image_name_remote_registry }}:buildcache-${{ runner.arch }}-${{ steps.variables.outputs.application_name }},mode=max
+          cache-from: type=registry,ref=${{ steps.variables.outputs.full_image_name_remote_registry }}-cache:${{ steps.variables.outputs.application_name }}-buildcache-${{ runner.arch }}
+          cache-to: type=registry,ref=${{ steps.variables.outputs.full_image_name_remote_registry }}-cache:${{ steps.variables.outputs.application_name }}-buildcache-${{ runner.arch }},mode=max
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=oci,dest=/tmp/${{ steps.variables.outputs.unique_tag }}.tar
           platforms: linux/amd64,linux/arm64
@@ -557,12 +557,7 @@ jobs:
         uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5.8.0
         id: meta
         with:
-          labels: |
-            org.opencontainers.image.description=${{ needs.docker-build.outputs.description }}
-            org.opencontainers.image.revision=${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}
-            org.opencontainers.image.source=${{ github.event.pull_request.html_url }}
-            org.opencontainers.image.version=pr-${{ github.event.number }}
-          images: ${{ needs.docker-build.outputs.full_image_name_local_registry }}
+          images: ${{ needs.docker-build.outputs.full_image_name_remote_registry }}
           tags: |
             type=raw,value=${{ needs.docker-build.outputs.unique_tag }}
             type=ref,event=pr,suffix=-latest
@@ -581,32 +576,6 @@ jobs:
           docker load --input ./${{ needs.docker-build.outputs.unique_tag }}.tar
           docker push ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}
 
-      - name: Create image in final destination
-        shell: bash
-        run: |
-          new_tags=()
-          while IFS= read -r tag; do
-            new_tags+=(--tag)
-            new_tags+=(${tag})
-          done <<< "${{ steps.meta.outputs.tags }}"
-
-          new_labels=()
-          while IFS= read -r label; do
-            new_labels+=(--annotation)
-            new_labels+=("index:${label}")
-          done <<< "${{ steps.meta.outputs.labels }}"
-
-          # merge labels & annotations
-          docker buildx imagetools create "${new_tags[@]}" "${new_labels[@]}" \
-            ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}
-
-          for new_tag in $(echo "${{ join(steps.meta.outputs.tags, ' ') }}"); do
-            echo "${new_tag}:"
-            docker buildx imagetools inspect --raw ${new_tag}
-            # empty to get newline
-            echo ""
-          done
-
       - name: Get digest of image in our local registry
         shell: bash
         id: local_image
@@ -615,12 +584,25 @@ jobs:
 
           echo "digest=${digest}" >> ${GITHUB_OUTPUT}
 
-      - name: Publish to the actual repo
+      - name: Set new tags
         shell: bash
         run: |
-          docker buildx imagetools create \
-            --tag ${{ needs.docker-build.outputs.full_image_name_remote_registry }}:${{ needs.docker-build.outputs.unique_tag }} \
+          new_tags=()
+          while IFS= read -r tag; do
+            new_tags+=(--tag)
+            new_tags+=(${tag})
+          done <<< "${{ steps.meta.outputs.tags }}"
+
+          # merge labels & annotations
+          docker buildx imagetools create "${new_tags[@]}" "${new_labels[@]}" \
             ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}
+
+          for new_tag in $(echo "${{ join(steps.meta.outputs.tags, ' ') }}"); do
+            echo "Inspecting ${new_tag}:"
+            docker buildx imagetools inspect --raw ${new_tag}
+            # empty to get newline
+            echo ""
+          done
 
       # note that we use the digest of the local image
       # these digests don't change after pushing, but
