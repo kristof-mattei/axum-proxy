@@ -1,5 +1,5 @@
 <!-- header goes here -->
-## [1.0.0](https://github.com/kristof-mattei/axum-proxy/compare/v0.5.1..v1.0.0) - 2025-09-21
+## [0.6.0](https://github.com/kristof-mattei/axum-proxy/compare/v0.5.1..v0.6.0) - 2025-09-21
 
 ### 🚀 Features
 
@@ -308,6 +308,7 @@
 - Image as well because renovate is slow - ([b2a2c2d](https://github.com/kristof-mattei/axum-proxy/commit/b2a2c2d675d902775baa61a96ee7c47e9ab0106c))
 - Use git-cliff to get next version - ([0be0460](https://github.com/kristof-mattei/axum-proxy/commit/0be04606cccbb69b08ba47233de310b0fb290469))
 - Ignore .git - ([8293ae3](https://github.com/kristof-mattei/axum-proxy/commit/8293ae364ac6a820b9745564ba83b206b2f969a5))
+- Breaking doesn't make us go from 0->1 by default - ([b6c3182](https://github.com/kristof-mattei/axum-proxy/commit/b6c3182ca96730a0d6adb3cea886d4dabc39b8d4))
 
 ### 🧪 Testing
 
@@ -321,7 +322,8 @@
 ### ⚙️ Miscellaneous Tasks
 
 - *(release)* Release v1.5.0 - ([5504d10](https://github.com/kristof-mattei/axum-proxy/commit/5504d10df91b765fac320a1ae903bc761017728c))
-- *(release)* Release v1.0.0 - ([](https://github.com/kristof-mattei/axum-proxy/commit/))
+- *(release)* Release v1.0.0 - ([c0f515e](https://github.com/kristof-mattei/axum-proxy/commit/c0f515eaaaea5f5f8afdf81c0bdf4f2c3af3ad17))
+- *(release)* Release v0.6.0 - ([](https://github.com/kristof-mattei/axum-proxy/commit/))
 - *(version)* V1.2.0 - ([1dbbec6](https://github.com/kristof-mattei/axum-proxy/commit/1dbbec608864c5cb559a90d8904996011daef52c))
 - *(version)* V1.3.0 - ([bee1b83](https://github.com/kristof-mattei/axum-proxy/commit/bee1b83e6cfe1afd6286073fc1bb38787c0ba48e))
 - *(version)* V1.3.1 - ([096c422](https://github.com/kristof-mattei/axum-proxy/commit/096c4229799cecace867a1de699a7f65eefe59bb))
