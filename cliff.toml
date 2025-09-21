@@ -125,3 +125,7 @@ topo_order_commits = true
 sort_commits = "oldest"
 # Process submodules commits
 recurse_submodules = false
+
+[bump]
+breaking_always_bump_major = false
+initial_tag = "0.0.1"
