@@ -53,7 +53,7 @@ jobs:
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
-          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-cocogitto
+          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-git-cliff
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
             ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
@@ -93,33 +93,42 @@ jobs:
                 --gunzip \
                 --file=-
 
-      - name: Install cocogitto to get the next version number
+      - name: Install git-cliff to generate changelog & next version number
         shell: bash
         run: |
-          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cocogitto --pkg-url "{ repo }/releases/download/{ version }/{ name }-{ version }-{ target }.tar.gz" --bin-dir "{ target }/{ bin }{ binary-ext }" --target x86_64-unknown-linux-musl --pkg-fmt tgz --bin cog --strategies crate-meta-data
+          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm git-cliff
 
-      - name: Bump
+      - name: Get new version, generated updated changelog and update repo with updated changelog
         shell: bash
         id: release
         run: |
-          git config --global user.name github-actions
-          git config --global user.email github-actions@github.com
+          repository=${{ github.repository }}
+          # split at the last / and keep that (kristof-mattei/repo-name -> repo-name)
+          repository=${repository##*/}
 
-          cog bump --auto
+          git config --global user.name ${repository}-release[bot]
+          git config --global user.email 864376+${repository}-release[bot]@users.noreply.github.com
 
-          version="v$(cog -v get-version)"
+          version=$(git-cliff --bumped-version --unreleased --github-token ${{ secrets.GITHUB_TOKEN }})
           echo "version=$version" >> ${GITHUB_OUTPUT}
 
-          git push
+          commit_message="chore(release): Release ${version}"
 
-      - name: Generate Changelog
-        shell: bash
-        run: |
-          cog changelog --at ${{ steps.release.outputs.version }} > GITHUB_CHANGELOG.md
+          git-cliff --output CHANGELOG.md --bump --with-commit "${commit_message}" --github-token ${{ secrets.GITHUB_TOKEN }}
+
+          git add CHANGELOG.md
+
+          git commit --message "${commit_message}"
+
+          git tag $version --message "${commit_message}"
+
+          git push --follow-tags
+
+          git-cliff --output diff-CHANGELOG.md --current --github-token ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload github release
         uses: softprops/action-gh-release@6cbd405e2c4e67a21c47fa9e383d020e4e28b836 # v2.3.3
         with:
-          body_path: GITHUB_CHANGELOG.md
+          body_path: diff-CHANGELOG.md
           tag_name: ${{ steps.release.outputs.version }}
           token: ${{ secrets.TOKEN_TO_TRIGGER_SUBSEQUENT_WORKFLOWS }}

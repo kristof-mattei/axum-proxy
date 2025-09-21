@@ -58,4 +58,4 @@ jobs:
       - name: Check the commits
         shell: bash
         run: |
-          cog check
+          cog check --ignore-merge-commits

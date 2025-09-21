@@ -4,6 +4,10 @@ name: Test Release
 on:
   workflow_dispatch: # releasing is manual as we don't want to release every time
 
+concurrency:
+  group: "${{ github.workflow }}"
+  cancel-in-progress: true # only last step is important, which runs or doesn't
+
 permissions:
   contents: write
   issues: read
@@ -47,7 +51,7 @@ jobs:
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
-          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-cocogitto
+          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-git-cliff
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
             ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
@@ -87,27 +91,25 @@ jobs:
                 --gunzip \
                 --file=-
 
-      - name: Install cocogitto to get the next version number
+      - name: Install git-cliff to generate changelog & next version number
         shell: bash
         run: |
-          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cocogitto --pkg-url "{ repo }/releases/download/{ version }/{ name }-{ version }-{ target }.tar.gz" --bin-dir "{ target }/{ bin }{ binary-ext }" --target x86_64-unknown-linux-musl --pkg-fmt tgz --bin cog --strategies crate-meta-data
+          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm git-cliff
 
-      - name: Bump
+      - name: Generate the changelog representing the next release
         shell: bash
         id: release
         run: |
-          git config --global user.name github-actions
-          git config --global user.email github-actions@github.com
+          repository=${{ github.repository }}
+          # split at the last / and keep that (kristof-mattei/repo-name -> repo-name)
+          repository=${repository##*/}
 
-          cog bump --auto
+          version=$(git-cliff --bumped-version --unreleased --github-token ${{ secrets.GITHUB_TOKEN }})
+          echo "version=$version" >> ${GITHUB_OUTPUT}
 
-          version="v$(cog -v get-version)"
-          echo "version=${version}" >> ${GITHUB_OUTPUT}
+          commit_message="chore(release): Release ${version}"
 
-          cog changelog --at ${version} > GITHUB_CHANGELOG.md
+          git-cliff --output diff-CHANGELOG.md --bump --unreleased --latest --with-commit "${commit_message}" --github-token ${{ secrets.GITHUB_TOKEN }}
 
-          echo "New version: ${version}"
-
-          echo "Changelog: "
-
-          cat GITHUB_CHANGELOG.md
+          echo "# Next release changelog:" >> ${GITHUB_STEP_SUMMARY}
+          cat diff-CHANGELOG.md >> ${GITHUB_STEP_SUMMARY}
