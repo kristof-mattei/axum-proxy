@@ -21,6 +21,6 @@ OLD_NAME_WITH_UNDERSCORE=$(echo "${OLD_NAME}" | sed -e "s/-/_/g")
 
 echo ${OLD_NAME_WITH_UNDERSCORE}
 
-rg --hidden --files-with-matches ${OLD_NAME} | xargs -i sed -i "s/${OLD_NAME}/${NEW_NAME}/g" {}
-rg --hidden --files-with-matches ${OLD_NAME_WITH_UNDERSCORE}
-rg --hidden --files-with-matches ${OLD_NAME_WITH_UNDERSCORE} | xargs -i sed -i "s/${OLD_NAME_WITH_UNDERSCORE}/${NEW_NAME_WITH_UNDERSCORE}/g" {}
+rg --hidden --glob '!.git/*' --files-with-matches ${OLD_NAME} | xargs -i sed -i "s/${OLD_NAME}/${NEW_NAME}/g" {}
+rg --hidden --glob '!.git/*' --files-with-matches ${OLD_NAME_WITH_UNDERSCORE}
+rg --hidden --glob '!.git/*' --files-with-matches ${OLD_NAME_WITH_UNDERSCORE} | xargs -i sed -i "s/${OLD_NAME_WITH_UNDERSCORE}/${NEW_NAME_WITH_UNDERSCORE}/g" {}

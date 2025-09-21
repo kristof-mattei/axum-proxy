@@ -1,209 +1,750 @@
-- - -
-## [v0.5.1](https://github.com/kristof-mattei/axum-proxy/compare/6ba6df545e87f1e6676e3c8c4daa9fc3cd8cfc0d..v0.5.1) - 2025-05-27
-#### Bug Fixes
-- **(deps)** update rust crate hyper-util to v0.1.13 - ([5dfa4c1](https://github.com/kristof-mattei/axum-proxy/commit/5dfa4c14ecc7a880e727f1ff74a9746658b7204b)) - renovate[bot]
-- **(deps)** update rust crate hyper-rustls to v0.27.6 - ([185d299](https://github.com/kristof-mattei/axum-proxy/commit/185d2999bd09f93e2b21282172b35bd1555811e9)) - renovate[bot]
-- **(deps)** update rust crate hyper-util to v0.1.12 - ([635d3ec](https://github.com/kristof-mattei/axum-proxy/commit/635d3ecb981b0191c99aa71cb2a2c19c6c43f20d)) - renovate[bot]
-- added arch to buildscripts to fix collisions, removed binstall for where we just use cargo-edit, as it doesn't have a binary available - ([2e990e3](https://github.com/kristof-mattei/axum-proxy/commit/2e990e32aca9e4bca899064dbf429d7f72ebaae2)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- remove unfulfilled lints - ([425ebe9](https://github.com/kristof-mattei/axum-proxy/commit/425ebe9882df61e5c0e1bba10ef2a72abb033745)) - [@kristof-mattei](https://github.com/kristof-mattei)
-#### Miscellaneous Chores
-- **(deps)** update docker/build-push-action action to v6.18.0 - ([8ef41fd](https://github.com/kristof-mattei/axum-proxy/commit/8ef41fda01e4ba3060419974c16bcfe765693a0a)) - renovate[bot]
-- **(deps)** lock file maintenance - ([e5e420b](https://github.com/kristof-mattei/axum-proxy/commit/e5e420bb0c2de9574b78257418bf35185fcfa3ed)) - renovate[bot]
-- **(deps)** update enricomi/publish-unit-test-result-action action to v2.20.0 - ([354e23e](https://github.com/kristof-mattei/axum-proxy/commit/354e23e097f0589fc48a8d6384e72ed374f0ba39)) - renovate[bot]
-- **(deps)** update rust crate tokio to v1.45.1 - ([7994bcd](https://github.com/kristof-mattei/axum-proxy/commit/7994bcdb5e9466ff531321742d9053500f6b03da)) - renovate[bot]
-- **(deps)** update codecov/test-results-action action to v1.1.1 - ([696f2a1](https://github.com/kristof-mattei/axum-proxy/commit/696f2a1c0d6eef9f597ff83c8896fc25205f1779)) - renovate[bot]
-- **(deps)** update npm to >=11.4.1 - ([e1b6601](https://github.com/kristof-mattei/axum-proxy/commit/e1b6601003c169ec500866a47e7b349fe7faab72)) - renovate[bot]
-- **(deps)** update node.js to v22.16.0 - ([284513d](https://github.com/kristof-mattei/axum-proxy/commit/284513dec19fe8de4e7110b9ff1e4ea51b722fd8)) - renovate[bot]
-- **(deps)** update rui314/setup-mold digest to 67424c1 - ([a518dfd](https://github.com/kristof-mattei/axum-proxy/commit/a518dfd684f3bf7d619f0cc70a6e34b2fd2e4a3d)) - renovate[bot]
-- **(deps)** update github/codeql-action action to v3.28.18 - ([ed3fd33](https://github.com/kristof-mattei/axum-proxy/commit/ed3fd3362d32163b8360699f1d87a63a3efc464a)) - renovate[bot]
-- **(deps)** update codecov/codecov-action action to v5.4.3 - ([0022d13](https://github.com/kristof-mattei/axum-proxy/commit/0022d130f8062ee3f28a4172146bdb31a8b4f94a)) - renovate[bot]
-- **(deps)** update npm to >=11.4.0 - ([5954fdb](https://github.com/kristof-mattei/axum-proxy/commit/5954fdbe1c35e52c7f671df0144dc880634bc942)) - renovate[bot]
-- **(deps)** update docker/build-push-action action to v6.17.0 - ([25e5f22](https://github.com/kristof-mattei/axum-proxy/commit/25e5f2221938da18c0f593b23edb0594fcc62df5)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.122.0 - ([18562f7](https://github.com/kristof-mattei/axum-proxy/commit/18562f74eb83f6ab4440730b0a22b5b38757cf33)) - renovate[bot]
-- **(deps)** update node.js to v22.15.1 - ([12032ad](https://github.com/kristof-mattei/axum-proxy/commit/12032adf805a81dfe2ba42972a9fc603c80401a8)) - renovate[bot]
-- **(deps)** lock file maintenance - ([d19c084](https://github.com/kristof-mattei/axum-proxy/commit/d19c084514516335ea0894f25429873ed311a7a6)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.121.0 - ([a835b40](https://github.com/kristof-mattei/axum-proxy/commit/a835b4062d5c777311047149647139f475404fb4)) - renovate[bot]
-- **(deps)** update mcr.microsoft.com/devcontainers/rust:1-1-bullseye docker digest to d9c118e - ([c98c4f4](https://github.com/kristof-mattei/axum-proxy/commit/c98c4f41b09e23ebf5a40be5c672e293197095d2)) - renovate[bot]
-- **(deps)** update rust crate tokio to v1.45.0 - ([5e41d85](https://github.com/kristof-mattei/axum-proxy/commit/5e41d856ba9dd2a3edc5d6b6220f3c8117d1b439)) - renovate[bot]
-- **(deps)** lock file maintenance - ([1834420](https://github.com/kristof-mattei/axum-proxy/commit/1834420dbdf86b79b9bf604154f140132959429a)) - renovate[bot]
-- **(deps)** update github/codeql-action action to v3.28.17 - ([1863b3f](https://github.com/kristof-mattei/axum-proxy/commit/1863b3f668c56efbd7e7e6f9838cfdeb428222fd)) - renovate[bot]
-- allow windows-sys multiple versions - ([b035e34](https://github.com/kristof-mattei/axum-proxy/commit/b035e34755158255339cfac46431d8fd28914034)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- update from upstream - ([9462bcc](https://github.com/kristof-mattei/axum-proxy/commit/9462bcc7b03ac736a48342b551d18b8777de002c)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- update scripts from upstream - ([6dec586](https://github.com/kristof-mattei/axum-proxy/commit/6dec58662969904b8a3fe7aae8431b39463c07f0)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- fmt - ([6ba6df5](https://github.com/kristof-mattei/axum-proxy/commit/6ba6df545e87f1e6676e3c8c4daa9fc3cd8cfc0d)) - [@kristof-mattei](https://github.com/kristof-mattei)
+<!-- header goes here -->
+## [unreleased]
 
-- - -
+### 🚀 Features
 
-## [v0.5.0](https://github.com/kristof-mattei/axum-proxy/compare/0944b892b968e26c241689b3028d8744ed2eaccf..v0.5.0) - 2025-05-02
-#### Bug Fixes
-- add flags to prevent bad configuration - ([cf960c7](https://github.com/kristof-mattei/axum-proxy/commit/cf960c745da3eda31ea53fe2df85f054c078922c)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- split tls backends into 2 options - ([6f08860](https://github.com/kristof-mattei/axum-proxy/commit/6f088608dec706083d023c8ab2a34ea3ef3810f0)) - [@kristof-mattei](https://github.com/kristof-mattei)
-#### Features
-- add features for ring and aws-lc - ([d446879](https://github.com/kristof-mattei/axum-proxy/commit/d446879bc03146be77c5cbe862d0a2885201546f)) - [@kristof-mattei](https://github.com/kristof-mattei)
-#### Miscellaneous Chores
-- **(deps)** disable aws-lc-rs by default - ([5eaabd4](https://github.com/kristof-mattei/axum-proxy/commit/5eaabd43d8f830f57ba5c8f3661e648e0c7e6281)) - Joe Grund
-- **(deps)** lock file maintenance - ([0944b89](https://github.com/kristof-mattei/axum-proxy/commit/0944b892b968e26c241689b3028d8744ed2eaccf)) - renovate[bot]
-- **(version)** v0.5.0 - ([0309af5](https://github.com/kristof-mattei/axum-proxy/commit/0309af5540de232bcf3b684466239049d4ff4aec)) - github-actions
-- bump to rust edition 2024 - ([efdda73](https://github.com/kristof-mattei/axum-proxy/commit/efdda7318d02748331aa57a36ec0618bb66bef94)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- update build patterns - ([658bfaa](https://github.com/kristof-mattei/axum-proxy/commit/658bfaa9775234ec76a3654ae43d1433dae70141)) - [@kristof-mattei](https://github.com/kristof-mattei)
+- Multiplatform with caching - ([6c5188b](https://github.com/kristof-mattei/axum-proxy/commit/6c5188b32d43e0f8ae0bd1d9082871b23e244116))
+- Enable codeql - ([9d22fa5](https://github.com/kristof-mattei/axum-proxy/commit/9d22fa5261061d03a3c63a9fa5f5599e374b36ed))
+- Update publish defaults - ([406e06c](https://github.com/kristof-mattei/axum-proxy/commit/406e06cae013094a6e2995e2c49158b1677b814e))
+- Ensure formatting works - ([a7ae4c6](https://github.com/kristof-mattei/axum-proxy/commit/a7ae4c6870fcd124a76741003d4dce3773f7a056))
+- Attest individual and multiplatform images - ([b2393c1](https://github.com/kristof-mattei/axum-proxy/commit/b2393c1478174e162e13e33ac06c4d3ccf028e84))
+- Restrict ALL - ([28544d3](https://github.com/kristof-mattei/axum-proxy/commit/28544d39a362f8b2e9066f1a4ba89e8f9a6e3941))
+- I rule(set) - ([37253e2](https://github.com/kristof-mattei/axum-proxy/commit/37253e288eefd5b1e8f7c40184fcf7b9acd90ec4))
+- Use anchors to dedup build - ([f6cafa4](https://github.com/kristof-mattei/axum-proxy/commit/f6cafa45b7e0bfd4c29dc2f7f0e57ba258a96922))
+- Pin to trixie, use gcc-14 from trixie - ([e0ea2a2](https://github.com/kristof-mattei/axum-proxy/commit/e0ea2a212118b3a24d52bb86ae8bb5ed8e6582bd))
+- Separate cache based on target to allow for more efficient caching - ([89bcb9b](https://github.com/kristof-mattei/axum-proxy/commit/89bcb9be9680fa5d0df610d93fb9b978a3362202))
+- Write output to per-target folder, otherwise caches overwrite each other causing recompilation in the install step - ([aabbed1](https://github.com/kristof-mattei/axum-proxy/commit/aabbed1fd86be610b46a911d2d1cf7231b0ec5ac))
+- [**breaking**] Switch from `log` to `tracing` - ([e7b8b69](https://github.com/kristof-mattei/axum-proxy/commit/e7b8b699e8303323f882d381445b542e8e399601))
 
-- - -
+### 🐛 Bug Fixes
 
-## [v0.5.0](https://github.com/kristof-mattei/axum-proxy/compare/0944b892b968e26c241689b3028d8744ed2eaccf..v0.5.0) - 2025-05-01
-#### Bug Fixes
-- add flags to prevent bad configuration - ([cf960c7](https://github.com/kristof-mattei/axum-proxy/commit/cf960c745da3eda31ea53fe2df85f054c078922c)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- split tls backends into 2 options - ([6f08860](https://github.com/kristof-mattei/axum-proxy/commit/6f088608dec706083d023c8ab2a34ea3ef3810f0)) - [@kristof-mattei](https://github.com/kristof-mattei)
-#### Features
-- add features for ring and aws-lc - ([d446879](https://github.com/kristof-mattei/axum-proxy/commit/d446879bc03146be77c5cbe862d0a2885201546f)) - [@kristof-mattei](https://github.com/kristof-mattei)
-#### Miscellaneous Chores
-- **(deps)** disable aws-lc-rs by default - ([5eaabd4](https://github.com/kristof-mattei/axum-proxy/commit/5eaabd43d8f830f57ba5c8f3661e648e0c7e6281)) - Joe Grund
-- **(deps)** lock file maintenance - ([0944b89](https://github.com/kristof-mattei/axum-proxy/commit/0944b892b968e26c241689b3028d8744ed2eaccf)) - renovate[bot]
-- update build patterns - ([658bfaa](https://github.com/kristof-mattei/axum-proxy/commit/658bfaa9775234ec76a3654ae43d1433dae70141)) - [@kristof-mattei](https://github.com/kristof-mattei)
+- *(deps)* Update rust crate openssl to 0.10.73 - ([818d5d7](https://github.com/kristof-mattei/axum-proxy/commit/818d5d763e04fc8e3f0638a9264e9c8f1aecc4cb))
+- *(deps)* Update rust crate color-eyre to 0.6.5 - ([6cbb98d](https://github.com/kristof-mattei/axum-proxy/commit/6cbb98dc877f5d2785ceb938f3fca30172c21bbe))
+- *(deps)* Update rust crate hyper-util to v0.1.16 - ([5bbd995](https://github.com/kristof-mattei/axum-proxy/commit/5bbd995358e90d152289f70c4a4560f508cb9248))
+- *(deps)* Update rust crate hyper to v1.7.0 - ([07510e6](https://github.com/kristof-mattei/axum-proxy/commit/07510e617b4391c50721b4fc3143237f0737e466))
+- *(deps)* Update rust crate regex to v1.11.2 - ([f0e6b7f](https://github.com/kristof-mattei/axum-proxy/commit/f0e6b7fd3aab5441779b324b5558df1d406ac778))
+- *(deps)* Update rust crate log to v0.4.28 - ([972ece3](https://github.com/kristof-mattei/axum-proxy/commit/972ece3bb03d66684d84d6f7696d142381eb5e1f))
+- *(deps)* Update rust crate hyper-util to v0.1.17 - ([bc8c8a7](https://github.com/kristof-mattei/axum-proxy/commit/bc8c8a7be214e549426d35c6e4df61513fd62d2f))
+- Switch to prettier's mjs setup, widen limit for non-json files - ([15954b2](https://github.com/kristof-mattei/axum-proxy/commit/15954b23a004049eb88cbce34cc69bd231dce81e))
+- Correct dpkg-architecture architecture check - ([83055c9](https://github.com/kristof-mattei/axum-proxy/commit/83055c9bba144255202d4d12658323903be69d53))
+- Install with locked to prevent cargo from updating deps during cargo install - ([bdb7e91](https://github.com/kristof-mattei/axum-proxy/commit/bdb7e91b3054f6ef902f1c87870118ff035638e3))
+- Cache per arch, as these overwrite each other - ([90bb69a](https://github.com/kristof-mattei/axum-proxy/commit/90bb69af3c0d082b4cea18a161b99e34d61cd5fc))
+- Dir, path, I don't know anymore - ([4bfa22d](https://github.com/kristof-mattei/axum-proxy/commit/4bfa22d121e114bb8fbb8435ec90735f4f30466c))
+- Line continuation - ([8239c41](https://github.com/kristof-mattei/axum-proxy/commit/8239c4108c487acea05461ebe09f69887a3bd597))
+- Uppercase - ([e70a0ca](https://github.com/kristof-mattei/axum-proxy/commit/e70a0ca8dda3bc0126f539a945a0477ab6c8c875))
+- Remove no-deps - ([80518c0](https://github.com/kristof-mattei/axum-proxy/commit/80518c0b1875c34158846e16e7de58d7b422b6e9))
+- Reduce permissions - ([54b4398](https://github.com/kristof-mattei/axum-proxy/commit/54b4398e66ee00c3e8f2254b9479d7ff79b29026))
+- Manually build Rust for codeql as per our standard build - ([af9390e](https://github.com/kristof-mattei/axum-proxy/commit/af9390ee873ba6968417c2749569cc630214ca7e))
+- Build-mode `manual` is not supported for Rust - ([7659499](https://github.com/kristof-mattei/axum-proxy/commit/76594994e616ebef734f5a7c275c5a19249d5d52))
+- Pnpm - ([229ffad](https://github.com/kristof-mattei/axum-proxy/commit/229ffad2a4bb0deb7f0c2d4fa954c84691262494))
+- Ignore pnpm-lock.yaml format - ([34ee806](https://github.com/kristof-mattei/axum-proxy/commit/34ee80670cf28b511be17ca61fdb52d0eb463ce4))
+- Ensure cargo.lock is up to date - ([75f241b](https://github.com/kristof-mattei/axum-proxy/commit/75f241bf01868d419fa383572650b891c06cacc6))
+- Remove unused script - ([f8aa057](https://github.com/kristof-mattei/axum-proxy/commit/f8aa05727ba3a31d557bb9287eccf147edc8827d))
+- Also set style_edition - ([172d6ab](https://github.com/kristof-mattei/axum-proxy/commit/172d6ab04a50b2f19415ec0b64726b6d6d773db5))
+- Infer edition from Cargo.toml - ([f1d0742](https://github.com/kristof-mattei/axum-proxy/commit/f1d0742fa46c850b4c983d5c6e378108bd22e942))
+- Schema - ([df22c46](https://github.com/kristof-mattei/axum-proxy/commit/df22c4616102dd6af00cd2f8993cf6d955467c99))
+- Also ignore samply output - ([87357c9](https://github.com/kristof-mattei/axum-proxy/commit/87357c9d0439fd731cb818c830898947a3735025))
+- Simplify license, use MIT license instead of BSD, simplify package.json - ([da64573](https://github.com/kristof-mattei/axum-proxy/commit/da64573e286744b1e812856b7d8cb8e27d600447))
+- Validate toml & sh & ... formatting as part of PR process - ([69f84c6](https://github.com/kristof-mattei/axum-proxy/commit/69f84c6436c864b272611f8629b1dbda46560e45))
+- Ignore Cargo.lock from being formatted - ([e721512](https://github.com/kristof-mattei/axum-proxy/commit/e72151217ff0eb6b92d4a15dfd11aeba8ee2687d))
+- Restore package.json 2 tab width - ([f8851e3](https://github.com/kristof-mattei/axum-proxy/commit/f8851e36b4f0f8795b4a945211e673f3aa8dcb55))
+- Reorder - ([d0080cd](https://github.com/kristof-mattei/axum-proxy/commit/d0080cde013c86eab0087d897024be4ab18df1ae))
+- Remove unused env that comes in via variables - ([adf0cd7](https://github.com/kristof-mattei/axum-proxy/commit/adf0cd7117034c106eac21c2384bfa282d4271b8))
+- Set correct guard name - ([3131d66](https://github.com/kristof-mattei/axum-proxy/commit/3131d663eac696ac0d1ed2aa522051f1218e8067))
+- [**breaking**] Rename `Error` to `ProxyError` to not pollute namespace - ([ab67cae](https://github.com/kristof-mattei/axum-proxy/commit/ab67caee5f4dcb92a00fc15e40b7b2f2430a444b))
+- [**breaking**] Bump Rust - ([a238406](https://github.com/kristof-mattei/axum-proxy/commit/a2384068d29663572cc396db365dae92982368fb))
+- Doc formatting - ([408f65d](https://github.com/kristof-mattei/axum-proxy/commit/408f65db00c8b9d4012aa84ccba4ede0ac449d4a))
+- Cleanup unused lints - ([5a38041](https://github.com/kristof-mattei/axum-proxy/commit/5a38041fe40daa98087753ea9c3a2a4cab2a842e))
+- We know that sort order when iterating over hash-type isn't guaranteed - ([82a22ac](https://github.com/kristof-mattei/axum-proxy/commit/82a22acb0bf4caf05e96785c69f69db94a7f07fa))
+- Allow cargo features selection - ([bb52f2f](https://github.com/kristof-mattei/axum-proxy/commit/bb52f2fe772f0cbed2ae63ebcd109f7b10d08597))
+- FeaTures - ([6372af0](https://github.com/kristof-mattei/axum-proxy/commit/6372af04da9b9ce338e2ec2d12e00f3fedbb2ec5))
+- Missing read permissions in test and report - ([3f8f6a5](https://github.com/kristof-mattei/axum-proxy/commit/3f8f6a51b3ce1be82b2c165f75353c4e9b222ae4))
+- Use the github token to ensure we can download - ([f6ecce7](https://github.com/kristof-mattei/axum-proxy/commit/f6ecce72871eba2bd3d8386da8afc525f803942d))
+- Set full version - ([5535b81](https://github.com/kristof-mattei/axum-proxy/commit/5535b81f32546a474b3efcc5a96158bf47311133))
+- Build multi-platform docker images - ([5342da1](https://github.com/kristof-mattei/axum-proxy/commit/5342da175081a5dd495b3039e06cea73011ee475))
+- Pre-cache - ([e35eb20](https://github.com/kristof-mattei/axum-proxy/commit/e35eb2015728b1f7e1c210e89bacbbc18ff96c2e))
+- Copilot instructions - ([a494929](https://github.com/kristof-mattei/axum-proxy/commit/a4949293d72a56254fd14699807855ee539a787e))
+- Fetch per arch, locked, and explicit import - ([399084a](https://github.com/kristof-mattei/axum-proxy/commit/399084afecc27cbc36fe204c6804d036d4a98834))
+- Src in registry should not be cached - ([5c4d96c](https://github.com/kristof-mattei/axum-proxy/commit/5c4d96cd47b47d95fce5e7bdf614c73ccb193f05))
+- Lock fetch - ([d7ac9da](https://github.com/kristof-mattei/axum-proxy/commit/d7ac9da6eba1e8c34be075a95a107496f24f7181))
+- Bring ARG together - ([cc62162](https://github.com/kristof-mattei/axum-proxy/commit/cc621629fd8c447546f8bb2391bda7cf1ff7e858))
+- Disable cache dependencies for docker build, the downloading of ./target takes up too much space, and we're not building anyway - ([a6b9b6f](https://github.com/kristof-mattei/axum-proxy/commit/a6b9b6fd4afc687635b0c2dd4f2be81c19476344))
+- Shrink what we cache - ([a71972a](https://github.com/kristof-mattei/axum-proxy/commit/a71972a001a23b800efb383affc9bc0c5356da7c))
+- Fmt doesn't need target - ([0d9005c](https://github.com/kristof-mattei/axum-proxy/commit/0d9005c5f324e604141694007df0b24bfc2cff61))
+- Download binstall based on runner arch - ([1307db8](https://github.com/kristof-mattei/axum-proxy/commit/1307db8f053679f68b0ace029d056730980eedda))
+- We lost the pr-<number>-latest tag - ([78eb251](https://github.com/kristof-mattei/axum-proxy/commit/78eb2517abc67f51409de808583dcacf75544dd8))
+- Restore missed raw tag - ([cc2ea20](https://github.com/kristof-mattei/axum-proxy/commit/cc2ea20087e8ec53794c650a0c330b23f69fb589))
+- Separate cache package - ([b14d54a](https://github.com/kristof-mattei/axum-proxy/commit/b14d54ac88e7ff177857235b4d0067b86aa7b202))
+- Use semver version. - ([f7fa495](https://github.com/kristof-mattei/axum-proxy/commit/f7fa495682e4910b99bf39850988cecd6eb6e7c2))
+- Set sha for pnpm - ([eb3e312](https://github.com/kristof-mattei/axum-proxy/commit/eb3e3126b017db2a4482f00cb5097f53cd852a1e))
+- Admin can bypass - ([872a8bf](https://github.com/kristof-mattei/axum-proxy/commit/872a8bf3a220c13f61cfaed5fc72862363e033ce))
 
-- - -
+### ⚙️ Miscellaneous Tasks
 
-## [v0.4.2](https://github.com/kristof-mattei/axum-proxy/compare/165fef6a4d00ff543fe7b87cdc0b0d6663329e5c..v0.4.2) - 2025-04-30
-#### Bug Fixes
-- **(deps)** update rust crate axum to v0.8.4 - ([ac5a297](https://github.com/kristof-mattei/axum-proxy/commit/ac5a297a8e16ad7508f5dbf9cb184dc56a2f1698)) - renovate[bot]
-#### Miscellaneous Chores
-- **(deps)** update returntocorp/semgrep docker tag to v1.120.1 - ([168ce9a](https://github.com/kristof-mattei/axum-proxy/commit/168ce9aa7d95c4ff25c12fe697b1202736ccc80d)) - renovate[bot]
-- **(deps)** lock file maintenance - ([2c57263](https://github.com/kristof-mattei/axum-proxy/commit/2c57263c4657e453989b663d93f4cbd2db0b0cb6)) - renovate[bot]
-- **(deps)** update github/codeql-action action to v3.28.16 - ([ff9b8c4](https://github.com/kristof-mattei/axum-proxy/commit/ff9b8c4c607c4ed5e7f69322ec671d9ef68d979c)) - renovate[bot]
-- **(deps)** update node.js to v22.15.0 - ([1e0bcd4](https://github.com/kristof-mattei/axum-proxy/commit/1e0bcd49cb482b71fb4435877bb0dd20e6c35e18)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.120.0 - ([582a55a](https://github.com/kristof-mattei/axum-proxy/commit/582a55a818a604bbd2144613cb5da6a65b43426b)) - renovate[bot]
-- **(deps)** lock file maintenance - ([de6f9d8](https://github.com/kristof-mattei/axum-proxy/commit/de6f9d8184ef23e7039a874006a76e5ae621c4a2)) - renovate[bot]
-- **(deps)** update softprops/action-gh-release action to v2.2.2 - ([f286af8](https://github.com/kristof-mattei/axum-proxy/commit/f286af81d91b6b8396f224144f101486c9803d68)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.119.0 - ([6652e4f](https://github.com/kristof-mattei/axum-proxy/commit/6652e4ff14e64eef9312c97c565fdf301f37294a)) - renovate[bot]
-- **(deps)** update codecov/codecov-action action to v5.4.2 - ([35f1b82](https://github.com/kristof-mattei/axum-proxy/commit/35f1b82cb4ed5760ecd3ed45b6ba8d4fde2db19c)) - renovate[bot]
-- **(deps)** lock file maintenance - ([68ca037](https://github.com/kristof-mattei/axum-proxy/commit/68ca037e9945733cd31ffdfc5a208f2bbfe73c2a)) - renovate[bot]
-- **(deps)** update actions/setup-node action to v4.4.0 - ([f164bda](https://github.com/kristof-mattei/axum-proxy/commit/f164bdadb3896485c42b65dedf2c669615a0c741)) - renovate[bot]
-- **(deps)** update mcr.microsoft.com/devcontainers/rust:1-1-bullseye docker digest to a87c2e8 - ([840b1c4](https://github.com/kristof-mattei/axum-proxy/commit/840b1c4b5c4bcc6257056d91fbfaa464333596d3)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.118.0 - ([165fef6](https://github.com/kristof-mattei/axum-proxy/commit/165fef6a4d00ff543fe7b87cdc0b0d6663329e5c)) - renovate[bot]
+- Fix strip-components, it caused nothing to be placed - ([b88f13c](https://github.com/kristof-mattei/axum-proxy/commit/b88f13c48b7a68493819786d1c7e3ddf70e81526))
+- Move scripts - ([242ce77](https://github.com/kristof-mattei/axum-proxy/commit/242ce77b6b07062f09cecc116df82720af27fb2f))
+- Fix typo - ([0ac7ffb](https://github.com/kristof-mattei/axum-proxy/commit/0ac7ffb096832c33b15a2369f9a101849c342ffb))
+- Upgrade before installing - ([8887b23](https://github.com/kristof-mattei/axum-proxy/commit/8887b2380320aaf84268ac9f199b6b453b47c893))
+- Fix deprecation warning - ([837157b](https://github.com/kristof-mattei/axum-proxy/commit/837157b57a19dfefa416576f38b7d597030d9d83))
+- Don't prompt to accept commit when no conflicts - ([e0677f8](https://github.com/kristof-mattei/axum-proxy/commit/e0677f83c9c49b189b96f5136b327f722de0e85c))
+- Caching doesn't need the runner's OS - ([f6c6e07](https://github.com/kristof-mattei/axum-proxy/commit/f6c6e07f96ef39a9927b6959976115a69d1a4c88))
+- Disable telemetry, use oidc - ([0b862de](https://github.com/kristof-mattei/axum-proxy/commit/0b862dea6cb59aa90c377cdf2a622c68a4a1e57a))
+- Add coveralls - ([e9fe37b](https://github.com/kristof-mattei/axum-proxy/commit/e9fe37b857938501c790abd7c63eb99633a73b8e))
+- Split command, remove prefix - ([61fb123](https://github.com/kristof-mattei/axum-proxy/commit/61fb1236d3451146507548f0efab8e5a4eb590c5))
+- Testing - ([3de7372](https://github.com/kristof-mattei/axum-proxy/commit/3de73727c81184cd5f2f492d27a6664d4519a314))
+- Cargo binstall defaults to cargo install when not found - ([61cf619](https://github.com/kristof-mattei/axum-proxy/commit/61cf6192a81156d3e81026058d4f4e8c0cdf54b8))
+- Alphabet - ([e6d1bef](https://github.com/kristof-mattei/axum-proxy/commit/e6d1beffdac232a3f25358804bd22539db56cca5))
+- Formatting - ([6fb033f](https://github.com/kristof-mattei/axum-proxy/commit/6fb033fbb4458100673639f29835a6af0496b5a0))
+- Shuffle stuff around - ([cd283f4](https://github.com/kristof-mattei/axum-proxy/commit/cd283f4470b10eb7509b6c4634e20548b4d74f43))
+- Disable multiple_crate_versions, it's just noise - ([c9dee4b](https://github.com/kristof-mattei/axum-proxy/commit/c9dee4bc1e7e8d99750843b3883ed8b327062655))
+- Update comment - ([0ddb54f](https://github.com/kristof-mattei/axum-proxy/commit/0ddb54f6ec28a11d5839f9d47f7cb0732b4b16b7))
+- Cleanup - ([f113c99](https://github.com/kristof-mattei/axum-proxy/commit/f113c99f22a429bf6f743289129a5d0a3ea69f15))
+- Don't push image cargo build/test/... failed - ([bbc21d0](https://github.com/kristof-mattei/axum-proxy/commit/bbc21d076d767fe5fa393f782b7dcc43b63d831d))
+- Fix dockerfile instruction order - ([6013577](https://github.com/kristof-mattei/axum-proxy/commit/6013577f1f0615e0cf8d1c861c5b3bcc0d421df9))
+- Cleanup - ([1135c86](https://github.com/kristof-mattei/axum-proxy/commit/1135c86230b38095743a9cb189064872fcb3a51a))
+- Rust doesn't support manual mode, no need to pre-build - ([e932a61](https://github.com/kristof-mattei/axum-proxy/commit/e932a6182bc42113faf8ff9aecc9a3c551897236))
+- Remove glob from path - ([faf30f8](https://github.com/kristof-mattei/axum-proxy/commit/faf30f8f10ecc0d43c0d07f1fed5883694f5ef2d))
+- Settings update - ([be03d72](https://github.com/kristof-mattei/axum-proxy/commit/be03d72b4def3a601986845cd063edd915e71daa))
+- Enable clone_on_ref_ptr - ([1afa75c](https://github.com/kristof-mattei/axum-proxy/commit/1afa75c15ffd8409cacab55724fbdeb171bef55e))
+- Clean up unused .nvmrc - ([3bb9661](https://github.com/kristof-mattei/axum-proxy/commit/3bb9661946b5a736db181661023abe9ae6f1f204))
+- Cleanup - ([146c27d](https://github.com/kristof-mattei/axum-proxy/commit/146c27dc94d80bb1a3dfc3fa2a3459c3ea29d7cd))
+- Fmt - ([e28e2d9](https://github.com/kristof-mattei/axum-proxy/commit/e28e2d9467de13ed7431bbcd0bed16f960057b69))
+- Also format toml - ([aebaeae](https://github.com/kristof-mattei/axum-proxy/commit/aebaeae7a9cd79ead5a4bd64e7c5f5633bca43a8))
+- Simplify prettierconfig - ([15da060](https://github.com/kristof-mattei/axum-proxy/commit/15da060278add228c90f65f822279a0f93e43ed2))
+- Update readme - ([068d680](https://github.com/kristof-mattei/axum-proxy/commit/068d680ec3759336bc41384e890c9de4f0903c4c))
+- Move deps, disable as_conversions, too broad - ([4a48efe](https://github.com/kristof-mattei/axum-proxy/commit/4a48efeafbb4224b6ef154e50a203e5696263c6d))
+- Don't cache in lint-configs - ([ab37d2f](https://github.com/kristof-mattei/axum-proxy/commit/ab37d2fb61fef6b4a462c1686faa77fbdcccb6f9))
+- Disable codecov, fails too often - ([252a089](https://github.com/kristof-mattei/axum-proxy/commit/252a089765ee5872923b20f2d3b26f8e6b5dc41c))
+- Remove unneeded newline - ([66e19b3](https://github.com/kristof-mattei/axum-proxy/commit/66e19b3bfb7a4371b072ac7c8dc51db797bfa730))
+- More robust downloading of crane - ([c306637](https://github.com/kristof-mattei/axum-proxy/commit/c3066375bd8abf949146bc69e873acd4c4ca99a5))
+- Pass download format to binstall for cocogitto - ([2e173f6](https://github.com/kristof-mattei/axum-proxy/commit/2e173f61f09b1b338bff01edee10e1fed0f63540))
+- Disable oldstyle branch protection - ([a6a851a](https://github.com/kristof-mattei/axum-proxy/commit/a6a851a1f84c80ee58e3294c132601bb4f330892))
+- Delete old-style protection - ([a754f7d](https://github.com/kristof-mattei/axum-proxy/commit/a754f7dce43b3d534a364df25fcec53df3196f96))
+- Use musl all the way - ([828d679](https://github.com/kristof-mattei/axum-proxy/commit/828d67953e2be358e3565197feb91ec127cb2da2))
+- Remove lldb-prettifier built as part of repo, use shared config - ([8a7e110](https://github.com/kristof-mattei/axum-proxy/commit/8a7e110376c9a57b26a0a3ab9540b466394a8290))
+- Fmt - ([3d4e946](https://github.com/kristof-mattei/axum-proxy/commit/3d4e9462ada1800d8c22b210ba56ce28758770ec))
+- Remove submodule folder - ([f6e5d3a](https://github.com/kristof-mattei/axum-proxy/commit/f6e5d3a28c8efe2dcae9575945860a54e710d410))
+- Sort - ([c757c8d](https://github.com/kristof-mattei/axum-proxy/commit/c757c8de56467f6c8f45b8825684605c4435da47))
+- Typo - ([cded012](https://github.com/kristof-mattei/axum-proxy/commit/cded012f14f816d0e1878e4abf0225bbc22b5925))
+- Sort deps, bump version numbers to reflect changes in Cargo.lock - ([ffb30d1](https://github.com/kristof-mattei/axum-proxy/commit/ffb30d122b7ba304a8818df7e18420d62bcc94ee))
+## [1.3.1](https://github.com/kristof-mattei/axum-proxy/compare/v1.3.0..v1.3.1) - 2025-05-21
 
-- - -
+### 🐛 Bug Fixes
 
-## [v0.4.1](https://github.com/kristof-mattei/axum-proxy/compare/b8de394fcd5b3a0feb68bf7776b10b2bde218bb8..v0.4.1) - 2025-04-09
-#### Bug Fixes
-- also test docs - ([b8de394](https://github.com/kristof-mattei/axum-proxy/commit/b8de394fcd5b3a0feb68bf7776b10b2bde218bb8)) - [@kristof-mattei](https://github.com/kristof-mattei)
+- Remove incorrec exit - ([3791382](https://github.com/kristof-mattei/axum-proxy/commit/379138240224b860cf69d1249f93cacc8c847b6e))
 
-- - -
+### ⚙️ Miscellaneous Tasks
 
-## [v0.4.0](https://github.com/kristof-mattei/axum-proxy/compare/f27df3f806bb36e82f6e974aedb9013da50d1c31..v0.4.0) - 2025-04-09
-#### Bug Fixes
-- **(deps)** update rust crate hyper-util to v0.1.11 - ([2ff618f](https://github.com/kristof-mattei/axum-proxy/commit/2ff618f3a3d52852f16f246fb19b43c1b1cff259)) - renovate[bot]
-- **(deps)** update rust crate axum to v0.8.3 - ([13490ba](https://github.com/kristof-mattei/axum-proxy/commit/13490bafb9b7db66566f4363c03a413d648d5512)) - renovate[bot]
-- **(deps)** update rust crate log to v0.4.27 - ([6aff567](https://github.com/kristof-mattei/axum-proxy/commit/6aff56764c5365e69b68d80ce6bf0b77002fb843)) - renovate[bot]
-- **(deps)** update rust crate http to v1.3.1 - ([aa278ce](https://github.com/kristof-mattei/axum-proxy/commit/aa278ce00da24a94a84382e8093a36a14da234af)) - renovate[bot]
-- **(deps)** update rust crate log to v0.4.26 - ([89840ab](https://github.com/kristof-mattei/axum-proxy/commit/89840ab1fa911ef08cbc234951509e2f21d1cb15)) - renovate[bot]
-- revert pin on dev packages, bump 0. packages - ([e8dc406](https://github.com/kristof-mattei/axum-proxy/commit/e8dc4064f8e663393589a321dc1ed58ed236be33)) - [@kristof-mattei](https://github.com/kristof-mattei)
-#### Miscellaneous Chores
-- **(deps)** bump axum - ([a79afe0](https://github.com/kristof-mattei/axum-proxy/commit/a79afe045e81c9b0bcbe07c8f95601395ec03f81)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- **(deps)** update npm to >=11.3.0 - ([e55f0ae](https://github.com/kristof-mattei/axum-proxy/commit/e55f0aeffe5a71a702e1b874251b3fbf146fa0c4)) - renovate[bot]
-- **(deps)** update github/codeql-action action to v3.28.15 - ([d918aba](https://github.com/kristof-mattei/axum-proxy/commit/d918abab47df3696ff2febbb6faa96131086f5ac)) - renovate[bot]
-- **(deps)** update github/codeql-action action to v3.28.14 - ([885eab4](https://github.com/kristof-mattei/axum-proxy/commit/885eab4d3c7e3a2dd5fb78d6c56e6287eb83df08)) - renovate[bot]
-- **(deps)** lock file maintenance - ([767409a](https://github.com/kristof-mattei/axum-proxy/commit/767409a52939a2d32096a6e4085111e59c8dfdea)) - renovate[bot]
-- **(deps)** update rust crate tokio to v1.44.2 - ([54db660](https://github.com/kristof-mattei/axum-proxy/commit/54db660b22f94c93266c00fb330dbb4ca9f6c512)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.117.0 - ([eaa24a6](https://github.com/kristof-mattei/axum-proxy/commit/eaa24a696c1c78fcf62bf1a58c9e15c724715d94)) - renovate[bot]
-- **(deps)** update rui314/setup-mold digest to e16410e - ([1bc9ec0](https://github.com/kristof-mattei/axum-proxy/commit/1bc9ec053b42c2ffdf7b24fc384e26b5b8999a31)) - renovate[bot]
-- **(deps)** update enricomi/publish-unit-test-result-action action to v2.19.0 - ([6c9bd27](https://github.com/kristof-mattei/axum-proxy/commit/6c9bd27fc4576e08e8736059b1afee512c61af1a)) - renovate[bot]
-- **(deps)** lock file maintenance - ([6fdcb2c](https://github.com/kristof-mattei/axum-proxy/commit/6fdcb2c77ab11f2c34f5cf7a3d6ccf1a8039ac26)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.116.0 - ([19d3015](https://github.com/kristof-mattei/axum-proxy/commit/19d3015532655f77ef85097d9f41f17823805261)) - renovate[bot]
-- **(deps)** update github/codeql-action action to v3.28.13 - ([3a3cb5f](https://github.com/kristof-mattei/axum-proxy/commit/3a3cb5f4427f6a32b6b156bde66ecc9e2aa22581)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.114.0 - ([a634045](https://github.com/kristof-mattei/axum-proxy/commit/a63404548bdd8f86398ec29c4e021c66144eee9d)) - renovate[bot]
-- **(deps)** update actions/cache action to v4.2.3 - ([2aecb7d](https://github.com/kristof-mattei/axum-proxy/commit/2aecb7d91930ebc17be10fa10365c1085b23a6d4)) - renovate[bot]
-- **(deps)** update github/codeql-action action to v3.28.12 - ([ed2a3af](https://github.com/kristof-mattei/axum-proxy/commit/ed2a3af079ab89b4c84fa303d72a39c983cd64f7)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.113.0 - ([772ffaf](https://github.com/kristof-mattei/axum-proxy/commit/772ffaf91349a87bc9fc022fcfb54f5dc04ced0a)) - renovate[bot]
-- **(deps)** update mcr.microsoft.com/devcontainers/rust:1-1-bullseye docker digest to e43bb4c - ([07b55cb](https://github.com/kristof-mattei/axum-proxy/commit/07b55cb80c19e67687b1589668ab2d8de1a39dad)) - renovate[bot]
-- **(deps)** lock file maintenance - ([65cdfc1](https://github.com/kristof-mattei/axum-proxy/commit/65cdfc1023728cb3f2157f0e3229b0109d496c94)) - renovate[bot]
-- **(deps)** update actions/setup-node action to v4.3.0 - ([776ef08](https://github.com/kristof-mattei/axum-proxy/commit/776ef081dda3e309165b999d7600ac0b19d5982a)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.112.0 - ([5e2e99e](https://github.com/kristof-mattei/axum-proxy/commit/5e2e99e8c6adcffb2fcc3a441fced855f76ba4dc)) - renovate[bot]
-- **(deps)** update rust crate tokio to v1.44.1 - ([6bcaed6](https://github.com/kristof-mattei/axum-proxy/commit/6bcaed650a30991ebdfe478c3e6e60b71745b5a1)) - renovate[bot]
-- **(deps)** update rust crate http-body-util to v0.1.3 - ([80f5244](https://github.com/kristof-mattei/axum-proxy/commit/80f524491456a53359aa0da1e151ca13a71a4481)) - renovate[bot]
-- **(deps)** update codecov/test-results-action action to v1.1.0 - ([c325388](https://github.com/kristof-mattei/axum-proxy/commit/c325388c0de01f035c96be35e3e958b44c229de9)) - renovate[bot]
-- **(deps)** lock file maintenance - ([091cc2c](https://github.com/kristof-mattei/axum-proxy/commit/091cc2ca6554b60a9491983b2e0453bca92a1d8d)) - renovate[bot]
-- **(deps)** update rust crate tokio to v1.44.0 - ([5a62db5](https://github.com/kristof-mattei/axum-proxy/commit/5a62db543249a981205dfc91d07fa6803d4e7e4a)) - renovate[bot]
-- **(deps)** update github/codeql-action action to v3.28.11 - ([28355aa](https://github.com/kristof-mattei/axum-proxy/commit/28355aaeab8e7be5c9ea2bc7c9b180e1b549e28b)) - renovate[bot]
-- **(deps)** update npm to >=11.2.0 - ([aaaf49e](https://github.com/kristof-mattei/axum-proxy/commit/aaaf49e9e2dd2d6aec6d6fdd4c5ecc2027a34833)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.111.0 - ([76ddd9b](https://github.com/kristof-mattei/axum-proxy/commit/76ddd9b617905b1b538195bb5976643d6b49d163)) - renovate[bot]
-- **(deps)** update rust crate mockito to v1.7.0 - ([3613b8c](https://github.com/kristof-mattei/axum-proxy/commit/3613b8c0cea0c0b05f721ab944146e297e1f92a8)) - renovate[bot]
-- **(deps)** lock file maintenance - ([84f0350](https://github.com/kristof-mattei/axum-proxy/commit/84f0350f90efd1e69371ac0a5e10f3ed7eccaef1)) - renovate[bot]
-- **(deps)** update actions/cache action to v4.2.2 - ([f4385ac](https://github.com/kristof-mattei/axum-proxy/commit/f4385ac1d92bb5679821628bd42e2e9ea4d498d5)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.110.0 - ([48452e4](https://github.com/kristof-mattei/axum-proxy/commit/48452e4e57f85da3382a5ae70445e3dc5a88bf40)) - renovate[bot]
-- **(deps)** update codecov/codecov-action action to v5.4.0 - ([5845594](https://github.com/kristof-mattei/axum-proxy/commit/58455943239dbc6ba5ac6dcb6c14dc1622112c81)) - renovate[bot]
-- **(deps)** lock file maintenance - ([76ee338](https://github.com/kristof-mattei/axum-proxy/commit/76ee33803d7474b64b29c59629e336c7438d50e3)) - renovate[bot]
-- **(deps)** update github/codeql-action action to v3.28.10 - ([d396998](https://github.com/kristof-mattei/axum-proxy/commit/d396998771c90ecdc3c1f0ce8112e72a3aecdd27)) - renovate[bot]
-- **(deps)** update actions-rs-plus/clippy-check action to v2.2.1 - ([570ccfb](https://github.com/kristof-mattei/axum-proxy/commit/570ccfb83abe889139761ba2fe1d998dba290ad6)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.109.0 - ([f7e6a8f](https://github.com/kristof-mattei/axum-proxy/commit/f7e6a8fe92b647598f66fc0e7989f51ef78daae0)) - renovate[bot]
-- **(deps)** update codecov/test-results-action action to v1.0.4 - ([7832648](https://github.com/kristof-mattei/axum-proxy/commit/7832648834ab83dfb884bc5394129ab75ffa9278)) - renovate[bot]
-- **(deps)** update actions/cache action to v4.2.1 - ([5469f6f](https://github.com/kristof-mattei/axum-proxy/commit/5469f6f894f1edd152e3edb34de73ca086ecb39b)) - renovate[bot]
-- **(deps)** lock file maintenance - ([dbbce43](https://github.com/kristof-mattei/axum-proxy/commit/dbbce434c395a4fb2986c8f9e9c1c0be935338e3)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.108.0 - ([1b04ceb](https://github.com/kristof-mattei/axum-proxy/commit/1b04ceb0781a77c95b04b82a4eb350f8f156acbb)) - renovate[bot]
-- **(deps)** update node.js to v22.14.0 - ([680c7c8](https://github.com/kristof-mattei/axum-proxy/commit/680c7c847ce51edbbe5d6706cf66f64f50ba8468)) - renovate[bot]
-- **(deps)** update dependency prettier to v3.5.0 - ([ceeba65](https://github.com/kristof-mattei/axum-proxy/commit/ceeba6584cc3552dd3be790859d032387b4a2bfa)) - renovate[bot]
-- **(deps)** update rust crate http-body-util to v0.1.2 - ([859bc63](https://github.com/kristof-mattei/axum-proxy/commit/859bc63dfb7b336d4d2d6fbd08af615f235084c4)) - renovate[bot]
-- **(deps)** pin dependencies - ([bfd4cac](https://github.com/kristof-mattei/axum-proxy/commit/bfd4cac0fc8e60ba94da002e9a2a9c23e6945a40)) - renovate[bot]
-- **(deps)** update github/codeql-action action to v3.28.9 - ([f261717](https://github.com/kristof-mattei/axum-proxy/commit/f26171782df84ac74b62c077da8260b5589d11f9)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.107.0 - ([44e98aa](https://github.com/kristof-mattei/axum-proxy/commit/44e98aa82ee5558675fd4a4a40f82c1012748537)) - renovate[bot]
-- **(deps)** update codecov/test-results-action action to v1.0.3 - ([9be65ab](https://github.com/kristof-mattei/axum-proxy/commit/9be65ab89bc6c991ab84a025d6881ffaffc7855b)) - renovate[bot]
-- **(deps)** update github/codeql-action action to v3.28.8 - ([930d99b](https://github.com/kristof-mattei/axum-proxy/commit/930d99bc0eac578759d07b9d858f84a600644061)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.106.0 - ([4c0ea22](https://github.com/kristof-mattei/axum-proxy/commit/4c0ea22d7d68e7d78d431c87acb109da4a01ba1f)) - renovate[bot]
-- **(deps)** update npm to >=11.1.0 - ([2d0131f](https://github.com/kristof-mattei/axum-proxy/commit/2d0131f7daed797aeccd01af4a1fc6bb454259dc)) - renovate[bot]
-- **(deps)** update github/codeql-action action to v3.28.6 - ([d05d9c5](https://github.com/kristof-mattei/axum-proxy/commit/d05d9c5e895aa39b9ce189a73da6eb510c3cfc83)) - renovate[bot]
-- **(deps)** update actions/setup-node action to v4.2.0 - ([7b6de2f](https://github.com/kristof-mattei/axum-proxy/commit/7b6de2f75f88d3fbc7b282f4462cd71d69df5fa6)) - renovate[bot]
-- **(deps)** update github/codeql-action action to v3.28.5 - ([15c7a45](https://github.com/kristof-mattei/axum-proxy/commit/15c7a450847c816bb84e509c476d0439c23c30e0)) - renovate[bot]
-- **(deps)** update codecov/codecov-action action to v5.3.1 - ([a11f96f](https://github.com/kristof-mattei/axum-proxy/commit/a11f96f842a356a5b5e22d273fc1767049f060a5)) - renovate[bot]
-- **(deps)** update codecov/codecov-action action to v5.3.0 - ([746fa6e](https://github.com/kristof-mattei/axum-proxy/commit/746fa6eeaf77fb7d4593d3f65ea5917c8583c848)) - renovate[bot]
-- **(deps)** update github/codeql-action action to v3.28.4 - ([4a8ae86](https://github.com/kristof-mattei/axum-proxy/commit/4a8ae86f0562aeec32c6942d4d0591b466dd5a14)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.104.0 - ([fbcc16c](https://github.com/kristof-mattei/axum-proxy/commit/fbcc16c60dfc5f443f4e594fd468bb8e741c85fc)) - renovate[bot]
-- **(deps)** update github/codeql-action action to v3.28.3 - ([03007c4](https://github.com/kristof-mattei/axum-proxy/commit/03007c48126932ad9d8b11abbf2680b98cc97a0c)) - renovate[bot]
-- **(deps)** update codecov/codecov-action action to v5.2.0 - ([5b6b46f](https://github.com/kristof-mattei/axum-proxy/commit/5b6b46f22b7f06e3c270e9e8059912ef2e428c98)) - renovate[bot]
-- **(deps)** update github/codeql-action action to v3.28.2 - ([211d806](https://github.com/kristof-mattei/axum-proxy/commit/211d806c7116c461f234f6840fab09f3d4590218)) - renovate[bot]
-- **(deps)** update node.js to v22.13.1 - ([3fae01a](https://github.com/kristof-mattei/axum-proxy/commit/3fae01a461fb239a8005c3d50600a1da0408b112)) - renovate[bot]
-- **(deps)** lock file maintenance - ([b1d4c27](https://github.com/kristof-mattei/axum-proxy/commit/b1d4c275b895629dc9adbe75ea2608e163f222d6)) - renovate[bot]
-- **(deps)** update rui314/setup-mold digest to f80524c - ([56d0e85](https://github.com/kristof-mattei/axum-proxy/commit/56d0e85716fb08bebad0dc91b1055259691d7511)) - renovate[bot]
-- **(deps)** update dependency @actions/tool-cache to v2.0.2 - ([87f8f94](https://github.com/kristof-mattei/axum-proxy/commit/87f8f94b08b8b148050dac02507ad365934b7fd1)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.103.0 - ([ae2838d](https://github.com/kristof-mattei/axum-proxy/commit/ae2838db2e916e3d6d28fbb07b4fa8cec8d69997)) - renovate[bot]
-- **(deps)** update github/codeql-action action to v3.28.1 - ([32cccde](https://github.com/kristof-mattei/axum-proxy/commit/32cccde63bc8f93a43d0aa3fd8f023a8532ccd88)) - renovate[bot]
-- **(deps)** update returntocorp/semgrep docker tag to v1.102.0 - ([404f669](https://github.com/kristof-mattei/axum-proxy/commit/404f6690ca78a20e7ae7d009cc9f7d3327c5bf05)) - renovate[bot]
-- **(deps)** update node.js to v22.13.0 - ([418f0ad](https://github.com/kristof-mattei/axum-proxy/commit/418f0adfae28c3cedc2a13ca1a9ba92a0a9baf40)) - renovate[bot]
-- **(deps)** update softprops/action-gh-release action to v2.2.1 - ([4a296eb](https://github.com/kristof-mattei/axum-proxy/commit/4a296eb98c4e32965fb8b36b625afba28b498f1c)) - renovate[bot]
-- **(deps)** update codecov/test-results-action action to v1.0.2 - ([11740a2](https://github.com/kristof-mattei/axum-proxy/commit/11740a28082166ead27d1a3a5f7deefeb29b08bc)) - renovate[bot]
-- housekeeping - ([5e12ee2](https://github.com/kristof-mattei/axum-proxy/commit/5e12ee2d3de765fbaab4a97a0149dde689e7a51e)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- update build patterns - ([f188d03](https://github.com/kristof-mattei/axum-proxy/commit/f188d03b73fefe70e76e6661fda25f133f826b29)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- widen tokio for dev-deps - ([398c43b](https://github.com/kristof-mattei/axum-proxy/commit/398c43bd7271e952868e0e2464bb296645969dfb)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- set name - ([a13b01f](https://github.com/kristof-mattei/axum-proxy/commit/a13b01ff6550cb48a732dc7a55baac0466c337d9)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- formatting - ([052b77c](https://github.com/kristof-mattei/axum-proxy/commit/052b77c79e796773305849bb62fc8d7a11f27a6c)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- rename package - ([8d21ea4](https://github.com/kristof-mattei/axum-proxy/commit/8d21ea4caac35324069ad0f7295e6199e3a6ad1c)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- ignore generated changelog - ([f27df3f](https://github.com/kristof-mattei/axum-proxy/commit/f27df3f806bb36e82f6e974aedb9013da50d1c31)) - [@kristof-mattei](https://github.com/kristof-mattei)
+- *(version)* V1.3.1 - ([096c422](https://github.com/kristof-mattei/axum-proxy/commit/096c4229799cecace867a1de699a7f65eefe59bb))
+## [1.3.0](https://github.com/kristof-mattei/axum-proxy/compare/v1.2.0..v1.3.0) - 2025-05-21
 
-- - -
+### 🚀 Features
 
-## [v0.3.0](https://github.com/kristof-mattei/axum-proxy/compare/47778bcae2d2f6c8a44e7cb1fdb9c279adb135d9..v0.3.0) - 2025-01-04
-#### Bug Fixes
-- enable renovate - ([dad87c0](https://github.com/kristof-mattei/axum-proxy/commit/dad87c0b813eb4bbc95fa00dbd358caf71f50c13)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- make all tests work with axum 8 (and probably other issues) - ([55fe06c](https://github.com/kristof-mattei/axum-proxy/commit/55fe06cbc5219b04dba44c4b0561e64abb855247)) - [@kristof-mattei](https://github.com/kristof-mattei)
-#### Features
-- my automation flow - ([ecb1839](https://github.com/kristof-mattei/axum-proxy/commit/ecb1839542aa358b22dcc031f165e7ef358d85ae)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- fork - ([2200e40](https://github.com/kristof-mattei/axum-proxy/commit/2200e40b96452dd266b4a01d727a1c0bfe56184b)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- move to hyper >1.0.0 and matching axum versionthis replaces the functionality removed in hyper 1.0.0 by thehyper_util and http_body_util crates. - ([0bcf642](https://github.com/kristof-mattei/axum-proxy/commit/0bcf642f85df871fc24bb9eb4dc3e8cf24162d08)) - manorom
-- add rustls supports - ([e12d5d5](https://github.com/kristof-mattei/axum-proxy/commit/e12d5d5c04b2f889c4a6438c7bb9884c8f214790)) - Masato Nakata
-#### Miscellaneous Chores
-- add nextest profile & devcontainer - ([fb7a152](https://github.com/kristof-mattei/axum-proxy/commit/fb7a15280bc8870c32ab43d2b639727ad5bad077)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- ensure folders are present - ([2f5ced0](https://github.com/kristof-mattei/axum-proxy/commit/2f5ced0ab2d5cf71a560744362fe0672df7a3d0b)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- fmt - ([dfa4d84](https://github.com/kristof-mattei/axum-proxy/commit/dfa4d841ac7e53fd18db5ccc9f68c92a24f240c9)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- address clippy's suggestions - ([bc7da05](https://github.com/kristof-mattei/axum-proxy/commit/bc7da05d6f86730da5862df2913371adfb1369e1)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- fix merge mess - ([84cc6f3](https://github.com/kristof-mattei/axum-proxy/commit/84cc6f31043fc386cf359a830f7430d513876fa8)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- bump axum - ([500d445](https://github.com/kristof-mattei/axum-proxy/commit/500d44523f5681ec40d9f7087939e417e1aab5ec)) - [@kristof-mattei](https://github.com/kristof-mattei)
-- version v0.2.1 - ([b310726](https://github.com/kristof-mattei/axum-proxy/commit/b31072661b4566746b32e71447eec36b4572c4f9)) - Masato Nakata
-- update reused.rs - ([5eecc00](https://github.com/kristof-mattei/axum-proxy/commit/5eecc00a6c6d199627d6f2fb1710116e7886ed20)) - Rich Siomporas
-- version v0.2.0 - ([649eeea](https://github.com/kristof-mattei/axum-proxy/commit/649eeeac0dd7cd10abe7f12a31e62249483354fd)) - Masato Nakata
-- upgrade the dependency on regex - ([25fa844](https://github.com/kristof-mattei/axum-proxy/commit/25fa844cb20b56891d7f65bf4032270638106082)) - Masato Nakata
-- add attr into docs to indicate features - ([eb78cc0](https://github.com/kristof-mattei/axum-proxy/commit/eb78cc07da519387f4fbe4ee6d737da7075ca7fe)) - Masato Nakata
-- version v0.1.1 - ([73abdb0](https://github.com/kristof-mattei/axum-proxy/commit/73abdb0965a7cb3d4f82dc95f43935734e0291db)) - Masato Nakata
-- fix the link to docs.rs in readme - ([3711dfd](https://github.com/kristof-mattei/axum-proxy/commit/3711dfd0b897721e8bfeb33299e08e116353d794)) - Masato Nakata
-- initial commit - ([47778bc](https://github.com/kristof-mattei/axum-proxy/commit/47778bcae2d2f6c8a44e7cb1fdb9c279adb135d9)) - Masato Nakata
+- Add cross building - ([46dedc2](https://github.com/kristof-mattei/axum-proxy/commit/46dedc27e9c8fc8af3110a95ac803c08f6a82aa8))
 
-- - -
+### 🐛 Bug Fixes
 
+- Start tracking lldb debug helper - ([b662ffa](https://github.com/kristof-mattei/axum-proxy/commit/b662ffa8c38b08c5f3d276e6e58646013a051efd))
+- Disable clippy 1.87.0 let_and_return - ([9246d86](https://github.com/kristof-mattei/axum-proxy/commit/9246d861995c87085c04618a8619320afdbd771d))
+- Add runner.arch to the cache keys - ([64b63e2](https://github.com/kristof-mattei/axum-proxy/commit/64b63e2f99501f0208e54f3d1d35e19990751cec))
+- Set correct cache key for the docker step - ([bb875b8](https://github.com/kristof-mattei/axum-proxy/commit/bb875b8d038162d657082014a7070edb573cae92))
+- Don't install binstall, cargo-edit doesn't have a package anyway - ([377a21e](https://github.com/kristof-mattei/axum-proxy/commit/377a21ec73fd822d22099945fb196dcb89b75cc4))
 
-OLD
+### ⚙️ Miscellaneous Tasks
+
+- *(version)* V1.3.0 - ([bee1b83](https://github.com/kristof-mattei/axum-proxy/commit/bee1b83e6cfe1afd6286073fc1bb38787c0ba48e))
+- Ignore generated changelog - ([9084f3f](https://github.com/kristof-mattei/axum-proxy/commit/9084f3fe60d2794d98ca6fff47428c169a8f3f80))
+- Clippy 1.86 fixes - ([1ba9e82](https://github.com/kristof-mattei/axum-proxy/commit/1ba9e82c8de2d8fd2ba93018639ec3683e95c9e6))
+- Disable required signatures - ([445e425](https://github.com/kristof-mattei/axum-proxy/commit/445e4253a7dcbe8fac577cdcaff328466590abe1))
+- Set default debug visualizer - ([6941793](https://github.com/kristof-mattei/axum-proxy/commit/69417931ad3e2506dbee9732bef5b1ef9649c885))
+- Update debug setup - ([59756b7](https://github.com/kristof-mattei/axum-proxy/commit/59756b712762276d2032290b7d24f3a9e900d059))
+- Change wording - ([34fb4cf](https://github.com/kristof-mattei/axum-proxy/commit/34fb4cf3eda6724b074e3ce877a733dfaf8780cf))
+- Formatting - ([f3dde64](https://github.com/kristof-mattei/axum-proxy/commit/f3dde6447ec7fc4eadd646da761b872e21fdd6a2))
+- I686 is 32-bit, we need 64-bit - ([e57dbf8](https://github.com/kristof-mattei/axum-proxy/commit/e57dbf819b37fe82bab231af7c693a8bb32cc04c))
+- Remove need for build & targetplatform in scripts - ([13b8275](https://github.com/kristof-mattei/axum-proxy/commit/13b827509a357046309726f116cdfb611753d266))
+- More precise coverage, don't include test/** - ([83002c7](https://github.com/kristof-mattei/axum-proxy/commit/83002c72807cf5ffe0b77fcc16f7353eeefe46fe))
+- Make wget more robust - ([a7e1e60](https://github.com/kristof-mattei/axum-proxy/commit/a7e1e60645a975d9787f1681273af3b8b22326fc))
+- Remove customization, packages now work oob with binstall - ([c85dd07](https://github.com/kristof-mattei/axum-proxy/commit/c85dd0741ff01084504eb2d18c53efcb57a5f37b))
+- Convention: bash variable names are lowercase - ([dc27ba1](https://github.com/kristof-mattei/axum-proxy/commit/dc27ba1dc0d30acc3765a6369749891823bf5a70))
+- Consolidation of scripts - ([0a075f6](https://github.com/kristof-mattei/axum-proxy/commit/0a075f6204c8e468fa8027314dc89ed552b5d839))
+- Move away from env, use output - ([a6a7b2c](https://github.com/kristof-mattei/axum-proxy/commit/a6a7b2c240dfc8f005740d3b15b9a1e5473f7a4d))
+- Even more variables - ([64866e5](https://github.com/kristof-mattei/axum-proxy/commit/64866e5bc5547d3b4ef13329f07708f59a0c1c6b))
+- Fix output - ([39aecb7](https://github.com/kristof-mattei/axum-proxy/commit/39aecb7f88547541cb73a0daea054cba7bafc37f))
+- Group variables in single step - ([793b007](https://github.com/kristof-mattei/axum-proxy/commit/793b0079596c261547767c8e939b31d12345e336))
+- Set revision explicitely - ([1ca21b9](https://github.com/kristof-mattei/axum-proxy/commit/1ca21b9c350223869f42f51e85cf6311b2ca7307))
+## [1.2.0](https://github.com/kristof-mattei/axum-proxy/compare/v1.1.0..v1.2.0) - 2025-03-14
+
+### 🚀 Features
+
+- Multi-platform images - ([45196bd](https://github.com/kristof-mattei/axum-proxy/commit/45196bd6bd8801472a6db0b76278fbeaa54c1ca1))
+- Codecov - ([fac48b6](https://github.com/kristof-mattei/axum-proxy/commit/fac48b684db19cf74aae4afbf77783a9d31cacc2))
+- Docker multiplatform - ([c1f9221](https://github.com/kristof-mattei/axum-proxy/commit/c1f922116dd2e78d149247667a514f3bb4724aa1))
+- Support for releasing crates - ([6da4854](https://github.com/kristof-mattei/axum-proxy/commit/6da485494a7d16767c01b0255eae49fff6cb6dcf))
+- Get rid of semantic release, use cocogitto - ([a4b5e8c](https://github.com/kristof-mattei/axum-proxy/commit/a4b5e8cf58786d438cccee5678dcad0bc1fdcdb2))
+
+### 🐛 Bug Fixes
+
+- *(deps)* Update rust crate color-eyre to 0.6.3 - ([baf1dc7](https://github.com/kristof-mattei/axum-proxy/commit/baf1dc7b4352679914415662a2b16ec8f036d409))
+- Don't set shell, not needed in semgrep container - ([de4ab4c](https://github.com/kristof-mattei/axum-proxy/commit/de4ab4c42e490e7e5a5ce2a6af342659f9ef3a49))
+- Separate scan and fixup, as the scan container doesn't have bash / jq anymore - ([4e59581](https://github.com/kristof-mattei/axum-proxy/commit/4e595812651951b3e762d8abe0ef7dac61ff6156))
+- Only upload sarif file itself - ([0629d45](https://github.com/kristof-mattei/axum-proxy/commit/0629d45d07730960d087feed26c941ee1d7fa0a6))
+- Set unpack folder, not filepath - ([3612966](https://github.com/kristof-mattei/axum-proxy/commit/36129662df205055eedb8fd73e62a4dbeb08e323))
+- Platform name - ([d8cf974](https://github.com/kristof-mattei/axum-proxy/commit/d8cf9747ae7b1c14fa7f70b1f7f612d342d1e31a))
+- Filepaths were wrong - ([6d1f131](https://github.com/kristof-mattei/axum-proxy/commit/6d1f131d50f29b4e9f58a3ab29cc83da7dd3c0e2))
+- Use artifact v4 settings - ([d8c091d](https://github.com/kristof-mattei/axum-proxy/commit/d8c091de62781eac1789ad4a11889e3fa4559414))
+- Correctly build musl - ([c712945](https://github.com/kristof-mattei/axum-proxy/commit/c7129451d3a7618b0304bcf78471f5fd14811bf2))
+- Try something else - ([0efe974](https://github.com/kristof-mattei/axum-proxy/commit/0efe9741d77cf9f7ca93f38255aa91e7dcf670af))
+- Report tests to codecov for tracking - ([cc1ccdd](https://github.com/kristof-mattei/axum-proxy/commit/cc1ccdd729170ab4f8fddc1660911caf587fc3ad))
+- Prettier 3.41.0 - ([64aa76c](https://github.com/kristof-mattei/axum-proxy/commit/64aa76cc522d7ee28a38bfffee53dc789abe4c12))
+- Restore needed workflows - ([72180e8](https://github.com/kristof-mattei/axum-proxy/commit/72180e8239e1a85a892f7713d8986bb9ad34f55c))
+- Build container from scratch - ([250217a](https://github.com/kristof-mattei/axum-proxy/commit/250217a80fa10d152f21f31c6031ce45039b32ce))
+- Remove @actions/tool-cache - ([3889143](https://github.com/kristof-mattei/axum-proxy/commit/3889143b5e053e5d63835407138decb395314a13))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(version)* V1.2.0 - ([1dbbec6](https://github.com/kristof-mattei/axum-proxy/commit/1dbbec608864c5cb559a90d8904996011daef52c))
+- No trailing commas in json - ([a7b01be](https://github.com/kristof-mattei/axum-proxy/commit/a7b01be89742c69a3a671fba6f674d7895cec524))
+- Use internal console, not the terminal for debugging - ([33e467c](https://github.com/kristof-mattei/axum-proxy/commit/33e467c0afbef21f88e46190f86ad01431cb41aa))
+- Fix startColumn/endColumn being 0. Is invalid. Normalize json file for diffing, ignore output. Diff is expected - ([d37020f](https://github.com/kristof-mattei/axum-proxy/commit/d37020fdd19bd9f2d7348fd7b9553dd0921afa6f))
+- Explicitely set prettierrc's path - ([3787f7f](https://github.com/kristof-mattei/axum-proxy/commit/3787f7f1842f1b72aad3ad93a86af660c438f138))
+- Align title - ([0a560bf](https://github.com/kristof-mattei/axum-proxy/commit/0a560bf62205abac716b75abe3a54d1776fbca81))
+- Checkout to satisfy the codeql tool - ([d6f858a](https://github.com/kristof-mattei/axum-proxy/commit/d6f858a3a1f026bb0c219e0dfdc199f3b3676af6))
+- Rename semgrep job to make it register with semgrep - ([9720764](https://github.com/kristof-mattei/axum-proxy/commit/9720764f82f17f202c8886bd638cf0faa36c4897))
+- Use semgrep action, not container - ([738b8de](https://github.com/kristof-mattei/axum-proxy/commit/738b8deb1606266e1106577b3f61231efe5b2d4c))
+- Back to container, the action is outdated - ([dc2bd52](https://github.com/kristof-mattei/axum-proxy/commit/dc2bd5258b484556d1600145067aa2a1fdb20d56))
+- Add category - ([df3df77](https://github.com/kristof-mattei/axum-proxy/commit/df3df77ba61c070a904f3d2f721cb245a0ac6ad9))
+- Semgrep 1 job - ([5c6c2ee](https://github.com/kristof-mattei/axum-proxy/commit/5c6c2ee8527a899ec058e6194fea015c957e23a9))
+- Fix filename - ([3802280](https://github.com/kristof-mattei/axum-proxy/commit/3802280c2239d9a4174a315ccd172cfe8fc7f181))
+- Allow warnings in test - ([83d3bb2](https://github.com/kristof-mattei/axum-proxy/commit/83d3bb205342485cf9f3ff8f87c20cd1a9df616e))
+- Allow warnings in test - ([e49075f](https://github.com/kristof-mattei/axum-proxy/commit/e49075f2c6d6ab5b98e0d81304a2a6acad966c8a))
+- Set checks with new API - ([8361952](https://github.com/kristof-mattei/axum-proxy/commit/83619524f171939a235a921255eea4f52c4e9e07))
+- Fix ] typo - ([3648333](https://github.com/kristof-mattei/axum-proxy/commit/3648333faa3377507bef44aa89fdbc06882293d3))
+- Try codecov - ([e1dd293](https://github.com/kristof-mattei/axum-proxy/commit/e1dd29358d55d597f95fa4053b76a7a99b1154f7))
+- Support for ARM64 - ([8658748](https://github.com/kristof-mattei/axum-proxy/commit/865874837be48194e825e92178951bdd7859d744))
+- Try OCI - ([d40e4f7](https://github.com/kristof-mattei/axum-proxy/commit/d40e4f7901c299a5429579c484e5fbc3c24716dc))
+- Build with matrix - ([87566ad](https://github.com/kristof-mattei/axum-proxy/commit/87566adcc016b050b52b7749ce47183f7d78e791))
+- Also add rust target to name - ([fa11cb5](https://github.com/kristof-mattei/axum-proxy/commit/fa11cb5b76646809cd5de6451a07818bec922b93))
+- Correct params - ([3b4513c](https://github.com/kristof-mattei/axum-proxy/commit/3b4513c6dfd7d46a21b41594173de731f9139ece))
+- Debugging - ([89153e2](https://github.com/kristof-mattei/axum-proxy/commit/89153e203b481aa34552ffdb093e608138b5bc10))
+- Export docker - ([5cff099](https://github.com/kristof-mattei/axum-proxy/commit/5cff0993fca0e1a278b63e91059474efe6853486))
+- Prettier - ([abe1135](https://github.com/kristof-mattei/axum-proxy/commit/abe113575b1383bb35be5849d65ced7b7bf7b240))
+- Linker for aarch64 - ([112a197](https://github.com/kristof-mattei/axum-proxy/commit/112a19734f542c4ce61a93e1e1d365dbc4b0619d))
+- Copy in linker into docker container - ([57ff932](https://github.com/kristof-mattei/axum-proxy/commit/57ff9320ee1aa210641ea66041351a3d308cd9a0))
+- Arm64 - ([9510d6d](https://github.com/kristof-mattei/axum-proxy/commit/9510d6d00bbb8b67a8317f3e452fc5fda93b0036))
+- Minor build changes, formatting - ([8b1e9f8](https://github.com/kristof-mattei/axum-proxy/commit/8b1e9f8aa2e6a37c268dd7587d0912d251afdea4))
+- Fix typo - ([3a3e968](https://github.com/kristof-mattei/axum-proxy/commit/3a3e96855b5eadc81a2d0704a1c4de6569d721a5))
+- Also rebuild when .nvmrc changes - ([6155455](https://github.com/kristof-mattei/axum-proxy/commit/61554551d015d07fb230e09d8d5e33da2cfd1e54))
+- Always run reporting, even when no changes as reports are mandatory - ([c86f535](https://github.com/kristof-mattei/axum-proxy/commit/c86f5353d6813262e0bf327dbe2db641f87d363c))
+- Disable codecov running plugins, disable codecov searching - ([c946f90](https://github.com/kristof-mattei/axum-proxy/commit/c946f90a1a119f7f97f1e2830c2c55eef3050c6a))
+- Add linebreaks in the if statements, otherwise the vscode parser gets upset - ([79ecc87](https://github.com/kristof-mattei/axum-proxy/commit/79ecc8745e7629e60c75b1990aae2850543eb4d0))
+- Remove unneeded id - ([81b3536](https://github.com/kristof-mattei/axum-proxy/commit/81b35367789ed5722e391766ed52dd73b02ac259))
+- Change name - ([7bcbcb6](https://github.com/kristof-mattei/axum-proxy/commit/7bcbcb6b9a667327f8b239b4f49743efc6e55130))
+- Separate the name so the rename script doesn't update it - ([db3de07](https://github.com/kristof-mattei/axum-proxy/commit/db3de077fe7c68dfd00b94332eb776c889abc19b))
+- Enforce_admins should be null if you want to disable it... - ([97a3c84](https://github.com/kristof-mattei/axum-proxy/commit/97a3c846ebfaa2489bb7af87f4149ec7b9276efc))
+- Syntax consistency, as -> AS - ([ba8d334](https://github.com/kristof-mattei/axum-proxy/commit/ba8d3344466d98c4ddd2260291cecbe946c7c9ec))
+- Formatting - ([773e45a](https://github.com/kristof-mattei/axum-proxy/commit/773e45a7839624fef2056ed1e7f4e37339860f23))
+- Remove unneeded .ci - ([3be9c19](https://github.com/kristof-mattei/axum-proxy/commit/3be9c19e347578b89a0c2e9b3448e5df3e9aeaee))
+- Formatting - ([978f4b2](https://github.com/kristof-mattei/axum-proxy/commit/978f4b2a669b1d2f6ab3d9e7d738ab2b87516be4))
+- Enable more lints - ([4cb6bb7](https://github.com/kristof-mattei/axum-proxy/commit/4cb6bb7967f130408917be3a75e19421c5fedb86))
+- Ensure we have oras - ([adb17dd](https://github.com/kristof-mattei/axum-proxy/commit/adb17dd3071a0f100b7f9b25d5ee79b2af0594da))
+- Fix title - ([1ecfb70](https://github.com/kristof-mattei/axum-proxy/commit/1ecfb70f8778f65098b117403bbc1574a2f6a017))
+- Install cargo-binstall from updated url - ([8172e7f](https://github.com/kristof-mattei/axum-proxy/commit/8172e7fe5a8996eb4b499ccd4ee443f7e5ee2cca))
+- Rust 1.85.0 - ([d876c00](https://github.com/kristof-mattei/axum-proxy/commit/d876c00796252ef81adf85ea6ae8fc25b9d5e0d8))
+- Format dockerfile - ([edb1f30](https://github.com/kristof-mattei/axum-proxy/commit/edb1f309e3326acbad14b3b83aea65b53e12e506))
+- Fmt also 1.85.0 - ([c9488e3](https://github.com/kristof-mattei/axum-proxy/commit/c9488e384c6ac0816b2a02574f18e0e54eff3b12))
+- Remove oras - ([8eceae9](https://github.com/kristof-mattei/axum-proxy/commit/8eceae99297f4f5900549ef08f6105df530069cb))
+- Forgot `push` - ([6842ab4](https://github.com/kristof-mattei/axum-proxy/commit/6842ab4e26a3417520d3334da6fd542d1d240871))
+- Push by tag, not filepath... - ([cb03a00](https://github.com/kristof-mattei/axum-proxy/commit/cb03a00f208e2e3116f048bc6dcd42615933d90d))
+- Add logging, try remove unneeded (?) buildx - ([baafce6](https://github.com/kristof-mattei/axum-proxy/commit/baafce66428bb303013f3dbc2760556cbbeca150))
+- Add template clippy.toml - ([307cbdb](https://github.com/kristof-mattei/axum-proxy/commit/307cbdb563c89194cf50119410509e4f4030659b))
+- Fix for rustup 1.28.0 not installing needed toolchain by default - ([9f283b7](https://github.com/kristof-mattei/axum-proxy/commit/9f283b736f6e0f03ac8c2afaa2fda5cbbb86896d))
+- Install rust-fmt - ([234465e](https://github.com/kristof-mattei/axum-proxy/commit/234465e358cc52c0fead88af8f2116bac0f632b7))
+- Use working-directory - ([e7e90d5](https://github.com/kristof-mattei/axum-proxy/commit/e7e90d51a297e56a3fabc95ee2ade32c4150bb57))
+- Set working-directory - ([f657766](https://github.com/kristof-mattei/axum-proxy/commit/f657766fd5b75716fa316bd1ad90c5d7c32e975b))
+- Ensure we restore symlinks - ([ceede20](https://github.com/kristof-mattei/axum-proxy/commit/ceede20c91e783b56d32c109e7e989834ea38cfe))
+- Remove incorrect comment - ([82a8d6d](https://github.com/kristof-mattei/axum-proxy/commit/82a8d6d47279919c074137571d5901367e9826d3))
+## [1.1.0](https://github.com/kristof-mattei/axum-proxy/compare/v0.1.0..v1.1.0) - 2024-01-13
+
+### 🚀 Features
+
+- Allowed for concurrent building of docker container - ([7a99b3b](https://github.com/kristof-mattei/axum-proxy/commit/7a99b3b303846cb1a98e80f54f5950faee7fc28a))
+- Grcov -> tarpaulin - ([a37fa30](https://github.com/kristof-mattei/axum-proxy/commit/a37fa307247860f4071f31a569506b1bc8544045))
+- Use cog - ([146fdca](https://github.com/kristof-mattei/axum-proxy/commit/146fdca905e0a1d268eb9750934e3204803be68b))
+- Use shell - ([2a266e9](https://github.com/kristof-mattei/axum-proxy/commit/2a266e93167b8a39c482a8a615e12ecd5ddc4c21))
+- Rust 1.58.0 - ([3ac03e8](https://github.com/kristof-mattei/axum-proxy/commit/3ac03e829ae931369967728de3326294446a53e5))
+- Rust 1.60.0 - ([0180532](https://github.com/kristof-mattei/axum-proxy/commit/0180532b1e432662ccb7908ebc98d39ad501a227))
+- Rust 1.61.0 - ([c130478](https://github.com/kristof-mattei/axum-proxy/commit/c130478ad91eaf6b1cea04a2cfe57f6e926efa92))
+- Upgrade semgrep to latest version - ([c7dc4f5](https://github.com/kristof-mattei/axum-proxy/commit/c7dc4f5bf96c15784a6b6b5c7ff260a15f244dcd))
+- Devcontainer - ([1d77ed5](https://github.com/kristof-mattei/axum-proxy/commit/1d77ed59fbf4915e3b1393867d56ec36a22f9b42))
+- More rust 1.62 - ([628756b](https://github.com/kristof-mattei/axum-proxy/commit/628756bf8790f9ffe84ac5cb3ff37baac70c7fcc))
+- Sync-repo-settings first pass - ([0d88baa](https://github.com/kristof-mattei/axum-proxy/commit/0d88baa34a3d7b167028941aafdf32e5c464b9c2))
+- Generalize dockerfile - ([be4e9a5](https://github.com/kristof-mattei/axum-proxy/commit/be4e9a5fe9cc34bcd239080845ace4c6a631ba97))
+
+### 🐛 Bug Fixes
+
+- Split build and push for faster overall times - ([83d504e](https://github.com/kristof-mattei/axum-proxy/commit/83d504eb164a50cdd52f850b144a71b467c3cf04))
+- Reduced parent^2 detection complexity - ([2fab698](https://github.com/kristof-mattei/axum-proxy/commit/2fab698158059e4ad8f2c9cc44a553beba68f826))
+- Forgot to put back line to add SHA to $env - ([5e2a12a](https://github.com/kristof-mattei/axum-proxy/commit/5e2a12a1eea0baa55a445077396f9468a1a16e3e))
+- --quiet isn't quiet - ([764ef0a](https://github.com/kristof-mattei/axum-proxy/commit/764ef0ab2140b0b80cf53b476ba6525b3a873b4e))
+- Initialize otherwise EXITCODE is not set on success, and then it still fails 😅 - ([6658ea7](https://github.com/kristof-mattei/axum-proxy/commit/6658ea7799a523b54b122ff6c8d5a33a18e2c7c6))
+- Fake commit - ([80eec6e](https://github.com/kristof-mattei/axum-proxy/commit/80eec6ed5bdf245ca071780face928adf95848f4))
+- Centralized names - ([2e2345b](https://github.com/kristof-mattei/axum-proxy/commit/2e2345b2f1337ed5c99dea090d94de2b4b932949))
+- Removed submodules, going direct - ([2e2a71c](https://github.com/kristof-mattei/axum-proxy/commit/2e2a71c68a23764369cf67dfc485c9a76372dad2))
+- Switched to fixed commits for actions - ([2bd59a8](https://github.com/kristof-mattei/axum-proxy/commit/2bd59a85d847c6cbe5ce39038e25666c99086674))
+- Fix for too much action... - ([8256387](https://github.com/kristof-mattei/axum-proxy/commit/8256387796424f2cd5066452cf17a32f0cbe8f35))
+- Removed needs for docker-build to allow parallel operation - ([64986f6](https://github.com/kristof-mattei/axum-proxy/commit/64986f67e074439c1433011d5b27eafc725c35e4))
+- Remove be - ([21d027b](https://github.com/kristof-mattei/axum-proxy/commit/21d027bdf904697f96c9fe4adfe91fd2cf081d4f))
+- Reduce docker tag complexity - ([d187184](https://github.com/kristof-mattei/axum-proxy/commit/d187184277fadc66b6c7027624ecb9340c1e2fd9))
+- Aspiring comments - ([791bbed](https://github.com/kristof-mattei/axum-proxy/commit/791bbedad194c189fb9e35389f1c265c94df29da))
+- ToUpper() - ([81ba43c](https://github.com/kristof-mattei/axum-proxy/commit/81ba43cd7ba41aad25165e5e2232dad00476b3a7))
+- Added skip-tags to prevent it from pushing tags - ([3806f32](https://github.com/kristof-mattei/axum-proxy/commit/3806f32e8b0e56462a525744feb93954a15e562e))
+- Dry run still verifies push permissions - ([57b2cde](https://github.com/kristof-mattei/axum-proxy/commit/57b2cde87e49ce10c0e9b9b082eb0174409a2b0f))
+- Even dry-run wants a token - ([a1349fc](https://github.com/kristof-mattei/axum-proxy/commit/a1349fc215d87c4f5220496ae841c56776c9067f))
+- Handle script dependency - ([54be1b9](https://github.com/kristof-mattei/axum-proxy/commit/54be1b982120c880256a061895f15784d11752d9))
+- Corrected library usage - ([ed8e289](https://github.com/kristof-mattei/axum-proxy/commit/ed8e289589a490b61dc229021fc860d1d52fbb89))
+- Forgot .rest - ([2cb78e7](https://github.com/kristof-mattei/axum-proxy/commit/2cb78e791ee76ef95925e61a4f7988fc427bdde2))
+- Variable correction - ([7e0baaa](https://github.com/kristof-mattei/axum-proxy/commit/7e0baaa911c814c430ee69d43edfe3433c189aec))
+- Create reports directory, otherwise tool complains - ([15ef2e8](https://github.com/kristof-mattei/axum-proxy/commit/15ef2e83b9aff72e8986656d457e9439c2d1b7ba))
+- Capture the rest, not the value called 'rest' - ([222ef7c](https://github.com/kristof-mattei/axum-proxy/commit/222ef7c6edd6c3011d8d70cb0af0ae6319899842))
+- Renamed for clarity - ([319817f](https://github.com/kristof-mattei/axum-proxy/commit/319817fac4290114976eab8c87102278c8b87440))
+- Locked node version - ([5a7acea](https://github.com/kristof-mattei/axum-proxy/commit/5a7aceafe7488f93450bbeb494f400e5ef60193f))
+- Reran npm install with npm 8 to update package-lock - ([2f51f25](https://github.com/kristof-mattei/axum-proxy/commit/2f51f25cf9aec79943511b87b12d57e40224b6c3))
+- Added npm to dependabot - ([f99a1cb](https://github.com/kristof-mattei/axum-proxy/commit/f99a1cbce03151e38279c081b2becd4478a5f87b))
+- A change in build scripts should cause a full rebuild - ([4e3da47](https://github.com/kristof-mattei/axum-proxy/commit/4e3da4743be7b4043d46cd10c2f9a05c60c4fc1b))
+- Use environment variable to get cargo location - ([c57b6db](https://github.com/kristof-mattei/axum-proxy/commit/c57b6dbcf20fabf1cbbc3cb946e656855acf992d))
+- Corrected environment variable - ([40527e4](https://github.com/kristof-mattei/axum-proxy/commit/40527e48765c4a99008d3207173de249c1de0b81))
+- Updated cargo cache to use tilde again - ([e650509](https://github.com/kristof-mattei/axum-proxy/commit/e650509c93198c1ca654b7ad46bf0f672b6f101a))
+- See if we can cache the whole .cargo directory - ([54d824f](https://github.com/kristof-mattei/axum-proxy/commit/54d824f82fd2e12457feaeb08ed259d15960f33f))
+- Updated concurrency key - ([eda182b](https://github.com/kristof-mattei/axum-proxy/commit/eda182b9fd074b2f515ad546d2ac15ef450c9141))
+- Leverage setup-node's ability to read from .nvmrc - ([f78dc4c](https://github.com/kristof-mattei/axum-proxy/commit/f78dc4ce7a4008e34e43a367be283327926f8581))
+- Added missing data - ([230c651](https://github.com/kristof-mattei/axum-proxy/commit/230c651afffa59e575e6d231d3334314df9179f3))
+- Alltargets for tarpaulin - ([3ba7006](https://github.com/kristof-mattei/axum-proxy/commit/3ba7006cd3bf3d027a0485aced51810837f41333))
+- Install tarpaulin from source - ([9f1966c](https://github.com/kristof-mattei/axum-proxy/commit/9f1966ce22f42e508d223a35ee4b651768fc2786))
+- Synced tool invocation parameters - ([8417c23](https://github.com/kristof-mattei/axum-proxy/commit/8417c23b540cd56be8123b85a0796b12ada21740))
+- Bumped rust version - ([c84b022](https://github.com/kristof-mattei/axum-proxy/commit/c84b02218ea3256f0138944b6939860a48236d7f))
+- Added rust-toolchain, symlinked to rust-toolchain.toml - ([cac0b9a](https://github.com/kristof-mattei/axum-proxy/commit/cac0b9aac7d25396a442e45dc3279ad9dd183eee))
+- Getting toolchain file to work - ([15ae1ab](https://github.com/kristof-mattei/axum-proxy/commit/15ae1abfbcc6472cd29039c4ef13c720966b5520))
+- Try with profile and toolchain specified here - ([05991b7](https://github.com/kristof-mattei/axum-proxy/commit/05991b716bed23ab70dfc1c6d8cdbfc83489e408))
+- Infer components from rust-toolchain.toml - ([e8aa97d](https://github.com/kristof-mattei/axum-proxy/commit/e8aa97da616b81fc8fbdfff829f6b820cac90513))
+- Corrected build dependencies, all-done work be a success if docker-build failed - ([ee3789d](https://github.com/kristof-mattei/axum-proxy/commit/ee3789db3225903b09255799f34df000d4b79462))
+- The world is ok - ([b9c1196](https://github.com/kristof-mattei/axum-proxy/commit/b9c119625d8f140e0e249ff5fcdafa55db969c0b))
+- Fixed wrong needs name - ([977e159](https://github.com/kristof-mattei/axum-proxy/commit/977e1592730e0ac018d1d6e1c7dfcc3a41ff4bfb))
+- Set up toolchain manually - ([f5f92d6](https://github.com/kristof-mattei/axum-proxy/commit/f5f92d6794df30cf70f7ad9963cd00c2367f1591))
+- -y to accept defaults - ([9280bfc](https://github.com/kristof-mattei/axum-proxy/commit/9280bfc01863ebac2baa024c28a447e2cc52098d))
+- Don't fail tarpaulin when a test fails - ([b065efa](https://github.com/kristof-mattei/axum-proxy/commit/b065efadf1e005dcc2c4c4ed8a7ddc74627bcf1b))
+- Rebuild when NPM packages change - ([43b4a7f](https://github.com/kristof-mattei/axum-proxy/commit/43b4a7fcce073b3ab19ea9d44d2cc8a3189dc285))
+- Add commit linting - ([141820a](https://github.com/kristof-mattei/axum-proxy/commit/141820aabf5b6a5823bb6c1080304797884187c5))
+- Npm cleanup - ([12b30b3](https://github.com/kristof-mattei/axum-proxy/commit/12b30b3877504b61ec1157e9fc3350ad1f219830))
+- Reduced complexity tied to semantic release because cog doesn't need it - ([21ed988](https://github.com/kristof-mattei/axum-proxy/commit/21ed98844785b0addf90a083e624e26aa92e08d8))
+- Set git user and email so that cog bump works - ([01efb04](https://github.com/kristof-mattei/axum-proxy/commit/01efb04af74d945bd368152b9281f4ab2d551209))
+- Set the right variable - ([18978f8](https://github.com/kristof-mattei/axum-proxy/commit/18978f8e875aec0a31553f3ab5dd6d6d998b44f8))
+- Ensure we're logged in to use the registry cache - ([994a73c](https://github.com/kristof-mattei/axum-proxy/commit/994a73c7c3d49280a7f5b7f6110859bafb7ba1c2))
+- Reordered cache restore and toolchain setup - ([5f08e37](https://github.com/kristof-mattei/axum-proxy/commit/5f08e374bcb75cc7d1eccd519884f069d05ce758))
+- Try coveralls - ([2e06476](https://github.com/kristof-mattei/axum-proxy/commit/2e06476d20cb459d068c9b6daf1f4e2725559835))
+- Try coveralls - ([d7196c5](https://github.com/kristof-mattei/axum-proxy/commit/d7196c57c7fa793db927c58dadf8cf6c28bd7a67))
+- Renamed step name - ([a7044ff](https://github.com/kristof-mattei/axum-proxy/commit/a7044ff77cf15d48660acb46621237e2aad81c82))
+- Remove cache exclusion - ([baee94e](https://github.com/kristof-mattei/axum-proxy/commit/baee94e4f6a90a8696c1e62b43c3d187083ab477))
+- Use built-in rustup - ([1b2d13b](https://github.com/kristof-mattei/axum-proxy/commit/1b2d13b9889b833b3616e825e49714bdfcde2cc8))
+- Removed unneeded linting file - ([7a6b3ed](https://github.com/kristof-mattei/axum-proxy/commit/7a6b3ed5d44dad4c4eb1360a73016200e4b10834))
+- Merged configuration into 1 - ([db6004a](https://github.com/kristof-mattei/axum-proxy/commit/db6004ac753af69521dbb529916b5c9f0fdc293e))
+- Updated to 2021 edition - ([cee0bd0](https://github.com/kristof-mattei/axum-proxy/commit/cee0bd0a17664f00947cc0d4bfe56fc178bcf9fe))
+- Restored packages configuration - ([506eac8](https://github.com/kristof-mattei/axum-proxy/commit/506eac86ff59359bf45758ca4182eeea3069fdbf))
+- Missing package - ([a20bc10](https://github.com/kristof-mattei/axum-proxy/commit/a20bc107500b531f2e1b23d45ab86063ab125225))
+- Lock down sha256 of docker images - ([659aadd](https://github.com/kristof-mattei/axum-proxy/commit/659aadd292af52bade19aeebc00747c8ee3c808d))
+- Grcov intstead of tarpaulin - ([d8f1fe1](https://github.com/kristof-mattei/axum-proxy/commit/d8f1fe173d6fe3efaa5aa2bb77ae0d988296c51b))
+- Filename was wrong + comment update + rust-version bump - ([4371418](https://github.com/kristof-mattei/axum-proxy/commit/4371418d7fd70cd8faaee6d77b98c932905339b5))
+- Corrected title - ([b3b0cb6](https://github.com/kristof-mattei/axum-proxy/commit/b3b0cb62e4b96f95daef20bc0d1ec6143e5d2e97))
+- Merge steps for testbased coverage - ([a7b74e1](https://github.com/kristof-mattei/axum-proxy/commit/a7b74e1637ac50f4165507f491278386cb986244))
+- Install llvm tools - ([3d5b63b](https://github.com/kristof-mattei/axum-proxy/commit/3d5b63b77c7c0b431c4f547c7b429a5266703637))
+- Typo in env variable - ([d4e47fa](https://github.com/kristof-mattei/axum-proxy/commit/d4e47faa41b598137d3e60418a7f4d9d8f8a0921))
+- Code climate test reporter - ([9c58b72](https://github.com/kristof-mattei/axum-proxy/commit/9c58b72f8b04698b8ef901e4e19ae642f3c99e8e))
+- Use correct subcommand - ([96fa7aa](https://github.com/kristof-mattei/axum-proxy/commit/96fa7aa0d712a2d8feb188ad28587b5f0e697de1))
+- Remove dependency on build to run on main - ([0a6b0c6](https://github.com/kristof-mattei/axum-proxy/commit/0a6b0c66405b44a17ba512cb8f56f64ee4420c9f))
+- Tag -> sha - ([7be092d](https://github.com/kristof-mattei/axum-proxy/commit/7be092dfdf25244113b8695cf94e7edae3a4ec23))
+- Filter out lcov - ([60e9e4e](https://github.com/kristof-mattei/axum-proxy/commit/60e9e4eb97e40080a4c4ec563c27675404e370a9))
+- Also keep tests - ([a746b08](https://github.com/kristof-mattei/axum-proxy/commit/a746b08a460aafa5b984303dc4527ef0046dcbe8))
+- Add linebreak - ([4712a1f](https://github.com/kristof-mattei/axum-proxy/commit/4712a1f6df2e3005b70e49cc4d6a097d0645a455))
+- Set code climate filter - ([e171505](https://github.com/kristof-mattei/axum-proxy/commit/e17150556571145f9295d3f6ed46eb372485b262))
+- No need to bring in action just for this - ([faa92dc](https://github.com/kristof-mattei/axum-proxy/commit/faa92dc31731b248339b30e9c2c583164f37afce))
+- Removed spaces - ([15a0f18](https://github.com/kristof-mattei/axum-proxy/commit/15a0f18752a64ce109f269bd8eb362334982b327))
+- Auto dependabot merge - ([cdc772a](https://github.com/kristof-mattei/axum-proxy/commit/cdc772a475f030e5135f22ced30af4a74129b8b2))
+- Ignore merge commit linting - ([314180a](https://github.com/kristof-mattei/axum-proxy/commit/314180a6a826335dfab4d4425fc29b474871ab33))
+- Instrument coverage is stable! - ([cd2a8e6](https://github.com/kristof-mattei/axum-proxy/commit/cd2a8e618131056b33df7711cac1da6d7e267e9c))
+- Switch to auto config - ([71ec2d9](https://github.com/kristof-mattei/axum-proxy/commit/71ec2d96c2778dc3c8c9359840b7c43f18323f44))
+- Remove fixes - ([e90953e](https://github.com/kristof-mattei/axum-proxy/commit/e90953e4eba7037818de69e8067faa244f6259a0))
+- Add user - ([4e414de](https://github.com/kristof-mattei/axum-proxy/commit/4e414de196055df363eb355b100ba5d6e7cb4a06))
+- Set the right user - ([c82af71](https://github.com/kristof-mattei/axum-proxy/commit/c82af712a81c84e773764916c281274377d150e0))
+- Set permissions - ([d3c9dcf](https://github.com/kristof-mattei/axum-proxy/commit/d3c9dcfea41224b596e87672338c66bf5f98f78e))
+- Try centralized renovate config - ([973829b](https://github.com/kristof-mattei/axum-proxy/commit/973829b723a20cdd4b5c5f9d0bf3477cc8d421e2))
+- Download binstall to /tmp to avoid additional untracked files - ([eb3d325](https://github.com/kristof-mattei/axum-proxy/commit/eb3d3252dabeeb48c960995a46bb13b4df71796d))
+- Binstall now wants stuff with a capital - ([4e862db](https://github.com/kristof-mattei/axum-proxy/commit/4e862dbb4fcd5577e2ab36ebf2ba3ceb755eb122))
+- Don't copy paste - ([d9ed65e](https://github.com/kristof-mattei/axum-proxy/commit/d9ed65e9c1ac8e3ffd77a33f5f0956637ee90302))
+- Lowercase package fmt - ([d464837](https://github.com/kristof-mattei/axum-proxy/commit/d4648375d819651c86216d8b2d3f511622f91d82))
+- Fix schema - ([2363092](https://github.com/kristof-mattei/axum-proxy/commit/23630924a373ca06ffed352f8574516afb7e0cda))
+- Don't require reviews - ([921c419](https://github.com/kristof-mattei/axum-proxy/commit/921c4193b6dd2b37af2487072117c7586bbc37c3))
+- Force signed commits - ([9c408fd](https://github.com/kristof-mattei/axum-proxy/commit/9c408fdef65a9dbe2599402b5654de69ed9cfbcc))
+- Update rules - ([db556a8](https://github.com/kristof-mattei/axum-proxy/commit/db556a800db25f534302a594a120632d709b8a2f))
+- Set the correct tag - ([273291f](https://github.com/kristof-mattei/axum-proxy/commit/273291fe484addf894f8ddc3c13889b140389103))
+- Deny stuff, nobody reads warnings - ([20a9980](https://github.com/kristof-mattei/axum-proxy/commit/20a998015fee19324cf08f8893bb260c69aff3a3))
+- Semgrep from container - ([de3c82d](https://github.com/kristof-mattei/axum-proxy/commit/de3c82ddb3ec7fc91b63376ab3db0dfcbd6cfd48))
+- Set tag & sha256 - ([7b6e267](https://github.com/kristof-mattei/axum-proxy/commit/7b6e267179f85e2615185826d42f1ac74b1cb14d))
+- Group imports - ([a561eab](https://github.com/kristof-mattei/axum-proxy/commit/a561eabca180fbdebe301f830f2bcd3139887134))
+- Quotes - ([91c129c](https://github.com/kristof-mattei/axum-proxy/commit/91c129c1d09e29453c37024514cfdda0b3407c87))
+- Comment out nightly function, add match | - ([d0c9366](https://github.com/kristof-mattei/axum-proxy/commit/d0c936698945e3733e598e229ba117b44557d822))
+- No leading pipes - ([1010233](https://github.com/kristof-mattei/axum-proxy/commit/101023383a45998b4e0ed2a1dbd86f5681f7a73f))
+- Correct cocogitto again with binstall - ([6d58aa7](https://github.com/kristof-mattei/axum-proxy/commit/6d58aa766b57ca79248ddfffaa2e405efda60fb2))
+- Google -> probot - ([23ac95c](https://github.com/kristof-mattei/axum-proxy/commit/23ac95cd6c81f0b0f32accf434f4a50d5c48e65b))
+- Allow overrides - ([33769f0](https://github.com/kristof-mattei/axum-proxy/commit/33769f0d2f9451e5411470dc2dfc3b278b036229))
+- Add other settings - ([f520994](https://github.com/kristof-mattei/axum-proxy/commit/f520994518d0f5e13e59ec7c593c76da65062b02))
+- Set-output is deprecated - ([8b69dd4](https://github.com/kristof-mattei/axum-proxy/commit/8b69dd437a5cec1f3dd7e256be22658338bcbb03))
+- Set correct nextest config - ([2447503](https://github.com/kristof-mattei/axum-proxy/commit/2447503724f960fb66a723705e52810e169ae2aa))
+- Use up to date action - ([47190c9](https://github.com/kristof-mattei/axum-proxy/commit/47190c9524d3029fe2a3dedc570e1b88d2f63105))
+- Separate before and after cache - ([82f9775](https://github.com/kristof-mattei/axum-proxy/commit/82f97756352773948e9a4572f2740831d5bf9f2c))
+- Settings - ([769ba7d](https://github.com/kristof-mattei/axum-proxy/commit/769ba7d6fab0e5833e503b669531a1c9018c15a6))
+- Formatting - ([a6c47ee](https://github.com/kristof-mattei/axum-proxy/commit/a6c47ee700414a12bb6ee60a8a3d9bcdd28b7194))
+- Formatting - ([f71fbed](https://github.com/kristof-mattei/axum-proxy/commit/f71fbed5f1ac288c4d25462fbcd013dcca7a9ba0))
+- Snake in comments is causing parsing failures - ([69d278d](https://github.com/kristof-mattei/axum-proxy/commit/69d278dee797be71e67582b6ac0275853d1f5898))
+- Use cocogitto bump, and support no new version generated - ([68a37df](https://github.com/kristof-mattei/axum-proxy/commit/68a37dfdadd533d41497cdfed2cdff70716df06e))
+- Prevent cog throwing an error which causes script termination - ([a0e6468](https://github.com/kristof-mattei/axum-proxy/commit/a0e6468e9491beccaed2ac227f9f6c93bec69bc4))
+- Set latest tag - ([1870e1d](https://github.com/kristof-mattei/axum-proxy/commit/1870e1da3545c8fee6f6026ba6cece373316c1c4))
+- Switch to editorconfig - ([02402b7](https://github.com/kristof-mattei/axum-proxy/commit/02402b75b91fc52f36a1140d67f95460670a5f11))
+- Allow uninlined format args - ([203df05](https://github.com/kristof-mattei/axum-proxy/commit/203df05f519b8fa8d6f0f89044320194726ed5ca))
+- Add update script - ([bb08a31](https://github.com/kristof-mattei/axum-proxy/commit/bb08a315ab8b2269cc5d848c821a75b1ad79e97d))
+- Make clippy more annoying - ([af9bc12](https://github.com/kristof-mattei/axum-proxy/commit/af9bc12597c1236c3a642570c3c4fb526f5668b1))
+- Hack version (?) - ([58ff338](https://github.com/kristof-mattei/axum-proxy/commit/58ff338a043dc581440936114e8e0005a00a938c))
+- Remove version, doesn't work for container > image - ([2ef1e88](https://github.com/kristof-mattei/axum-proxy/commit/2ef1e883d0411aeaad4d0ea9e4a925bcd73a4ac1))
+- Set rangeStrategy - ([752da2c](https://github.com/kristof-mattei/axum-proxy/commit/752da2c3898fddaa537083430da3d0fd31d5a5cd))
+- Unset rangeStrategy, move to the renovate base config - ([2dae343](https://github.com/kristof-mattei/axum-proxy/commit/2dae3431cfeda8a8ef5c6b78a69f0e32b02db894))
+- Editorconfig settings for shell files - ([72d74b7](https://github.com/kristof-mattei/axum-proxy/commit/72d74b755522d30b07a00202ddf6e23138a9b1cb))
+- Pin clippy - ([bd33a24](https://github.com/kristof-mattei/axum-proxy/commit/bd33a2469072c2430b02694ebfe406f956de3862))
+- Yeet code climate - ([0ff8087](https://github.com/kristof-mattei/axum-proxy/commit/0ff8087a8aca74832292d787329cb2c30d3cddb7))
+- Lock down with version and digest - ([ea6cda5](https://github.com/kristof-mattei/axum-proxy/commit/ea6cda5aff2e89af491654668c95edef6231898c))
+- More formatting enforcement - ([4825d45](https://github.com/kristof-mattei/axum-proxy/commit/4825d45eac04d98c8b20870657fb8346ef5636a3))
+- Allow for building / not building docker container - ([9a91217](https://github.com/kristof-mattei/axum-proxy/commit/9a91217a67620dcae3d4a9dbe5f71712c97aa03c))
+- Ascii idents only to prevent idents starting with characters my keyboard can't handle - ([0b7f646](https://github.com/kristof-mattei/axum-proxy/commit/0b7f6469dbd30ad44508f836277282860cad6cbd))
+- Allow disable container retagging - ([8e39b39](https://github.com/kristof-mattei/axum-proxy/commit/8e39b39694931df1716d2b79dafcfd7348de04f0))
+- Updated cache ids - ([75f6e51](https://github.com/kristof-mattei/axum-proxy/commit/75f6e51d56f491eabd2038688a4348f421eaad34))
+- Comment indent - ([aff7168](https://github.com/kristof-mattei/axum-proxy/commit/aff7168b45600424fed73fb582001cf55c2e2cd3))
+- Don't retag when we don't build a container - ([fe1a006](https://github.com/kristof-mattei/axum-proxy/commit/fe1a006c3d9e9d95f0d8cef01555d3a4c303e92a))
+- Set maximum backtrace - ([cd44fe2](https://github.com/kristof-mattei/axum-proxy/commit/cd44fe2ab070d930dea9b1040a5e57ec9276ed34))
+- Also do RUST_BACKTRACE=full for debugging - ([fde9619](https://github.com/kristof-mattei/axum-proxy/commit/fde9619668b4eb33ad41e0265c8ff5cae164001e))
+- Build all with tests too - ([2fdf062](https://github.com/kristof-mattei/axum-proxy/commit/2fdf062917c86c9ffebbd81b3b9bb8720aa841ef))
+- Trace for all, not just the app - ([e92d8c0](https://github.com/kristof-mattei/axum-proxy/commit/e92d8c04661c0a06a6932a701ba7fc4e0f731fc2))
+- Default is to use color-eyre - ([9ec7951](https://github.com/kristof-mattei/axum-proxy/commit/9ec795182352fc168b18cd5a9fd623b1930494f3))
+- Trace for run and test - ([57bb0f1](https://github.com/kristof-mattei/axum-proxy/commit/57bb0f18bcf3c360eca25ee5aeeb61ac37000d46))
+- Add update-name script - ([57e5023](https://github.com/kristof-mattei/axum-proxy/commit/57e502335d9e4f409054ed5ecfb7d1ad8ab1d2d9))
+- Coveralls as CodeCov keeps on failing - ([fab1710](https://github.com/kristof-mattei/axum-proxy/commit/fab171080b3de6c51c4bc7531699841534366f8a))
+- Specify version, Renovate will pin it - ([2a44ecb](https://github.com/kristof-mattei/axum-proxy/commit/2a44ecbc3cbca50f1fddaf65ec4633b762384ef1))
+- Make BUILD_DOCKER_CONTAINER configurable from variables - ([5ab39f5](https://github.com/kristof-mattei/axum-proxy/commit/5ab39f5f95c94aec0291d15c83e10f466fa659e4))
+- Env -> vars - ([a4ef4d5](https://github.com/kristof-mattei/axum-proxy/commit/a4ef4d59898bea126c2531a76799c0ba557ff2c7))
+- Get application name automatically - ([5f71149](https://github.com/kristof-mattei/axum-proxy/commit/5f71149c9c86a79155fe7180c8fc7e154febbca3))
+- Remove unneeded newline - ([4a3fe57](https://github.com/kristof-mattei/axum-proxy/commit/4a3fe575e0eb6d3a254a5041ccba662ddcbcbdcd))
+- We don't use .idea config - ([4d22e96](https://github.com/kristof-mattei/axum-proxy/commit/4d22e96241230cf0406dfc2cb3199b38acd2bad3))
+- Better defaults - ([0c8b4a7](https://github.com/kristof-mattei/axum-proxy/commit/0c8b4a74b7e969af7b5b696ba9300b0b6cd31a85))
+- Consolidate clippy & rust config on top of main, all the rest causes duplication - ([e158e41](https://github.com/kristof-mattei/axum-proxy/commit/e158e41a05171aadc4a36bed4f40685e9f15a8fc))
+- Don't show progress - ([2be0887](https://github.com/kristof-mattei/axum-proxy/commit/2be088747fc874dad816ed60d0e49dbf3390e0bb))
+- Workflow_dispatch does not take a branch - ([7cb9b28](https://github.com/kristof-mattei/axum-proxy/commit/7cb9b2833bc904c936e96cb57d091262d3246933))
+- Fix new version - ([ef697ab](https://github.com/kristof-mattei/axum-proxy/commit/ef697abfef681fa7d69f7baa93c9c76b77b3548c))
+- Add placeholder for env variable - ([4bb5340](https://github.com/kristof-mattei/axum-proxy/commit/4bb534066cf1c3471e352cc5c8eb80ea3af113d5))
+- Move semantic-release config file as per https://github.com/semantic-release/semantic-release/releases/tag/v23.0.0 - ([e77b9d1](https://github.com/kristof-mattei/axum-proxy/commit/e77b9d10a3019ff3c00f28ed49eb6cf4faeb5f1c))
+- Mixed up config name order - ([6976f89](https://github.com/kristof-mattei/axum-proxy/commit/6976f89fbd6f5774047fa42c1dff717e2a37e0e5))
+- Simplified tags - ([5c2e4f9](https://github.com/kristof-mattei/axum-proxy/commit/5c2e4f911c20a994d2c70cbb9105e1ebb156c6ae))
+- Cleanup - ([80a9dda](https://github.com/kristof-mattei/axum-proxy/commit/80a9dda3495b1f1142304906a9246b8f6072c0ec))
+
+### 🧪 Testing
+
+- Flow - ([9e940fb](https://github.com/kristof-mattei/axum-proxy/commit/9e940fbe55fa07e3b24358b023720ba2d73d8c86))
+- Print changelog.md - ([ce90089](https://github.com/kristof-mattei/axum-proxy/commit/ce900894ee712c58c14955ec4bfa9b90b0c050e8))
+- Failure test - ([fc23c01](https://github.com/kristof-mattei/axum-proxy/commit/fc23c01aee19e787bf952f9ce9b2205e62ff15cc))
+- Trigger build - ([8ea2267](https://github.com/kristof-mattei/axum-proxy/commit/8ea226738eb615fce0abdffc37ef8cd01c6fabe6))
+
+### ⚙️ Miscellaneous Tasks
+
+- Spelling correction - ([78e52a8](https://github.com/kristof-mattei/axum-proxy/commit/78e52a882d3cc7e22e17e4457e870f9b3b7534d2))
+- Removed unneeded print - ([045ea6c](https://github.com/kristof-mattei/axum-proxy/commit/045ea6c8ecceed3918dd2c5307cbae9e56ff1864))
+- Added comment for future me <insert 88mph joke> - ([1c4c032](https://github.com/kristof-mattei/axum-proxy/commit/1c4c0321a161d6719796b0724a13eb754b2125c8))
+- Renamed files - ([e34981a](https://github.com/kristof-mattei/axum-proxy/commit/e34981a3a8506a261ad818f45ea726e3d2e20e7c))
+- Debugging changelog printing issues - ([cf9a3de](https://github.com/kristof-mattei/axum-proxy/commit/cf9a3de23bf33ea746cd56d0c50b15b3825aca52))
+- Fix linebreaks - ([25900e3](https://github.com/kristof-mattei/axum-proxy/commit/25900e3490df1800b89ed40ad727f64a74ef8252))
+- Forgot dependency - ([24064f8](https://github.com/kristof-mattei/axum-proxy/commit/24064f83d4cb48e7b908485d1a1c0104e6b07bc4))
+- Fix space - ([023334b](https://github.com/kristof-mattei/axum-proxy/commit/023334b405aabed437cbb00a6f9152f259f30830))
+- Added final step - ([ea08b74](https://github.com/kristof-mattei/axum-proxy/commit/ea08b74d52466ba5ae07af106737e036b27ce0b1))
+- Update README.md - ([f043d40](https://github.com/kristof-mattei/axum-proxy/commit/f043d40421a8e5836e2b18711e751965e67103ae))
+- Updated name everywhere - ([e0da1df](https://github.com/kristof-mattei/axum-proxy/commit/e0da1dfbaab56c5bfe15145abab04ddfbd05539c))
+- Bumped rust numbers everywhere - ([a0577b5](https://github.com/kristof-mattei/axum-proxy/commit/a0577b5c76c2c590f7ec371dab5669b648b31bf9))
+- Fixed name - ([eb13981](https://github.com/kristof-mattei/axum-proxy/commit/eb13981ac036fa28dfe7f8df5665d28ef071aab2))
+- Consolidated npm usage - ([146c18f](https://github.com/kristof-mattei/axum-proxy/commit/146c18fa3ddc6c63cd2fa1e32a9cfefaf346ffa2))
+- Cleanup un-used script - ([e8ab324](https://github.com/kristof-mattei/axum-proxy/commit/e8ab3245bc3ac74a7bd96844047c68ee789f18b4))
+- Foundation for correct version numbers - ([82fe6c5](https://github.com/kristof-mattei/axum-proxy/commit/82fe6c562db8fcc81eed9ff614346e1dcb6ca8e3))
+- Set version number of Rust binary at build time - ([5746431](https://github.com/kristof-mattei/axum-proxy/commit/57464314eadd600e6ceb395041d8ba6f33c3afb5))
+- Reduce unneeded builds - ([ed49297](https://github.com/kristof-mattei/axum-proxy/commit/ed49297faf6c0300cbfe42ae5b4b5d7fcfbbf091))
+- Add dry-run to make sure we don't publish preemptively - ([5285cee](https://github.com/kristof-mattei/axum-proxy/commit/5285cee32977ef1ada378dc306c20b9c5f08ccb5))
+- Ensure checkout so that we have a package-lock - ([4eeb52e](https://github.com/kristof-mattei/axum-proxy/commit/4eeb52e02e4eb3c18f39edadbdafe4ed3b47b2fb))
+- Remove spurious ) - ([5a81c7e](https://github.com/kristof-mattei/axum-proxy/commit/5a81c7e34b0dbe620524c8399eb6a4f56083084c))
+- I used the wrong script - ([7dcc44d](https://github.com/kristof-mattei/axum-proxy/commit/7dcc44d2c43e506d4b436c1fdf43bd9cabf3da33))
+- Flip aroud switches until we find the right combination - ([1c225f6](https://github.com/kristof-mattei/axum-proxy/commit/1c225f6c17d71594ab8fbb751d5de52df0d821d1))
+- Hack the semantic-release - ([65bd2eb](https://github.com/kristof-mattei/axum-proxy/commit/65bd2ebb3aeea525700fab234db4499581e11fa8))
+- Semantic-release doesn't like refs/pulls/12/merge, surrounding with quotes to test - ([c3acbf5](https://github.com/kristof-mattei/axum-proxy/commit/c3acbf55e23ecd55e4d280efdfc3bb1d7ccfa834))
+- Just trying to get  this to work - ([b5478dd](https://github.com/kristof-mattei/axum-proxy/commit/b5478dd32304377204c6d7b8960ac877f5af19f4))
+- Can't go without --no-ci - ([29fbe92](https://github.com/kristof-mattei/axum-proxy/commit/29fbe92afa714985de7f0c6fc8c779a8caaeca04))
+- Try get last tag - ([a37253e](https://github.com/kristof-mattei/axum-proxy/commit/a37253eb904612f60e0a6e4ea2a891cf7a76e051))
+- Removed duplicate version id - ([97ee09a](https://github.com/kristof-mattei/axum-proxy/commit/97ee09a29da6ccedb4591b9cd91d1520506cad58))
+- Better way to check out the head? - ([04c1587](https://github.com/kristof-mattei/axum-proxy/commit/04c1587aea423444d50b9b63ebd78a74b5ec895c))
+- Work around semantic-release restrictions - ([63a6315](https://github.com/kristof-mattei/axum-proxy/commit/63a63159018ab9b7806dd669768fcfdc06f6c6b1))
+- Hack around semantic-release some more - ([3bd1a9c](https://github.com/kristof-mattei/axum-proxy/commit/3bd1a9c0f70f33abdc0f51b68ddb6b02cfa298af))
+- Wrong script name - ([517cb82](https://github.com/kristof-mattei/axum-proxy/commit/517cb822538623679fcd57d5aaba79317038ee97))
+- Skip tag, we don't want to give this one rights to push - ([278546c](https://github.com/kristof-mattei/axum-proxy/commit/278546c990fc0937d60403b661ac555cee8a966d))
+- Give more permissions for dry-run - ([1d5cbf0](https://github.com/kristof-mattei/axum-proxy/commit/1d5cbf0ba44ead2afaa0e94bf967155758e8577d))
+- Testing new flow - ([8d9c25a](https://github.com/kristof-mattei/axum-proxy/commit/8d9c25a2ff7b97357fd5f385eaf5cf801995d2f4))
+- Fix publish script - ([68bb738](https://github.com/kristof-mattei/axum-proxy/commit/68bb738d6d2f86e71f91588e1c5fe2f4ccc45a62))
+- Check for changes - ([39f071c](https://github.com/kristof-mattei/axum-proxy/commit/39f071cd709181ee79f9e42869332af34a142da1))
+- Restructure, remove unneeded submodule pull - ([cfebd29](https://github.com/kristof-mattei/axum-proxy/commit/cfebd2921b7e87dec2003216c88e2e0efb58dcd7))
+- Fix condition - ([02df130](https://github.com/kristof-mattei/axum-proxy/commit/02df1304baa8a2b096b8e0f29b93eaf6faa552e6))
+- Split steps - ([95bf3b6](https://github.com/kristof-mattei/axum-proxy/commit/95bf3b6a5c85f11cfb08c9594369d58bd7a9188c))
+- Reduced complexity of filter - ([20f398c](https://github.com/kristof-mattei/axum-proxy/commit/20f398c8adbd47f93754d42298ca2a59c808bf6b))
+- Beautified titles - ([00b5d37](https://github.com/kristof-mattei/axum-proxy/commit/00b5d37f9dde952c90c8684fe7d2dec900d1e341))
+- Updated task name - ([10882f2](https://github.com/kristof-mattei/axum-proxy/commit/10882f2f181ae6d5e441dc8327c37ac729671261))
+- Prevent clippy from running twice - ([5db45b9](https://github.com/kristof-mattei/axum-proxy/commit/5db45b9964d66de7d9d5377748158bdd624b5bbf))
+- Aligned commandline parameters - ([fd9d518](https://github.com/kristof-mattei/axum-proxy/commit/fd9d51865bd14d729d49d15a6de25fb53a42c869))
+- Expanded clippy warnings - ([01272f6](https://github.com/kristof-mattei/axum-proxy/commit/01272f622b1a588f3fb064c82203222da3f29252))
+- Also run pedantic and cargo test on push - ([23ba6db](https://github.com/kristof-mattei/axum-proxy/commit/23ba6db09d220e17608aa43ab4ffe903507f2ada))
+- Also run test-and-report on main to update 'main' coverage - ([07cab02](https://github.com/kristof-mattei/axum-proxy/commit/07cab02c61478f168aa0fc7984a2dc5e79265ef1))
+- Also run clippy when merged to main to track progress - ([bccc597](https://github.com/kristof-mattei/axum-proxy/commit/bccc59739a8d274a06f093a2b625b09195d03ce0))
+- Create LICENSE - ([9662fd0](https://github.com/kristof-mattei/axum-proxy/commit/9662fd0bc59b52956cd6b30e26e6c5d4854ead9a))
+- Respect cargo.lock when doing cargo install - ([20b7f38](https://github.com/kristof-mattei/axum-proxy/commit/20b7f38541eb2641b99ede169a18b4323deae8b2))
+- Fixed the name - ([7166635](https://github.com/kristof-mattei/axum-proxy/commit/716663523d3c1e3d10b86a6b477298fa70196312))
+- Remove outdated comment - ([88369f7](https://github.com/kristof-mattei/axum-proxy/commit/88369f7ade36328e1b5156841a8127358c4a69a3))
+- Switch to cog - ([d9dc537](https://github.com/kristof-mattei/axum-proxy/commit/d9dc537936181daea34d14a6958064ff9c507eea))
+- Switch to cog wip - ([70bc0fe](https://github.com/kristof-mattei/axum-proxy/commit/70bc0fee3bec0b60d2eabd27999c80b43018bd92))
+- Use registry cache - ([6e66668](https://github.com/kristof-mattei/axum-proxy/commit/6e66668788e41a33e2efa36edf74297e83e58a13))
+- Typo, docker -> Docker - ([8571cd7](https://github.com/kristof-mattei/axum-proxy/commit/8571cd7fd8d6153eb75bef254aaa2e7ae8a1dc0f))
+- Use built-in rustup - ([e3a791a](https://github.com/kristof-mattei/axum-proxy/commit/e3a791a527a9f0e5b8a7696dd310d08f394ca4ce))
+- Set the checkout name - ([a8a45b4](https://github.com/kristof-mattei/axum-proxy/commit/a8a45b4f6ff2ef4783a60d0ddf99a519069e9f0a))
+- Fixed rustup update warning about rustfmt and cargo-fmt - ([bb187f3](https://github.com/kristof-mattei/axum-proxy/commit/bb187f384fb1042f363b9d756afc7aa64f5c852b))
+- No need to run clippy on push to main - ([44890f7](https://github.com/kristof-mattei/axum-proxy/commit/44890f764e814f9d99b92f43fd720cb2ab3998f3))
+- Updated generated cache name - ([4aa7084](https://github.com/kristof-mattei/axum-proxy/commit/4aa7084bddacb70518081f6a5872d4896f3bfd81))
+- Removed todo that's not gonna happen - ([5205794](https://github.com/kristof-mattei/axum-proxy/commit/5205794394c05e1f65333e4936def18162a8db0d))
+- Set nice name - ([22f0bca](https://github.com/kristof-mattei/axum-proxy/commit/22f0bcaf26b62359c2afd18cfad6fb280baf3d85))
+- Removed unneeded comments - ([dca69dc](https://github.com/kristof-mattei/axum-proxy/commit/dca69dc3ea2cbacb0a490e011c8c5a385ebf7c51))
+- Exclude rustfmt and cargo-fmt from the cache as rustup doesn't like that - ([d95f77f](https://github.com/kristof-mattei/axum-proxy/commit/d95f77ffd16ffa56db736e564928aa4726a7c224))
+- Use built-in rustup - ([5a98432](https://github.com/kristof-mattei/axum-proxy/commit/5a9843252f358198ac7b43bb06825052e7be3fa7))
+- Exclude rustfmt and cargo-fmt from the cache as rustup doesn't like that - ([2c04592](https://github.com/kristof-mattei/axum-proxy/commit/2c04592da28a24dc92b3f1025345654ed51d84cb))
+- Run prettier - ([46ff0fb](https://github.com/kristof-mattei/axum-proxy/commit/46ff0fb4c6b3f3509f42798b1b9adbd59617f0b4))
+- Don't clean before clippy, not needed - ([253afc2](https://github.com/kristof-mattei/axum-proxy/commit/253afc287d6ce9aafd9d906066a54410270ef80e))
+- Don't consider it 'all-done' when anything is cancelled - ([4fdc19d](https://github.com/kristof-mattei/axum-proxy/commit/4fdc19df0990801ebaf40f25fa955eb22f3f1946))
+- Also rebuild on cargo.lock changes - ([b196ad4](https://github.com/kristof-mattei/axum-proxy/commit/b196ad45b3b648f7588091e083df970f896b8185))
+- Updated npm packages - ([79e5129](https://github.com/kristof-mattei/axum-proxy/commit/79e5129e640c62201cc72d4807e3ff44a8ad2033))
+- Also bump rust-toolchain to rust 1.58.1 - ([1f91934](https://github.com/kristof-mattei/axum-proxy/commit/1f919341edc6d1538f96ae02ec832424ea0a9395))
+- Cleaned up rustfmt, added 2 settings - ([b484519](https://github.com/kristof-mattei/axum-proxy/commit/b484519b041b4336e93bbc556d202f70f68bf73e))
+- Set test comment mode - ([137affd](https://github.com/kristof-mattei/axum-proxy/commit/137affd7ddec571febf32f235fa26ac8702da2eb))
+- Formatting! - ([f2ab063](https://github.com/kristof-mattei/axum-proxy/commit/f2ab06359a1a980404bf2aebd013e43aef804662))
+- Don't create new comment, recycle! - ([c3a7cb4](https://github.com/kristof-mattei/axum-proxy/commit/c3a7cb4dd9fa46c893969e84e42c5b673e7adb8b))
+- Fixed title - ([14bdc49](https://github.com/kristof-mattei/axum-proxy/commit/14bdc49a2c8135972be93fef36a425bd9b094c80))
+- Correctly report test failure - ([6250142](https://github.com/kristof-mattei/axum-proxy/commit/6250142008a5f74fad09c6088fa64ec87d5c49a5))
+- Also update cargo & toolchain - ([291be2a](https://github.com/kristof-mattei/axum-proxy/commit/291be2aa3dd1d15c726686b0dd71ff2e35bff341))
+- Also update cargo & toolchain - ([52e4649](https://github.com/kristof-mattei/axum-proxy/commit/52e46491946ebb62922e3f120ec4d9b5c33f8d81))
+- Fail done properly - ([9a420bf](https://github.com/kristof-mattei/axum-proxy/commit/9a420bf23ae315b64a7a0d20734de30db6ac01df))
+- Made task file rust-analyzer compliant - ([6f244be](https://github.com/kristof-mattei/axum-proxy/commit/6f244beea8c5c8232b66f51bb1dcd0d42759d223))
+- Spacing and remove verbose - ([abceeeb](https://github.com/kristof-mattei/axum-proxy/commit/abceeeb0e023cd1629df3540fe5f9d310b8dbd36))
+- Add release test script - ([0918c90](https://github.com/kristof-mattei/axum-proxy/commit/0918c90afafcb26396983767979f08dc46d5d7c0))
+- Consolidated extensions - ([7ebc90c](https://github.com/kristof-mattei/axum-proxy/commit/7ebc90c506e2570c0ec92145c4b4a6d23270c2cf))
+- Add title (name) to step - ([8f4396d](https://github.com/kristof-mattei/axum-proxy/commit/8f4396d247c865897e0088c6af23a54a0affef7c))
+- Docker images names should always be lowercase - ([9932b72](https://github.com/kristof-mattei/axum-proxy/commit/9932b72ad08d8a5eeacc0946b1fc367320c9e19f))
+- Add shell name and consolidated format - ([00ca5d7](https://github.com/kristof-mattei/axum-proxy/commit/00ca5d7c67d31eed62556cdcf12b0a77318a0be4))
+- Delete unneeded file - ([4734616](https://github.com/kristof-mattei/axum-proxy/commit/4734616fc8be237c5ee89130cd942fa971ad767f))
+- Update packages - ([c39ff7e](https://github.com/kristof-mattei/axum-proxy/commit/c39ff7e8cc8032f91fa8d765d600a1acce21e3de))
+- Clean up semgrep file, update package-lock - ([df7e1e4](https://github.com/kristof-mattei/axum-proxy/commit/df7e1e4d3942aa0f3b703de1c14005093ef41dec))
+- Crlf to lf - ([fdca795](https://github.com/kristof-mattei/axum-proxy/commit/fdca795c627dbed981e6ed02fe4287c37b29d169))
+- Install latest semgrep - ([b720d30](https://github.com/kristof-mattei/axum-proxy/commit/b720d30449d174b74e1ed3fa184d4c1e9e69f255))
+- Use token to get more rules - ([342529b](https://github.com/kristof-mattei/axum-proxy/commit/342529ba015edca81583186343b7d93949f5ac76))
+- Try to speed up by using binstall - ([ddf6fc7](https://github.com/kristof-mattei/axum-proxy/commit/ddf6fc7bb52110b4da4d67c3e380ed915442d848))
+- And more 1.62 - ([f048ac0](https://github.com/kristof-mattei/axum-proxy/commit/f048ac05a5aaed0f6a39ae632d7595c352acfaf1))
+- Fix the binary names - ([e700aaa](https://github.com/kristof-mattei/axum-proxy/commit/e700aaaae4cd095ab196892fb19e86cac143b8bf))
+- Spacing, made lint-commits also use binstall - ([c4daf59](https://github.com/kristof-mattei/axum-proxy/commit/c4daf591677669b2603f25019f5176dc850bbbe8))
+- Updated file property to junit_files as per https://github.com/EnricoMi/publish-unit-test-result-action/pull/285 - ([73a0ad7](https://github.com/kristof-mattei/axum-proxy/commit/73a0ad75fdb21be7081eb628fc2d8da728355629))
+- Remove duplicate `USER`, not needed - ([2bc87f5](https://github.com/kristof-mattei/axum-proxy/commit/2bc87f5cdc946847eef2f215f9316a45ec840f3b))
+- Enable renovate - ([741b4bd](https://github.com/kristof-mattei/axum-proxy/commit/741b4bd48ce77da72268caddf460cba3fe7ea75e))
+- Explicitly set token to avoid failed uploads - ([45e6bcf](https://github.com/kristof-mattei/axum-proxy/commit/45e6bcfbb31f1e1219db97bf65da1c33fdc64961))
+- Disable coveralls, it's acting up - ([e8ff3d3](https://github.com/kristof-mattei/axum-proxy/commit/e8ff3d3eca52fc746ef5ad8120071d9619f0b17e))
+- Also include rust-specific configs - ([0888cb2](https://github.com/kristof-mattei/axum-proxy/commit/0888cb2abb68acd808d532186220ebabe986de36))
+- Fixed double update typo - ([bc15a92](https://github.com/kristof-mattei/axum-proxy/commit/bc15a92e9c4eb0910f44a9368bbae281c5a4eb91))
+- Testing renovate's custom file updater - ([7918b9c](https://github.com/kristof-mattei/axum-proxy/commit/7918b9c204a40bd5b5ce19c8d3ad6abb61f2e148))
+- Restored codecov, remove executable modifier - ([b45eb0f](https://github.com/kristof-mattei/axum-proxy/commit/b45eb0f353f1928990d23fd54996ed97b70e1c61))
+- Disable coveralls & codecov - ([c43c49a](https://github.com/kristof-mattei/axum-proxy/commit/c43c49a500d053d5c1d2a5861a8ffa8d44281093))
+- Put versions so that renovate can tag correctly - ([dce5fd5](https://github.com/kristof-mattei/axum-proxy/commit/dce5fd57af8aa1a1a7722f4bfedc42e7be29a306))
+- Remove variable from dockerfile - ([1a47885](https://github.com/kristof-mattei/axum-proxy/commit/1a478854622fd3426534ebceac142ac2b633eaf5))
+- Try codecov again - ([f53b8db](https://github.com/kristof-mattei/axum-proxy/commit/f53b8dbce2882cfdbff917b4ee2261bc7fa47ad2))
+- Node v18 - ([33b78ea](https://github.com/kristof-mattei/axum-proxy/commit/33b78ea423dedd7d25bfc96395aa1f532347afa3))
+- Bump package-lock.json - ([1e0d6eb](https://github.com/kristof-mattei/axum-proxy/commit/1e0d6eb569c0928fc17eba447bf64a4fe6e4f809))
+- Ensure we take the longest tag, v1.0.0 instead of v1 - ([f9d106a](https://github.com/kristof-mattei/axum-proxy/commit/f9d106a78779f14e61abea3416341a0801268a3b))
+- Updated devcontainer config - ([fd84775](https://github.com/kristof-mattei/axum-proxy/commit/fd84775429513a4be51795a717b780eb303fcfdc))
+- Move to node 20, make backtrace always compile release as we don't care about their internals - ([47ce350](https://github.com/kristof-mattei/axum-proxy/commit/47ce350ee2b385ddb05e0f04271950fa344b11a1))
+- Use lints - ([3f9d4ef](https://github.com/kristof-mattei/axum-proxy/commit/3f9d4ef710834eb82812c2cba60986df58494117))
+- DENY uninlined format args - ([9a8e100](https://github.com/kristof-mattei/axum-proxy/commit/9a8e1007eba0101c9aa5cbefb1e1edcfb2bb5f2c))
+- ALLOW uninlined format args - ([73e964d](https://github.com/kristof-mattei/axum-proxy/commit/73e964d65776a2eed8c71af0ab734b9ef517f2ea))
+- Remove redundant quotes - ([50c419b](https://github.com/kristof-mattei/axum-proxy/commit/50c419b558e160a602b69911a6356fb2f875ced9))
+- Bump uninlined format args priority - ([61e818b](https://github.com/kristof-mattei/axum-proxy/commit/61e818b5e0f6f209e8f28d601e99ff98d3b922ea))
+- Add mold, use lints - ([7a06c47](https://github.com/kristof-mattei/axum-proxy/commit/7a06c474c0b4fcb9df8099bd46a933872d017b8c))
+- Restore backtrace always optimize - ([9f2d778](https://github.com/kristof-mattei/axum-proxy/commit/9f2d77895397e064a3b86e0e75624318181d3f27))
+- Fix typo - ([3bc4758](https://github.com/kristof-mattei/axum-proxy/commit/3bc4758d422559eab53724774bda44684c585eb3))
+- Pin mold - ([6222e7a](https://github.com/kristof-mattei/axum-proxy/commit/6222e7a5d096509d7b714b152c1dbfc4a5f32692))
+- Disable function-next-line formatting, it looks weird - ([1eb4dd2](https://github.com/kristof-mattei/axum-proxy/commit/1eb4dd2f28f2e6955ba36f09e464e6891b6d4c2c))
+- Rename nextversion to next_version - ([4821da4](https://github.com/kristof-mattei/axum-proxy/commit/4821da4b016aa974cffaf974c43165b504c1f125))
+- Ensure run and debug from main add the right LOG settings - ([d271883](https://github.com/kristof-mattei/axum-proxy/commit/d27188314fa89fdcac88034f612d5bce6a13bcb4))
+- Console isn't useful, updated casing of levels - ([0cb31d5](https://github.com/kristof-mattei/axum-proxy/commit/0cb31d5840aaf7672d71398a96e119fbc9d9a722))
+## [0.1.0](https://github.com/kristof-mattei/axum-proxy/compare/v1.0.0..v0.1.0) - 2021-10-30
+
+### 🚀 Features
+
+- Use crane as tool instead of elaborate docker setup - ([a5bc70b](https://github.com/kristof-mattei/axum-proxy/commit/a5bc70b9231c9fe16b4594e6349d75f5c0986932))
+
+### 🐛 Bug Fixes
+
+- Download grcov from releases, WAY faster - ([9a8c19b](https://github.com/kristof-mattei/axum-proxy/commit/9a8c19b538ae5c3cff200aa2460d03055ee1d14b))
+- Don't try extract bz2 as gzip - ([edd13c8](https://github.com/kristof-mattei/axum-proxy/commit/edd13c85f1f11c38e7bd1be2a1e8a4210346797a))
+- Arguments go into an array - ([9c6ff93](https://github.com/kristof-mattei/axum-proxy/commit/9c6ff93cb599504352c601e3e9f34790859a86d5))
+- 2nd param is dest, not flags, null to infer destination though - ([6db1ca8](https://github.com/kristof-mattei/axum-proxy/commit/6db1ca87785155c6e124dd99782acd5d9967778f))
+- Remove duplicated login - ([03eeddf](https://github.com/kristof-mattei/axum-proxy/commit/03eeddf662f5ebafb049c945d052340c8ee0d7e6))
+
+### 🧪 Testing
+
+- Sign with GPG signature - ([979cd32](https://github.com/kristof-mattei/axum-proxy/commit/979cd322c6433c7f9200ed36c0deb84ab02b0706))
+- Sign with GPG signature - ([63d0aa2](https://github.com/kristof-mattei/axum-proxy/commit/63d0aa281c26653cb62b1e7416fc047fe72c589a))
+## [1.0.0](https://github.com/kristof-mattei/axum-proxy/compare/v0.5.1..v1.0.0) - 2021-10-29
+
+### 🚀 Features
+
+- Initial commit - ([7af0684](https://github.com/kristof-mattei/axum-proxy/commit/7af0684c86b197699123cc67d0d87ec66fbd1e2e))
+- Added Quz and test - ([07ee173](https://github.com/kristof-mattei/axum-proxy/commit/07ee173edd9983669abfac91aa60245c7347d911))
+
+### 🐛 Bug Fixes
+
+- *(deps)* Update rust crate hyper-util to v0.1.14 - ([cfc0ccb](https://github.com/kristof-mattei/axum-proxy/commit/cfc0ccb39a0cb2c0219814e1384100348cd19de3))
+- *(deps)* Update rust crate hyper-rustls to v0.27.7 - ([41b694a](https://github.com/kristof-mattei/axum-proxy/commit/41b694acaea3d4d9c06206944c7d408dedecbf01))
+- *(deps)* Update rust crate hyper-util to v0.1.15 - ([ecf5950](https://github.com/kristof-mattei/axum-proxy/commit/ecf5950c447bfc8a88af7e15b122735a72bdae28))
+- Remove no-deps - ([ac50713](https://github.com/kristof-mattei/axum-proxy/commit/ac50713bcc41546ba31e7929ea94d780262c46c3))
+- Enabled codecov - ([70a7b60](https://github.com/kristof-mattei/axum-proxy/commit/70a7b60de32c66a3c0315f67d0f8278d91fc797a))
+- Codecov - ([1f6458f](https://github.com/kristof-mattei/axum-proxy/commit/1f6458f7eeb0ba5dd85d02ebcd67734c4dbd5623))
+- Bumped cargo version - ([f47f7d0](https://github.com/kristof-mattei/axum-proxy/commit/f47f7d0d5f7c6ba227002ba705a58f2fdf05aa2b))
+- Username.toLowerCase() - ([3c41052](https://github.com/kristof-mattei/axum-proxy/commit/3c410523e2c154652a3564511bbc90fde0710bb3))
+- Make sure husky doesn't install on CI servers - ([6908d84](https://github.com/kristof-mattei/axum-proxy/commit/6908d84e175ffab99bd18227bcbd515e0020c778))
+
+### ⚙️ Miscellaneous Tasks
+
+- Update scripts - ([70840c6](https://github.com/kristof-mattei/axum-proxy/commit/70840c6c5427d3382d44a5be2e9261a2551f52f9))
+- Update prettier invocation - ([206b7b4](https://github.com/kristof-mattei/axum-proxy/commit/206b7b4754c9f4eca535f00825e03fcadc80820d))
+- Fix deprecation warning - ([65e2839](https://github.com/kristof-mattei/axum-proxy/commit/65e28390d36672220c37ffb735089567b904ea2c))
+- Update from upstream - ([f5b5608](https://github.com/kristof-mattei/axum-proxy/commit/f5b560864a6258014f66c518e2d79461593d9cf8))
+- Alphabet - ([bcf4e09](https://github.com/kristof-mattei/axum-proxy/commit/bcf4e09b61d94a2cfb09f5c3d85fe1184928988e))
+- Formatting - ([c333298](https://github.com/kristof-mattei/axum-proxy/commit/c3332989026465f1af24eec19c86b12cc04121b4))
+- Update from upstream - ([62230f6](https://github.com/kristof-mattei/axum-proxy/commit/62230f65b8e967ad40b6d754b88e16b506198d73))
+- Update build scripts - ([15ee26c](https://github.com/kristof-mattei/axum-proxy/commit/15ee26c0a7f9af9839dde0e8ad4602f31ce152cb))
+- Update from upstream - ([6648b5b](https://github.com/kristof-mattei/axum-proxy/commit/6648b5b061916889c3d3f59ef5ecf972234efc0e))
+- Update from upstream - ([76d7822](https://github.com/kristof-mattei/axum-proxy/commit/76d782260b51f806a1cced9624e2c30d1ce230e9))
+- Update scripts - ([7da7690](https://github.com/kristof-mattei/axum-proxy/commit/7da76908a3714ecd22f61617b63da64dc80b3bb7))
+- Copy tags with docker tags again - ([8ffcf1e](https://github.com/kristof-mattei/axum-proxy/commit/8ffcf1ed1de7a080abcea97328b049bf909a1dba))
+## [0.5.1](https://github.com/kristof-mattei/axum-proxy/compare/v0.5.0..v0.5.1) - 2025-05-27
+
+### 🐛 Bug Fixes
+
+- *(deps)* Update rust crate hyper-util to v0.1.12 - ([635d3ec](https://github.com/kristof-mattei/axum-proxy/commit/635d3ecb981b0191c99aa71cb2a2c19c6c43f20d))
+- *(deps)* Update rust crate hyper-rustls to v0.27.6 - ([185d299](https://github.com/kristof-mattei/axum-proxy/commit/185d2999bd09f93e2b21282172b35bd1555811e9))
+- *(deps)* Update rust crate hyper-util to v0.1.13 - ([5dfa4c1](https://github.com/kristof-mattei/axum-proxy/commit/5dfa4c14ecc7a880e727f1ff74a9746658b7204b))
+- Remove unfulfilled lints - ([425ebe9](https://github.com/kristof-mattei/axum-proxy/commit/425ebe9882df61e5c0e1bba10ef2a72abb033745))
+- Added arch to buildscripts to fix collisions, removed binstall for where we just use cargo-edit, as it doesn't have a binary available - ([2e990e3](https://github.com/kristof-mattei/axum-proxy/commit/2e990e32aca9e4bca899064dbf429d7f72ebaae2))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(version)* V0.5.1 - ([4ad20ed](https://github.com/kristof-mattei/axum-proxy/commit/4ad20edda64faeead5a1b966ecb85f61618389ef))
+- Fmt - ([6ba6df5](https://github.com/kristof-mattei/axum-proxy/commit/6ba6df545e87f1e6676e3c8c4daa9fc3cd8cfc0d))
+- Update scripts from upstream - ([6dec586](https://github.com/kristof-mattei/axum-proxy/commit/6dec58662969904b8a3fe7aae8431b39463c07f0))
+- Update from upstream - ([9462bcc](https://github.com/kristof-mattei/axum-proxy/commit/9462bcc7b03ac736a48342b551d18b8777de002c))
+- Allow windows-sys multiple versions - ([b035e34](https://github.com/kristof-mattei/axum-proxy/commit/b035e34755158255339cfac46431d8fd28914034))
+## [0.5.0](https://github.com/kristof-mattei/axum-proxy/compare/v0.4.2..v0.5.0) - 2025-05-02
+
+### 🚀 Features
+
+- Add features for ring and aws-lc - ([d446879](https://github.com/kristof-mattei/axum-proxy/commit/d446879bc03146be77c5cbe862d0a2885201546f))
+
+### 🐛 Bug Fixes
+
+- Split tls backends into 2 options - ([6f08860](https://github.com/kristof-mattei/axum-proxy/commit/6f088608dec706083d023c8ab2a34ea3ef3810f0))
+- Add flags to prevent bad configuration - ([cf960c7](https://github.com/kristof-mattei/axum-proxy/commit/cf960c745da3eda31ea53fe2df85f054c078922c))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(version)* V0.5.0 - ([0309af5](https://github.com/kristof-mattei/axum-proxy/commit/0309af5540de232bcf3b684466239049d4ff4aec))
+- *(version)* V0.5.0 - ([774d534](https://github.com/kristof-mattei/axum-proxy/commit/774d534e277d51e5f6fd135dd4c2da70ed716e66))
+- Update build patterns - ([658bfaa](https://github.com/kristof-mattei/axum-proxy/commit/658bfaa9775234ec76a3654ae43d1433dae70141))
+- Bump to rust edition 2024 - ([efdda73](https://github.com/kristof-mattei/axum-proxy/commit/efdda7318d02748331aa57a36ec0618bb66bef94))
+## [0.4.2](https://github.com/kristof-mattei/axum-proxy/compare/v0.4.1..v0.4.2) - 2025-04-30
+
+### 🐛 Bug Fixes
+
+- *(deps)* Update rust crate axum to v0.8.4 - ([ac5a297](https://github.com/kristof-mattei/axum-proxy/commit/ac5a297a8e16ad7508f5dbf9cb184dc56a2f1698))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(version)* V0.4.2 - ([33bcea1](https://github.com/kristof-mattei/axum-proxy/commit/33bcea10b9588d459e835a643d855efba9a6c0ec))
+## [0.4.1](https://github.com/kristof-mattei/axum-proxy/compare/v0.4.0..v0.4.1) - 2025-04-09
+
+### 🐛 Bug Fixes
+
+- Also test docs - ([b8de394](https://github.com/kristof-mattei/axum-proxy/commit/b8de394fcd5b3a0feb68bf7776b10b2bde218bb8))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(version)* V0.4.1 - ([822d259](https://github.com/kristof-mattei/axum-proxy/commit/822d25948b0b94a6bba97f8488666de97d32cc57))
+## [0.4.0](https://github.com/kristof-mattei/axum-proxy/compare/v0.3.0..v0.4.0) - 2025-04-09
+
+### 🐛 Bug Fixes
+
+- *(deps)* Update rust crate log to v0.4.26 - ([89840ab](https://github.com/kristof-mattei/axum-proxy/commit/89840ab1fa911ef08cbc234951509e2f21d1cb15))
+- *(deps)* Update rust crate http to v1.3.1 - ([aa278ce](https://github.com/kristof-mattei/axum-proxy/commit/aa278ce00da24a94a84382e8093a36a14da234af))
+- *(deps)* Update rust crate log to v0.4.27 - ([6aff567](https://github.com/kristof-mattei/axum-proxy/commit/6aff56764c5365e69b68d80ce6bf0b77002fb843))
+- *(deps)* Update rust crate axum to v0.8.3 - ([13490ba](https://github.com/kristof-mattei/axum-proxy/commit/13490bafb9b7db66566f4363c03a413d648d5512))
+- *(deps)* Update rust crate hyper-util to v0.1.11 - ([2ff618f](https://github.com/kristof-mattei/axum-proxy/commit/2ff618f3a3d52852f16f246fb19b43c1b1cff259))
+- Revert pin on dev packages, bump 0. packages - ([e8dc406](https://github.com/kristof-mattei/axum-proxy/commit/e8dc4064f8e663393589a321dc1ed58ed236be33))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(version)* V0.4.0 - ([1e48cff](https://github.com/kristof-mattei/axum-proxy/commit/1e48cffa542380fef8de74ef4ed83ea135fcd2d2))
+- Ignore generated changelog - ([f27df3f](https://github.com/kristof-mattei/axum-proxy/commit/f27df3f806bb36e82f6e974aedb9013da50d1c31))
+- Rename package - ([8d21ea4](https://github.com/kristof-mattei/axum-proxy/commit/8d21ea4caac35324069ad0f7295e6199e3a6ad1c))
+- Formatting - ([052b77c](https://github.com/kristof-mattei/axum-proxy/commit/052b77c79e796773305849bb62fc8d7a11f27a6c))
+- Set name - ([a13b01f](https://github.com/kristof-mattei/axum-proxy/commit/a13b01ff6550cb48a732dc7a55baac0466c337d9))
+- Widen tokio for dev-deps - ([398c43b](https://github.com/kristof-mattei/axum-proxy/commit/398c43bd7271e952868e0e2464bb296645969dfb))
+- Update build patterns - ([f188d03](https://github.com/kristof-mattei/axum-proxy/commit/f188d03b73fefe70e76e6661fda25f133f826b29))
+- Housekeeping - ([5e12ee2](https://github.com/kristof-mattei/axum-proxy/commit/5e12ee2d3de765fbaab4a97a0149dde689e7a51e))
+## [0.3.0](https://github.com/kristof-mattei/axum-proxy/compare/v0.1.0..v0.3.0) - 2025-01-04
+
+### 🚀 Features
+
+- Add rustls supports - ([e12d5d5](https://github.com/kristof-mattei/axum-proxy/commit/e12d5d5c04b2f889c4a6438c7bb9884c8f214790))
+- Move to hyper >1.0.0 and matching axum versionthis replaces the functionality removed in hyper 1.0.0 by thehyper_util and http_body_util crates. - ([0bcf642](https://github.com/kristof-mattei/axum-proxy/commit/0bcf642f85df871fc24bb9eb4dc3e8cf24162d08))
+- Fork - ([2200e40](https://github.com/kristof-mattei/axum-proxy/commit/2200e40b96452dd266b4a01d727a1c0bfe56184b))
+- My automation flow - ([ecb1839](https://github.com/kristof-mattei/axum-proxy/commit/ecb1839542aa358b22dcc031f165e7ef358d85ae))
+
+### 🐛 Bug Fixes
+
+- Make all tests work with axum 8 (and probably other issues) - ([55fe06c](https://github.com/kristof-mattei/axum-proxy/commit/55fe06cbc5219b04dba44c4b0561e64abb855247))
+- Enable renovate - ([dad87c0](https://github.com/kristof-mattei/axum-proxy/commit/dad87c0b813eb4bbc95fa00dbd358caf71f50c13))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(version)* V0.3.0 - ([c7a9f8e](https://github.com/kristof-mattei/axum-proxy/commit/c7a9f8eed84ec93efa821a09e93f41188a6eafe9))
+- Initial commit - ([47778bc](https://github.com/kristof-mattei/axum-proxy/commit/47778bcae2d2f6c8a44e7cb1fdb9c279adb135d9))
+- Fix the link to docs.rs in readme - ([3711dfd](https://github.com/kristof-mattei/axum-proxy/commit/3711dfd0b897721e8bfeb33299e08e116353d794))
+- Version v0.1.1 - ([73abdb0](https://github.com/kristof-mattei/axum-proxy/commit/73abdb0965a7cb3d4f82dc95f43935734e0291db))
+- Add attr into docs to indicate features - ([eb78cc0](https://github.com/kristof-mattei/axum-proxy/commit/eb78cc07da519387f4fbe4ee6d737da7075ca7fe))
+- Upgrade the dependency on regex - ([25fa844](https://github.com/kristof-mattei/axum-proxy/commit/25fa844cb20b56891d7f65bf4032270638106082))
+- Version v0.2.0 - ([649eeea](https://github.com/kristof-mattei/axum-proxy/commit/649eeeac0dd7cd10abe7f12a31e62249483354fd))
+- Update reused.rs - ([5eecc00](https://github.com/kristof-mattei/axum-proxy/commit/5eecc00a6c6d199627d6f2fb1710116e7886ed20))
+- Version v0.2.1 - ([b310726](https://github.com/kristof-mattei/axum-proxy/commit/b31072661b4566746b32e71447eec36b4572c4f9))
+- Bump axum - ([500d445](https://github.com/kristof-mattei/axum-proxy/commit/500d44523f5681ec40d9f7087939e417e1aab5ec))
+- Fix merge mess - ([84cc6f3](https://github.com/kristof-mattei/axum-proxy/commit/84cc6f31043fc386cf359a830f7430d513876fa8))
+- Address clippy's suggestions - ([bc7da05](https://github.com/kristof-mattei/axum-proxy/commit/bc7da05d6f86730da5862df2913371adfb1369e1))
+- Fmt - ([dfa4d84](https://github.com/kristof-mattei/axum-proxy/commit/dfa4d841ac7e53fd18db5ccc9f68c92a24f240c9))
+- Ensure folders are present - ([2f5ced0](https://github.com/kristof-mattei/axum-proxy/commit/2f5ced0ab2d5cf71a560744362fe0672df7a3d0b))
+- Add nextest profile & devcontainer - ([fb7a152](https://github.com/kristof-mattei/axum-proxy/commit/fb7a15280bc8870c32ab43d2b639727ad5bad077))
+<!-- generated by git-cliff -->
