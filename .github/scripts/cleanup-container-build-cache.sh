@@ -7,6 +7,7 @@ PACKAGE_NAME="package"
 PER_PAGE=100
 DRY_RUN=false
 SKIP_CONFIRMATION=false
+DAYS_THRESHOLD=30
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -31,6 +32,10 @@ while [[ $# -gt 0 ]]; do
             PACKAGE_NAME="$2"
             shift 2
             ;;
+        --days)
+            DAYS_THRESHOLD="$2"
+            shift 2
+            ;;
         --dry-run)
             DRY_RUN=true
             shift
@@ -40,10 +45,11 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --help)
-            echo "Usage: $0 [--org ORG | --user USER] [--package PACKAGE_NAME] [--dry-run] [--yes] [--help]"
+            echo "Usage: $0 [--org ORG | --user USER] [--package PACKAGE_NAME] [--days DAYS] [--dry-run] [--yes] [--help]"
             echo "  --org              GitHub organization name"
             echo "  --user             GitHub username"
             echo "  --package          Package name (default: $PACKAGE_NAME)"
+            echo "  --days             Age threshold in days for tagged versions (default: $DAYS_THRESHOLD)"
             echo "  --dry-run          Show what would be deleted without actually deleting"
             echo "  --yes              Skip confirmation prompt"
             echo "  --help             Show this help message"
@@ -110,6 +116,22 @@ delete_version() {
     fi
 }
 
+# Function to check if a date is older than threshold
+is_older_than_threshold() {
+    local date_str=$1
+    local threshold_seconds=$((DAYS_THRESHOLD * 24 * 60 * 60))
+    local current_timestamp=$(date +%s)
+    local version_timestamp=$(date -d "$date_str" +%s 2> /dev/null)
+
+    if [[ -z "$version_timestamp" ]]; then
+        echo "Warning: Could not parse date: $date_str" >&2
+        return 1
+    fi
+
+    local age_seconds=$((current_timestamp - version_timestamp))
+    [[ $age_seconds -gt $threshold_seconds ]]
+}
+
 # Check if gh CLI is installed and authenticated
 if ! command -v gh &> /dev/null; then
     echo "Error: GitHub CLI (gh) is not installed"
@@ -129,9 +151,11 @@ fi
 
 # Collect all version IDs to delete
 untagged_versions=()
+old_tagged_versions=()
 page=1
 
 echo "Fetching version data..."
+echo "Will delete tagged versions older than $DAYS_THRESHOLD days..."
 
 while true; do
     echo "Processing page $page..."
@@ -159,10 +183,26 @@ while true; do
         if [[ -n "$version" ]]; then
             version_id=$(echo "$version" | jq --raw-output '.id')
             tags=$(echo "$version" | jq '.metadata.container.tags')
+            created_at=$(echo "$version" | jq --raw-output '.created_at')
+            updated_at=$(echo "$version" | jq --raw-output '.updated_at')
 
             # Check for untagged versions
             if echo "$tags" | jq -e '. == []' > /dev/null; then
                 untagged_versions+=("$version_id")
+            else
+                # Check if tagged version is old enough
+                # Use updated_at if available, otherwise fall back to created_at
+                check_date="$updated_at"
+                if [[ "$check_date" == "null" || -z "$check_date" ]]; then
+                    check_date="$created_at"
+                fi
+
+                if [[ "$check_date" != "null" && -n "$check_date" ]]; then
+                    if is_older_than_threshold "$check_date"; then
+                        tag_list=$(echo "$tags" | jq --raw-output '.[]' | tr '\n' ',' | sed 's/,$//')
+                        old_tagged_versions+=("$version_id:$tag_list:$check_date")
+                    fi
+                fi
             fi
         fi
     done <<< "$(echo "$response" | jq -c '.[]')"
@@ -180,8 +220,9 @@ done
 echo ""
 echo "=== CLEANUP SUMMARY ==="
 echo "Found ${#untagged_versions[@]} untagged versions"
+echo "Found ${#old_tagged_versions[@]} tagged versions older than $DAYS_THRESHOLD days"
 
-total_to_delete=${#untagged_versions[@]}
+total_to_delete=$((${#untagged_versions[@]} + ${#old_tagged_versions[@]}))
 
 if [[ $total_to_delete -eq 0 ]]; then
     echo "No versions found to delete."
@@ -192,6 +233,12 @@ if [[ ${#untagged_versions[@]} -gt 0 ]]; then
     echo ""
     echo "Untagged version IDs:"
     printf '%s\n' "${untagged_versions[@]}"
+fi
+
+if [[ ${#old_tagged_versions[@]} -gt 0 ]]; then
+    echo ""
+    echo "Old tagged versions (ID:tags:date):"
+    printf '%s\n' "${old_tagged_versions[@]}"
 fi
 
 if [[ "$DRY_RUN" == "true" ]]; then
@@ -226,6 +273,23 @@ if [[ "$skip_image_deletion" == "false" && $total_to_delete -gt 0 ]]; then
         echo "Cleaning up untagged versions..."
         for version_id in "${untagged_versions[@]}"; do
             delete_version "$version_id" "untagged"
+
+            if [[ "$DRY_RUN" == "false" ]]; then
+                if [[ $? -eq 0 ]]; then
+                    ((deleted_count++))
+                else
+                    ((failed_count++))
+                fi
+            fi
+        done
+    fi
+
+    # Delete old tagged versions
+    if [[ ${#old_tagged_versions[@]} -gt 0 ]]; then
+        echo "Cleaning up old tagged versions..."
+        for version_info in "${old_tagged_versions[@]}"; do
+            IFS=':' read -r version_id tags date <<< "$version_info"
+            delete_version "$version_id" "tagged: $tags (from $date)"
 
             if [[ "$DRY_RUN" == "false" ]]; then
                 if [[ $? -eq 0 ]]; then
