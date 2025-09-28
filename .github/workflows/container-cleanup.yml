@@ -1,0 +1,31 @@
+name: Container Registry Cleanup
+
+on:
+  schedule:
+    # Every Saturday at 20:00 UTC (8 PM)
+    - cron: "0 20 * * 6"
+  workflow_dispatch:
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          show-progress: false
+
+      - name: Run container cleanup
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ./.github/scripts/cleanup.sh \
+            --user ${{ github.repository_owner }} \
+            --package ${{ github.event.repository.name }} \
+            --yes
