@@ -130,7 +130,6 @@ version = "0.0.0-development"
 dependencies = [
  "axum",
  "http",
- "http-body",
  "http-body-util",
  "hyper",
  "hyper-rustls",
