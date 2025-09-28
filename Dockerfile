@@ -1,5 +1,5 @@
 # Rust toolchain setup
-FROM --platform=${BUILDPLATFORM} rust:1.90.0-trixie@sha256:eabb786e74b520e7ea45baca03ea20c3e8c6dc037c392d457badf05d8e5818b5 AS rust-base
+FROM --platform=${BUILDPLATFORM} rust:1.90.0-slim-trixie@sha256:40d4ee109c7e740b3a242f20cc3b5790af9c725828b86a458765f192391a6a4a AS rust-base
 
 ARG APPLICATION_NAME
 ARG DEBIAN_FRONTEND=noninteractive
@@ -23,9 +23,11 @@ ARG TARGET=x86_64-unknown-linux-musl
 FROM rust-base AS rust-linux-arm64
 ARG TARGET=aarch64-unknown-linux-musl
 
-FROM rust-${TARGETPLATFORM//\//-} AS rust-cargo-build
+FROM rust-linux-${TARGETARCH//\//-} AS rust-cargo-build
 
 ARG DEBIAN_FRONTEND=noninteractive
+# expose into `build.sh`
+ARG TARGETVARIANT
 
 COPY ./build-scripts /build-scripts
 
@@ -95,6 +97,8 @@ RUN cat /etc/passwd | grep appuser > /tmp/passwd_appuser
 FROM scratch
 
 ARG APPLICATION_NAME
+ARG TARGETARCH
+ARG TARGETVARIANT
 
 COPY --from=passwd-build /tmp/group_appuser /etc/group
 COPY --from=passwd-build /tmp/passwd_appuser /etc/passwd
@@ -104,6 +108,8 @@ COPY --from=rust-build /output/bin/${APPLICATION_NAME} /app/entrypoint
 USER appuser
 
 ENV RUST_BACKTRACE=full
+ENV TARGETARCH=${TARGETARCH}
+ENV TARGETVARIANT=${TARGETVARIANT}
 
 WORKDIR /app
 
