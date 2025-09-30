@@ -1,5 +1,5 @@
 # Rust toolchain setup
-FROM --platform=${BUILDPLATFORM} rust:1.90.0-slim-trixie@sha256:40d4ee109c7e740b3a242f20cc3b5790af9c725828b86a458765f192391a6a4a AS rust-base
+FROM --platform=${BUILDPLATFORM} rust:1.90.0-slim-trixie@sha256:5569ca9f826490a8d4798b6050bff56ea13d6c2f36fa2d45b8edbf477b04f3d5 AS rust-base
 
 ARG APPLICATION_NAME
 ARG DEBIAN_FRONTEND=noninteractive
