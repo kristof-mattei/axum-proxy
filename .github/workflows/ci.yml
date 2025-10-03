@@ -387,14 +387,17 @@ jobs:
         with:
           args: ${{ env.CARGO_FEATURES }} --all-targets --locked --workspace --verbose
 
-  prebuild-cargo-edit-cargo-get:
-    name: Prebuild cargo-edit and cargo-get for ${{ matrix.runs-on }}
+  pre-build-cargo-edit-cargo-get:
+    name: pre-build cargo-edit and cargo-get for ${{ matrix.runs-on }}
     strategy:
       matrix:
         runs-on:
           - "ubuntu-latest"
           - "ubuntu-24.04-arm"
     runs-on: ${{ matrix.runs-on }}
+    needs:
+      - repo-has-container
+    if: fromJSON(needs.repo-has-container.outputs.has_container) == true
     steps:
       - *checkout
 
@@ -435,7 +438,7 @@ jobs:
       - calculate-version
       - architectures
       # ensures cache of cargo-edit and cargo-get
-      - prebuild-cargo-edit-cargo-get
+      - pre-build-cargo-edit-cargo-get
     # if:
     # ... is not needed because calculate-version will not run if we disable building the docker container
     steps:
@@ -454,10 +457,10 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
           key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-${{ github.job }}
-          # deviation from standard `*cache_cargo`, we want the cache from `prebuild-cargo-edit-cargo-get`
-          # as that one prebuilds it for us
+          # deviation from standard `*cache_cargo`, we want the cache from `pre-build-cargo-edit-cargo-get`
+          # as that one pre-builds it for us
           restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-prebuild-cargo-edit-cargo-get
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-pre-build-cargo-edit-cargo-get
             ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
             ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
 
