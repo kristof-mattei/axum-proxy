@@ -44,7 +44,7 @@ hyper-util = { version = "0.1.17", features = [
     "client-legacy",
     "tokio",
 ] }
-regex = "1.11.3"
+regex = "1.12.2"
 tower-service = "0.3.3"
 tracing = "0.1.41"
 
