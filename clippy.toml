@@ -1,1 +1,8 @@
-absolute-paths-allowed-crates = ["hyper_util", "std"]
+absolute-paths-allowed-crates = [
+    "axum",
+    "axum_proxy",
+    "hyper",
+    "hyper_util",
+    "std",
+    "tokio",
+]
