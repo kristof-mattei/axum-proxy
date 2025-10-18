@@ -368,6 +368,7 @@ jobs:
           grcov $(find . -name "profile-*.profraw" -print) \
             --binary-path ./target/debug/ \
             --branch \
+            --excl-line "^\s*$" \
             --ignore-not-existing \
             --keep-only "src/**" \
             --llvm \
