@@ -5,18 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "lldb",
-            "request": "launch",
             "name": "Debug executable 'axum-proxy'",
+            "type": "lldb",
+            "request": "launch",
             "cargo": {
-                "args": ["build", "--bin=axum-proxy", "--package=axum-proxy"],
-                "filter": {
-                    "name": "axum-proxy",
-                    "kind": "bin"
-                }
+                "args": ["run", "--bin=axum-proxy"]
             },
             "args": [],
-            "cwd": "${workspaceFolder}",
             "env": {
                 "RUST_BACKTRACE": "1",
                 "RUST_LOG": "DEBUG,axum_proxy=TRACE"
@@ -25,23 +20,12 @@
             "terminal": "integrated"
         },
         {
-            "type": "lldb",
-            "request": "launch",
             "name": "Debug unit tests in executable 'axum-proxy'",
+            "type": "lldb",
+            "request": "launch",
             "cargo": {
-                "args": [
-                    "test",
-                    "--no-run",
-                    "--bin=axum-proxy",
-                    "--package=axum-proxy"
-                ],
-                "filter": {
-                    "name": "axum-proxy",
-                    "kind": "bin"
-                }
+                "args": ["test", "--bin=axum-proxy"]
             },
-            "args": [],
-            "cwd": "${workspaceFolder}",
             "env": {
                 "RUST_BACKTRACE": "1",
                 "RUST_LOG": "DEBUG,axum_proxy=TRACE"
@@ -50,23 +34,12 @@
             "terminal": "integrated"
         },
         {
+            "name": "Debug integration test 'integration_tests'",
             "type": "lldb",
             "request": "launch",
-            "name": "Debug integration test 'integration_tests'",
             "cargo": {
-                "args": [
-                    "test",
-                    "--no-run",
-                    "--test=integration_tests",
-                    "--package=axum-proxy"
-                ],
-                "filter": {
-                    "name": "integration_tests",
-                    "kind": "test"
-                }
+                "args": ["test", "--test=integration_tests"]
             },
-            "args": [],
-            "cwd": "${workspaceFolder}",
             "env": {
                 "RUST_BACKTRACE": "1",
                 "RUST_LOG": "DEBUG,axum_proxy=TRACE"
