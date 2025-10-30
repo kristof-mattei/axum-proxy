@@ -25,7 +25,7 @@ case $TARGET in
         ;;
 esac
 
-rust_flags="-Clink-self-contained=yes -Clinker=rust-lld ${target_cpu}"
+rustflags="-Clink-self-contained=yes -Clinker=rust-lld ${target_cpu}"
 
 # replace - with _ in the Rust target
 target_lower=${TARGET//-/_}
@@ -41,4 +41,4 @@ declare -x "${cxx_var}=${cpp_compiler}"
 cargo_target_linker_var=CARGO_TARGET_${target_upper}_LINKER
 declare -x "${cargo_target_linker_var}=${c_compiler}"
 
-RUSTFLAGS=$rust_flags cargo $@
+RUSTFLAGS=$rustflags cargo $@ --target ${TARGET}
