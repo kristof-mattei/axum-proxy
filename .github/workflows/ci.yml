@@ -569,20 +569,18 @@ jobs:
           description=$(cargo get package.description)
           echo "description=${description}" >> ${GITHUB_OUTPUT}
 
-      # Extract metadata (tags, labels) for Docker
-      # https://github.com/docker/metadata-action
-      - name: Extract Docker metadata
-        uses: docker/metadata-action@318604b99e75e41977312d83839a89be02ca4893 # v5.9.0
-        id: meta
+      - name: Set up Docker
+        uses: docker/setup-docker-action@efe9e3891a4f7307e689f2100b33a155b900a608 # v4.5.0
         with:
-          labels: |
-            org.opencontainers.image.description=${{ steps.variables.outputs.description }} (${{ matrix.platform }})
-            org.opencontainers.image.revision=${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}
-            org.opencontainers.image.source=${{ github.event.pull_request.html_url }}
-            org.opencontainers.image.version=pr-${{ github.event.number }}
-          images: ${{ steps.variables.outputs.full_image_name_local_registry }}
-          tags: |
-            type=raw,value=${{ steps.variables.outputs.unique_tag_arch }}
+          daemon-config: |
+            {
+              "features": {
+                "containerd-snapshotter": true
+              }
+            }
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
 
       - name: Log into registry ${{ steps.variables.outputs.registry }}
         uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
@@ -609,8 +607,18 @@ jobs:
         with:
           platforms: linux/${{ matrix.platform }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
+      - name: Extract Docker metadata
+        uses: docker/metadata-action@318604b99e75e41977312d83839a89be02ca4893 # v5.9.0
+        id: meta
+        with:
+          labels: |
+            org.opencontainers.image.description=${{ steps.variables.outputs.description }} (${{ matrix.platform }})
+            org.opencontainers.image.revision=${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}
+            org.opencontainers.image.source=${{ github.event.pull_request.html_url }}
+            org.opencontainers.image.version=pr-${{ github.event.number }}
+          images: ${{ steps.variables.outputs.full_image_name_local_registry }}
+          tags: |
+            type=raw,value=${{ steps.variables.outputs.unique_tag_arch }}
 
       - name: Build Docker image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
@@ -670,6 +678,9 @@ jobs:
               }
             }
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
+
       - name: Log into registry ${{ needs.docker-build.outputs.registry }}
         uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
         with:
@@ -677,7 +688,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Docker metadata
+      - name: Extract Docker metadata
         uses: docker/metadata-action@318604b99e75e41977312d83839a89be02ca4893 # v5.9.0
         id: meta
         with:
