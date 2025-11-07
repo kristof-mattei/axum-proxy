@@ -758,8 +758,12 @@ jobs:
             new_tags+=(${tag})
           done <<< "${{ steps.meta.outputs.tags }}"
 
-          docker buildx imagetools create "${new_tags[@]}" \
-            ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}
+          while timeout --kill-after=70 60 docker buildx imagetools create "${new_tags[@]}" \
+            ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}; [ $? = 124 ]; do
+            echo "Timeout exceeded, trying again..."
+
+            sleep 2
+          done
 
           for new_tag in $(echo "${{ join(steps.meta.outputs.tags, ' ') }}"); do
             echo "Inspecting ${new_tag}:"
