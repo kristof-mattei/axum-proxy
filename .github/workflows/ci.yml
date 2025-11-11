@@ -759,15 +759,21 @@ jobs:
           done <<< "${{ steps.meta.outputs.tags }}"
 
           while timeout --kill-after=70 60 docker buildx imagetools create "${new_tags[@]}" \
-            ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}; [ $? = 124 ]; do
-            echo "Timeout exceeded, trying again..."
+            ${{ needs.docker-build.outputs.full_image_name_local_registry }}:${{ needs.docker-build.outputs.unique_tag }}; [[ ! $? -eq 0 ]]; do
+            echo "Timeout exceeded / command failed, trying again..."
 
             sleep 2
           done
 
+          echo "Process exited with: $?"
+
           for new_tag in $(echo "${{ join(steps.meta.outputs.tags, ' ') }}"); do
             echo "Inspecting ${new_tag}:"
-            docker buildx imagetools inspect --raw ${new_tag}
+            while timeout --kill-after=70 60 docker buildx imagetools inspect --raw ${new_tag}; [[ ! $? -eq 0 ]]; do
+              echo "Timeout exceeded / command failed, trying again..."
+
+              sleep 2
+            done
             # empty to get newline
             echo ""
           done
