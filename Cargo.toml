@@ -261,6 +261,9 @@ wildcard_enum_match_arm = { level = "deny", priority = 127 }
 
 # end restriction
 
+# merging ifs can hurts legibility, so it's not a good deny lint
+collapsible_if = { level = "allow", priority = 127 }
+
 # this has 0 performance implications, the binding is compiled away, and it could cause issues
 # when done blindly, plus it makes it harder to debug as you cannot put breakpoints on return
 # values of functions (yet)
