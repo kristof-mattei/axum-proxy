@@ -653,9 +653,9 @@ jobs:
         image: registry:3@sha256:cd92709b4191c5779cd7215ccd695db6c54652e7a62843197e367427efb84d0e
         ports:
           - 5000:5000
+    outputs:
+      digest: ${{ steps.local_image.outputs.digest }}
     permissions:
-      attestations: write
-      id-token: write
       packages: write
     needs:
       - cargo-build
@@ -765,8 +765,9 @@ jobs:
             sleep 2
           done
 
-          echo "Process exited with: $?"
-
+      - name: Inspect new remote tags
+        shell: bash
+        run: |
           for new_tag in $(echo "${{ join(steps.meta.outputs.tags, ' ') }}"); do
             echo "Inspecting ${new_tag}:"
             while timeout --kill-after=70 60 docker buildx imagetools inspect --raw ${new_tag}; [[ ! $? -eq 0 ]]; do
@@ -774,10 +775,45 @@ jobs:
 
               sleep 2
             done
+
             # empty to get newline
             echo ""
           done
 
+  docker-attest:
+    name: Attest Docker container
+    runs-on: ubuntu-latest
+    permissions:
+      attestations: write
+      id-token: write
+      packages: write
+    needs:
+      - docker-build
+      - docker-publish
+    # Check if the event is not triggered by a fork
+    if: |
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event_name == 'pull_request'
+    steps:
+      - name: Set up Docker
+        uses: docker/setup-docker-action@efe9e3891a4f7307e689f2100b33a155b900a608 # v4.5.0
+        with:
+          daemon-config: |
+            {
+              "features": {
+                "containerd-snapshotter": true
+              }
+            }
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
+
+      - name: Log into registry ${{ needs.docker-build.outputs.registry }}
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ${{ needs.docker-build.outputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       # note that we use the digest of the local image
       # these digests don't change after pushing, but
       # since we deal with tags (mutable), and the way to get a digest is to use the tag, I prefer
@@ -787,7 +823,7 @@ jobs:
         id: attestation
         with:
           subject-name: ${{ needs.docker-build.outputs.full_image_name_remote_registry }}
-          subject-digest: ${{ steps.local_image.outputs.digest }}
+          subject-digest: ${{ needs.docker-publish.outputs.digest }}
           push-to-registry: true
 
   all-done:
@@ -807,6 +843,7 @@ jobs:
       - cargo-test-and-report
       - docker-build
       - docker-publish
+      - docker-attest
     if: |
       always()
     steps:
