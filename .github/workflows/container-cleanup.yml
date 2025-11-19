@@ -24,27 +24,27 @@ jobs:
           has_container="${{ vars.HAS_CONTAINER }}"
           echo "has_container=${has_container:-false}" >> ${GITHUB_OUTPUT}
 
-  cleanup-containers:
-    name: Cleanup containers
-    runs-on: ubuntu-latest
-    needs:
-      - repo-has-container
-    if: |
-      fromJSON(needs.repo-has-container.outputs.has_container) == true
-    steps:
-      - name: Checkout
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
-        with:
-          show-progress: false
+  # cleanup-containers:
+  #   name: Cleanup containers
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - repo-has-container
+  #   if: |
+  #     fromJSON(needs.repo-has-container.outputs.has_container) == true
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+  #       with:
+  #         show-progress: false
 
-      - name: Run container cleanup
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          ./.github/scripts/cleanup-containers.sh \
-            --user ${{ github.repository_owner }} \
-            --package ${{ github.event.repository.name }} \
-            --yes
+  #     - name: Run container cleanup
+  #       env:
+  #         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       run: |
+  #         ./.github/scripts/cleanup-containers.sh \
+  #           --user ${{ github.repository_owner }} \
+  #           --package ${{ github.event.repository.name }} \
+  #           --yes
 
   cleanup-container-build-cache:
     name: Cleanup container build cache
