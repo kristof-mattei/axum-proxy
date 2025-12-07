@@ -17,7 +17,8 @@ git checkout -b update-from-upstream origin/main
 git push --set-upstream origin update-from-upstream
 
 # merge in the changes from upstream
-git merge upstream/main --no-edit
+echo "chore: update from upstream" > ./.git/SQUASH_MSG
+git merge upstream/main --squash -m "chore: update from upstream"
 
 # fix stuff and ...
 # git push
