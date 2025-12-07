@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 absolute-paths-allowed-crates = [
     "axum",
     "axum_proxy",
@@ -5,4 +6,29 @@ absolute-paths-allowed-crates = [
     "hyper_util",
     "std",
     "tokio",
+||||||| c2dc841
+absolute-paths-allowed-crates = ["std"]
+=======
+absolute-paths-allowed-crates = ["std"]
+disallowed-methods = [
+    # https://github.com/serde-rs/json/issues/160
+    "serde_json::from_reader",
+]
+disallowed-types = [
+    { path = "std::collections::HashMap", replacement = "hashbrown::HashMap", reason = "The standard library version sacrificies performance for HashDos resistance, which should be chosen explicitly" },
+    { path = "std::collections::HashSet", replacement = "hashbrown::HashSet", reason = "The standard library version sacrificies performance for HashDos resistance, which should be chosen explicitly" },
+]
+enforced-import-renames = [
+    { path = "serde_json::from_slice", rename = "from_json_slice" },
+    { path = "serde_json::from_str", rename = "from_json_str" },
+    { path = "serde_json::from_value", rename = "from_json_value" },
+    { path = "serde_json::to_value", rename = "to_json_value" },
+    { path = "serde_json::value::to_raw_value", rename = "to_raw_json_value" },
+    { path = "serde_json::value::RawValue", rename = "RawJsonValue" },
+    { path = "serde_json::Value", rename = "JsonValue" },
+]
+standard-macro-braces = [
+    { name = "quote", brace = "{" },
+    { name = "quote::quote", brace = "{" },
+>>>>>>> upstream/main
 ]

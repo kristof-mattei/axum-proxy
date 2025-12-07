@@ -1256,9 +1256,18 @@ dependencies = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "stable_deref_trait"
 version = "1.2.1"
+||||||| c2dc841
+name = "tracing"
+version = "0.1.41"
+=======
+name = "tracing"
+version = "0.1.43"
+>>>>>>> upstream/main
 source = "registry+https://github.com/rust-lang/crates.io-index"
+<<<<<<< HEAD
 checksum = "6ce2be8dc25455e1f91df71bfa12ad37d7af1092ae736f3a6cd0e37bc7810596"
 
 [[package]]
@@ -1272,6 +1281,11 @@ name = "syn"
 version = "2.0.111"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "390cc9a294ab71bdb1aa2e99d13be9c753cd2d7bd6560c77118597410c4d2e87"
+||||||| c2dc841
+checksum = "784e0ac535deb450455cbfa28a6f0df145ea1bb7ae51b821cf5e7927fdcfbdd0"
+=======
+checksum = "2d15d90a0b5c19378952d479dc858407149d7bb45a14de0142f6c534b16fc647"
+>>>>>>> upstream/main
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1511,9 +1525,18 @@ dependencies = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "utf8_iter"
 version = "1.0.4"
+||||||| c2dc841
+name = "tracing-subscriber"
+version = "0.3.20"
+=======
+name = "tracing-subscriber"
+version = "0.3.22"
+>>>>>>> upstream/main
 source = "registry+https://github.com/rust-lang/crates.io-index"
+<<<<<<< HEAD
 checksum = "b6c140620e7ffbb22c2dee59cafe6084a59b5ffc27a8859a5f0d494b5d52b6be"
 
 [[package]]
@@ -1527,6 +1550,11 @@ name = "want"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bfa7760aed19e106de2c7c0b581b509f2f25d3dacaf737cb82ac61bc6d760b0e"
+||||||| c2dc841
+checksum = "2054a14f5307d601f88daf0553e1cbf472acc4f2c51afab632431cdcd72124d5"
+=======
+checksum = "2f30143827ddab0d256fd843b7a66d164e9f271cfa0dde49142c5ca0ca291f1e"
+>>>>>>> upstream/main
 dependencies = [
  "try-lock",
 ]
