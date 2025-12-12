@@ -431,7 +431,7 @@ jobs:
         with:
           args: ${{ env.CARGO_FEATURES }} --all-targets --locked --workspace --verbose
 
-  pre-build-cargo-edit-cargo-get:
+  pre-build-cargo-edit:
     name: Pre-build cargo-edit and cargo-get for ${{ matrix.runs-on }} for caching purposes
     strategy:
       matrix:
@@ -453,10 +453,10 @@ jobs:
 
       - *get_binstall
 
-      - name: Install cargo-edit to do set-version, and cargo-get to get the description
+      - name: Install cargo-edit to do set-version
         shell: bash
         run: |
-          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cargo-edit cargo-get
+          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cargo-edit
 
   # this name is also used in `publish-crate-after-release.yml`
   docker-build:
@@ -481,8 +481,8 @@ jobs:
     needs:
       - calculate-version
       - architectures
-      # ensures cache of cargo-edit and cargo-get
-      - pre-build-cargo-edit-cargo-get
+      # ensures cache of cargo-edit
+      - pre-build-cargo-edit
     # if:
     # ... is not needed because calculate-version will not run if we disable building the docker container
     steps:
@@ -501,10 +501,10 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
           key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-${{ github.job }}
-          # deviation from standard `*cache_cargo`, we want the cache from `pre-build-cargo-edit-cargo-get`
+          # deviation from standard `*cache_cargo`, we want the cache from `pre-build-cargo-edit`
           # as that one pre-builds it for us
           restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-pre-build-cargo-edit-cargo-get
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-pre-build-cargo-edit
             ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
             ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
 
@@ -514,15 +514,17 @@ jobs:
 
       - *get_binstall
 
-      - name: Install cargo-edit to do set-version, and cargo-get to get the description
+      - name: Install cargo-edit to do set-version
         shell: bash
         run: |
-          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cargo-edit cargo-get
+          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cargo-edit
 
       - name: Set the Cargo.toml version before we copy in the data into the Docker container
         shell: bash
         run: |
           cargo set-version ${{ needs.calculate-version.outputs.version }}
+
+          git diff
 
       # TODO validate no changes between github.event.pull_request.head.sha and the actual current sha (representing the hypothetical merge)
       - name: Set variables
@@ -566,7 +568,7 @@ jobs:
           echo "full_image_name_local_registry=${local_registry}/${image_name}" >> ${GITHUB_OUTPUT}
 
           # The application's description, from Cargo.toml
-          description=$(cargo get package.description)
+          description=$(cargo metadata --format-version 1 --no-deps | jq ".packages.[] | select(.name == \"${application_name}\") | .description" --raw-output)
           echo "description=${description}" >> ${GITHUB_OUTPUT}
 
       - name: Set up Docker
