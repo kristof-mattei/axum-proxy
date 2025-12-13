@@ -2,7 +2,8 @@
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": [
         "github>kristof-mattei/renovate-config",
-        "local>kristof-mattei/axum-proxy//renovate-dont-update-cargo"
+        "local>kristof-mattei/axum-proxy//renovate-dont-update-cargo",
+        "github>kristof-mattei/renovate-config//github-actions/nonSemver"
     ],
     "forkProcessing": "enabled"
 }
