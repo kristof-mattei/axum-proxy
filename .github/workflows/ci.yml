@@ -383,16 +383,18 @@ jobs:
           fail_ci_if_error: true
           files: reports/lcov.info
           plugins: ""
+          report_type: "coverage"
           use_oidc: true
 
-      - name: Upload test results to Codecov
-        uses: codecov/test-results-action@0fa95f0e1eeaafde2c782583b36b28ad0d8c77d3 # v1.2.1
+      - name: Upload test results (to Codecov.io)
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
         with:
           disable_search: true
-          # doesn't exist here... yet
-          # disable_telem: true
+          disable_telem: true
           fail_ci_if_error: true
           files: reports/results.xml
+          plugins: ""
+          report_type: "test_results"
           use_oidc: true
 
       - name: Fail if tests failed
@@ -843,6 +845,7 @@ jobs:
       - cargo-examples
       - cargo-fmt
       - cargo-test-and-report
+      - pre-build-cargo-edit
       - docker-build
       - docker-publish
       - docker-attest
