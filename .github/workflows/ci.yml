@@ -788,6 +788,7 @@ jobs:
     name: Attest Docker container
     runs-on: ubuntu-latest
     permissions:
+      artifact-metadata: write
       attestations: write
       id-token: write
       packages: write
