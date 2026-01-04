@@ -64,6 +64,9 @@ required-features = ["axum"]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
+[package.metadata.spellcheck]
+config = "spellcheck.toml"
+
 [lints.clippy]
 # don't stop from compiling / running
 all = "warn"
