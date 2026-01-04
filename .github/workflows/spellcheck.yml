@@ -71,76 +71,15 @@ jobs:
               exit 1
           fi
 
-      - name: Cache cargo
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
-        env:
-          CACHE_NAME: cargo
-        with:
-          path: |
-            ~/.cargo/.crates.toml
-            ~/.cargo/.crates2.json
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-${{ github.job }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
-
-      - name: Set up mold
-        uses: rui314/setup-mold@725a8794d15fc7563f59595bd9556495c0564878 # v1
-
-      - name: Set up toolchain
-        shell: bash
-        run: |
-          rm ${HOME}/.cargo/bin/cargo-fmt
-          rm ${HOME}/.cargo/bin/rust-analyzer
-          rm ${HOME}/.cargo/bin/rustfmt
-
-          rustup self update
-          rustup update
-          rustup show active-toolchain || rustup toolchain install
-          rustup show
-
-          cargo --version
-
-      - name: Get binstall
-        shell: bash
-        working-directory: /tmp
-        run: |
-          case ${{ runner.arch }} in
-            X64)
-              full_platform="x86_64"
-              ;;
-            ARM64)
-              full_platform="aarch64"
-              ;;
-          esac
-
-          archive="cargo-binstall-${full_platform}-unknown-linux-musl.tgz"
-          wget \
-            --output-document=- \
-            --timeout=10 \
-            --waitretry=3 \
-            --retry-connrefused \
-            --progress=dot:mega \
-            "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/${archive}" \
-            | tar \
-                --directory=${HOME}/.cargo/bin/ \
-                --strip-components=0 \
-                --no-overwrite-dir \
-                --extract \
-                --verbose \
-                --gunzip \
-                --file=-
-
-      - name: Install cargo-spellcheck to check the spelling
+      - name: Install libclang-dev should cargo-spellcheck be built from source
         shell: bash
         run: |
           sudo apt install libclang-dev
 
-          cargo binstall --no-confirm cargo-spellcheck --target x86_64-unknown-linux-gnu --pkg-url "https://github.com/drahnr/cargo-spellcheck/releases/download/v{ version }/{ name }-v{ version }-{ target }" --pkg-fmt bin
+      - name: Install cargo-spellcheck to check the spelling
+        uses: taiki-e/install-action@cc33365ec7e3350bc47bf935f247582cc6f68344 # v2.65.12
+        with:
+          tool: cargo-spellcheck
 
       - name: Run cargo-spellcheck
         run: |
