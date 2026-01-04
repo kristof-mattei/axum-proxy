@@ -29,31 +29,10 @@ jobs:
           show-progress: false
           fetch-depth: 0
 
-      - name: Get binstall
-        shell: bash
-        working-directory: /tmp
-        run: |
-          archive="cargo-binstall-x86_64-unknown-linux-musl.tgz"
-          wget \
-            --output-document=- \
-            --timeout=10 \
-            --waitretry=3 \
-            --retry-connrefused \
-            --progress=dot:mega \
-            "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/${archive}" \
-            | tar \
-                --directory=${HOME}/.cargo/bin/ \
-                --strip-components=0 \
-                --no-overwrite-dir \
-                --extract \
-                --verbose \
-                --gunzip \
-                --file=-
-
-      - name: Install cocogitto to get the next version number
-        shell: bash
-        run: |
-          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm cocogitto --pkg-url "{ repo }/releases/download/{ version }/{ name }-{ version }-{ target }.tar.gz" --bin-dir "{ target }/{ bin }{ binary-ext }" --target x86_64-unknown-linux-musl --pkg-fmt tgz --bin cog --strategies crate-meta-data
+      - name: Install cocogitto to lint commits
+        uses: taiki-e/install-action@cc33365ec7e3350bc47bf935f247582cc6f68344 # v2.65.12
+        with:
+          tool: cocogitto
 
       - name: Check the commits
         shell: bash

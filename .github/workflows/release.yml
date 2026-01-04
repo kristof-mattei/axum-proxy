@@ -41,62 +41,10 @@ jobs:
           show-progress: false
           token: ${{ secrets.TOKEN_TO_TRIGGER_SUBSEQUENT_WORKFLOWS }}
 
-      - name: Cache cargo
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
-        env:
-          CACHE_NAME: cargo
-        with:
-          path: |
-            ~/.cargo/.crates.toml
-            ~/.cargo/.crates2.json
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-git-cliff
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
-
-      - name: Set up toolchain
-        shell: bash
-        run: |
-          rm ${HOME}/.cargo/bin/cargo-fmt
-          rm ${HOME}/.cargo/bin/rust-analyzer
-          rm ${HOME}/.cargo/bin/rustfmt
-
-          rustup self update
-          rustup update
-          rustup show active-toolchain || rustup toolchain install
-          rustup show
-
-          cargo --version
-
-      - name: Get binstall
-        shell: bash
-        working-directory: /tmp
-        run: |
-          archive="cargo-binstall-x86_64-unknown-linux-musl.tgz"
-          wget \
-            --output-document=- \
-            --timeout=10 \
-            --waitretry=3 \
-            --retry-connrefused \
-            --progress=dot:mega \
-            "https://github.com/cargo-bins/cargo-binstall/releases/latest/download/${archive}" \
-            | tar \
-                --directory=${HOME}/.cargo/bin/ \
-                --strip-components=0 \
-                --no-overwrite-dir \
-                --extract \
-                --verbose \
-                --gunzip \
-                --file=-
-
       - name: Install git-cliff to generate changelog & next version number
-        shell: bash
-        run: |
-          cargo binstall --github-token ${{ secrets.GITHUB_TOKEN }} --no-confirm git-cliff
+        uses: taiki-e/install-action@cc33365ec7e3350bc47bf935f247582cc6f68344 # v2.65.12
+        with:
+          tool: git-cliff
 
       - name: Get new version, generated updated changelog and update repo with updated changelog
         shell: bash
