@@ -145,7 +145,7 @@ jobs:
           cargo --version
 
       - name: Install git-cliff to generate changelog & next version number
-        uses: taiki-e/install-action@83961fc0a2afe7f045535b5741d9a6418d7e1168 # v2.66.0
+        uses: taiki-e/install-action@3522286d40783523f9c7880e33f785905b4c20d0 # v2.66.1
         with:
           tool: git-cliff
 
@@ -298,7 +298,7 @@ jobs:
           rustup update
 
       - name: Install nextest, custom test runner, with native support for junit and grcov
-        uses: taiki-e/install-action@83961fc0a2afe7f045535b5741d9a6418d7e1168 # v2.66.0
+        uses: taiki-e/install-action@3522286d40783523f9c7880e33f785905b4c20d0 # v2.66.1
         with:
           tool: cargo-nextest, grcov
 
@@ -421,7 +421,7 @@ jobs:
       - *set_up_toolchain
 
       - name: Install cargo-edit to do set-version
-        uses: taiki-e/install-action@83961fc0a2afe7f045535b5741d9a6418d7e1168 # v2.66.0
+        uses: taiki-e/install-action@3522286d40783523f9c7880e33f785905b4c20d0 # v2.66.1
         with:
           tool: cargo-edit
 
@@ -480,7 +480,7 @@ jobs:
       - *set_up_toolchain
 
       - name: Install cargo-edit to do set-version
-        uses: taiki-e/install-action@83961fc0a2afe7f045535b5741d9a6418d7e1168 # v2.66.0
+        uses: taiki-e/install-action@3522286d40783523f9c7880e33f785905b4c20d0 # v2.66.1
         with:
           tool: cargo-edit
 
