@@ -109,7 +109,7 @@ jobs:
       # when updating this, ensure you update the `Cache cargo` step in the `docker-build` job
       - &cache_cargo
         name: Cache cargo
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
         env:
           CACHE_NAME: cargo
         with:
@@ -176,7 +176,7 @@ jobs:
 
       - &cache_target
         name: Cache target
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
         env:
           CACHE_NAME: target
         with:
@@ -211,7 +211,7 @@ jobs:
           show-progress: false
 
       - name: Cache dependencies
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
         env:
           CACHE_NAME: cargo-cache-dependencies
         with:
@@ -456,7 +456,7 @@ jobs:
       - *checkout
 
       - name: Cache cargo
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
         env:
           CACHE_NAME: cargo
         with:
