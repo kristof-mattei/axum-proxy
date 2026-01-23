@@ -2,6 +2,7 @@
 name = "axum-proxy"
 version = "0.0.0-development"
 edition = "2024"
+# When updating this, enable the `doc_paragraphs_missing_punctuation` lint
 rust-version = "1.88.0"
 authors = ["Kristof Mattei", "Masato Nakata <masaton@naughie.com>"]
 description = "Tower service for reverse proxy"
@@ -109,6 +110,8 @@ deref_by_slicing = { level = "deny", priority = 127 }
 # No, we already have `non_ascii_idents` which is even bette
 # disallowed_script_idents = { level = "deny", priority = 127 }
 doc_include_without_cfg = { level = "deny", priority = 127 }
+# Not available in current rust version
+# doc_paragraphs_missing_punctuation = { level = "deny", priority = 127 }
 else_if_without_else = { level = "deny", priority = 127 }
 empty_drop = { level = "deny", priority = 127 }
 # Lib only
