@@ -10,7 +10,7 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
-    "prettier": "3.7.4",
+    "prettier": "3.8.1",
     "prettier-plugin-sh": "0.18.0",
     "prettier-plugin-toml": "2.0.6"
   }

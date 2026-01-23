@@ -35,7 +35,7 @@ env:
 jobs:
   architectures:
     name: Build matrix
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       architectures: ${{ steps.matrix.outputs.architectures }}
     steps:
@@ -52,7 +52,7 @@ jobs:
 
   repo-has-container:
     name: Repo has container?
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       has_container: ${{ steps.determine.outputs.has_container }}
     steps:
@@ -65,7 +65,7 @@ jobs:
 
   changes:
     name: Detect changes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     permissions:
       contents: read
       pull-requests: read
@@ -87,7 +87,7 @@ jobs:
 
   calculate-version:
     name: Calculate version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     permissions:
       contents: read
     needs:
@@ -105,44 +105,6 @@ jobs:
         with:
           show-progress: false
           fetch-depth: 0
-
-      # when updating this, ensure you update the `Cache cargo` step in the `docker-build` job
-      - &cache_cargo
-        name: Cache cargo
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
-        env:
-          CACHE_NAME: cargo
-        with:
-          path: |
-            ~/.cargo/.crates.toml
-            ~/.cargo/.crates2.json
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-${{ github.job }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
-
-      - &set_up_mold
-        name: Set up mold
-        uses: rui314/setup-mold@725a8794d15fc7563f59595bd9556495c0564878 # v1
-
-      - &set_up_toolchain
-        name: Set up toolchain
-        shell: bash
-        run: |
-          rm ${HOME}/.cargo/bin/cargo-fmt
-          rm ${HOME}/.cargo/bin/rust-analyzer
-          rm ${HOME}/.cargo/bin/rustfmt
-
-          rustup self update
-          rustup update
-          rustup show active-toolchain || rustup toolchain install
-          rustup show
-
-          cargo --version
 
       - name: Install git-cliff to generate changelog & next version number
         uses: taiki-e/install-action@a632d43378d77581e7441d0833ad517e52ca1fef # v2.67.5
@@ -172,7 +134,23 @@ jobs:
     steps:
       - *checkout
 
-      - *cache_cargo
+      - &cache_cargo
+        name: Cache cargo
+        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
+        env:
+          CACHE_NAME: cargo
+        with:
+          path: |
+            ~/.cargo/.crates.toml
+            ~/.cargo/.crates2.json
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-${{ github.job }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
+            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
 
       - &cache_target
         name: Cache target
@@ -187,9 +165,24 @@ jobs:
             ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
             ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
 
-      - *set_up_mold
+      - &set_up_mold
+        name: Set up mold
+        uses: rui314/setup-mold@725a8794d15fc7563f59595bd9556495c0564878 # v1
 
-      - *set_up_toolchain
+      - &set_up_toolchain
+        name: Set up toolchain
+        shell: bash
+        run: |
+          rm ${HOME}/.cargo/bin/cargo-fmt
+          rm ${HOME}/.cargo/bin/rust-analyzer
+          rm ${HOME}/.cargo/bin/rustfmt
+
+          rustup self update
+          rustup update
+          rustup show active-toolchain || rustup toolchain install
+          rustup show
+
+          cargo --version
 
       - name: Build
         shell: bash
@@ -801,7 +794,7 @@ jobs:
     # when all upstream skips: pass
     # when all upstream success: success
     # combination of upstream skip and success: success
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     needs:
       - calculate-version
       - cargo-build
