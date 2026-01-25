@@ -83,7 +83,7 @@ jobs:
           cargo --version
 
       - name: Install cargo-edit to do set-version
-        uses: taiki-e/install-action@20b8fa5e17eb9bff42b5450c9c51724bf4609cf0 # v2.67.8
+        uses: taiki-e/install-action@386d9ef5a1dde23219d42c562ab251ed9ce92f98 # v2.67.9
         with:
           tool: cargo-edit
 
