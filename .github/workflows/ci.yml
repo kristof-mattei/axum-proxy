@@ -136,7 +136,7 @@ jobs:
 
       - &cache_cargo
         name: Cache cargo
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         env:
           CACHE_NAME: cargo
         with:
@@ -154,7 +154,7 @@ jobs:
 
       - &cache_target
         name: Cache target
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         env:
           CACHE_NAME: target
         with:
@@ -204,7 +204,7 @@ jobs:
           show-progress: false
 
       - name: Cache dependencies
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         env:
           CACHE_NAME: cargo-cache-dependencies
         with:
@@ -449,7 +449,7 @@ jobs:
       - *checkout
 
       - name: Cache cargo
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         env:
           CACHE_NAME: cargo
         with:
