@@ -45,7 +45,8 @@ WORKDIR /build
 
 RUN cargo init --name ${APPLICATION_NAME}
 
-COPY ./.cargo ./Cargo.toml ./Cargo.lock ./
+COPY ./.cargo ./cargo
+COPY ./Cargo.toml ./Cargo.lock ./
 
 RUN echo "fn main() {}" > ./src/build.rs
 
