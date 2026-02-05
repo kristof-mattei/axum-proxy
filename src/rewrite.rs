@@ -269,7 +269,12 @@ where
 
 #[cfg(test)]
 mod test {
-    use super::*;
+    use pretty_assertions::assert_eq;
+
+    use super::{
+        AppendPrefix, AppendSuffix, Func, LibRegex, PathRewriter as _, RegexAll, RegexN,
+        ReplaceAll, ReplaceN, Static, TrimPrefix, TrimSuffix,
+    };
 
     #[test]
     fn rewrite_static() {

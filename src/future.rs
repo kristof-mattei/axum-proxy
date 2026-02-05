@@ -50,8 +50,8 @@ impl Future for RevProxyFuture {
                 Poll::Ready(res) => Poll::Ready(Ok(res.map_err(ProxyError::RequestFailed))),
                 Poll::Pending => Poll::Pending,
             },
-            Err(ref mut e) => match e.take() {
-                Some(e) => Poll::Ready(Ok(Err(ProxyError::InvalidUri(e)))),
+            Err(ref mut error) => match error.take() {
+                Some(error) => Poll::Ready(Ok(Err(ProxyError::InvalidUri(error)))),
                 None => unreachable!("RevProxyFuture::poll() is called after ready"),
             },
         }

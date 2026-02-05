@@ -15,11 +15,11 @@ pub enum ProxyError {
 impl fmt::Display for ProxyError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
-            Self::InvalidUri(ref e) => {
-                write!(f, "Invalid uri: {}", e)
+            Self::InvalidUri(ref error) => {
+                write!(f, "Invalid uri: {}", error)
             },
-            Self::RequestFailed(ref e) => {
-                write!(f, "Request failed: {}", e)
+            Self::RequestFailed(ref error) => {
+                write!(f, "Request failed: {}", error)
             },
         }
     }

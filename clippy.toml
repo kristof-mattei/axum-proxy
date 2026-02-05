@@ -6,10 +6,17 @@ absolute-paths-allowed-crates = [
     "std",
     "tokio",
 ]
+disallowed-macros = [
+    { path = "std::assert_ne", reason = "use `pretty_assertions::assert_ne` instead" },
+    { path = "std::assert_eq", reason = "use `pretty_assertions::assert_eq` instead" },
+    # https://doc.rust-lang.org/std/assert_matches/macro.assert_matches.html
+    # { path = "std::assert_matches", reason = "use `pretty_assertions::assert_matches` instead" },
+]
 disallowed-methods = [
     # https://github.com/serde-rs/json/issues/160
     "serde_json::from_reader",
 ]
+disallowed-names = ["bar", "baz", "e", "err", "foo", "ok", "quux"]
 disallowed-types = [
     { path = "std::collections::HashMap", replacement = "hashbrown::HashMap", reason = "The standard library version sacrificies performance for HashDos resistance, which should be chosen explicitly" },
     { path = "std::collections::HashSet", replacement = "hashbrown::HashSet", reason = "The standard library version sacrificies performance for HashDos resistance, which should be chosen explicitly" },
@@ -27,3 +34,4 @@ standard-macro-braces = [
     { name = "quote", brace = "{" },
     { name = "quote::quote", brace = "{" },
 ]
+warn-on-all-wildcard-imports = false
