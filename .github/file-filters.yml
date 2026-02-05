@@ -2,11 +2,11 @@ code:
   - ".cargo/**"
   - ".github/**"
   - ".nvmrc"
-  - "*.toml"
+  - "**/*.toml"
   - "build-scripts/**"
-  - Cargo.lock
-  - Dockerfile
-  - "src/**"
-  - "tests/**"
   - "package.json"
   - "pnpm-lock.yaml"
+  - "src/**"
+  - "tests/**"
+  - Cargo.lock
+  - Dockerfile

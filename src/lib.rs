@@ -196,6 +196,7 @@ mod test_helper {
     use http_body_util::BodyExt as _;
     use hyper::body::Incoming;
     use mockito::{Matcher, ServerGuard};
+    use pretty_assertions::assert_eq;
     use tower_service::Service;
 
     use super::{ProxyError, RevProxyFuture};

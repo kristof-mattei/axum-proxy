@@ -35,11 +35,11 @@ mod server {
             let io = TokioIo::new(stream);
 
             tokio::task::spawn(async move {
-                if let Err(err) = http2::Builder::new(TokioExecutor::new())
+                if let Err(error) = http2::Builder::new(TokioExecutor::new())
                     .serve_connection(io, service_fn(hello))
                     .await
                 {
-                    eprintln!("Error serving connection: {}", err);
+                    eprintln!("Error serving connection: {}", error);
                 }
             });
         }

@@ -1,7 +1,10 @@
+# only in root
 /node_modules
-/profiling
 /reports
 /target
+
+# emitted per-crate
+profiling/
 
 # samply output
 /profile.json
