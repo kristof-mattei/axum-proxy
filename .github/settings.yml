@@ -142,10 +142,11 @@ rulesets:
           required_status_checks:
             - context: All done
               integration_id: 15368
-            - context: codecov/patch
-              integration_id: 254
-            - context: codecov/project
-              integration_id: 254
+            # These time out too much, we just want the information
+            # - context: codecov/patch
+            #   integration_id: 254
+            # - context: codecov/project
+            #   integration_id: 254
             - context: Format
               integration_id: 15368
             - context: Machete
