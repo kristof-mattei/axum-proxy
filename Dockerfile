@@ -23,7 +23,7 @@ ARG TARGET=x86_64-unknown-linux-musl
 FROM rust-base AS rust-linux-arm64
 ARG TARGET=aarch64-unknown-linux-musl
 
-FROM rust-linux-${TARGETARCH//\//-} AS rust-cargo-build
+FROM rust-linux-${TARGETARCH} AS rust-cargo-build
 
 ARG DEBIAN_FRONTEND=noninteractive
 # expose into `build.sh`
@@ -48,7 +48,23 @@ RUN cargo init --name ${APPLICATION_NAME}
 COPY ./.cargo ./.cargo
 COPY ./Cargo.toml ./Cargo.lock ./
 
+<<<<<<< HEAD
 RUN echo "fn main() {}" > ./src/build.rs
+||||||| 8ffe7d1e
+=======
+# main crate
+WORKDIR /build/crates/
+RUN cargo new --bin --vcs none ${APPLICATION_NAME}
+COPY ./crates/${APPLICATION_NAME}/Cargo.toml ./${APPLICATION_NAME}
+RUN echo "fn main() {}" > ./${APPLICATION_NAME}/src/build.rs
+
+# repeat this for each crate
+WORKDIR /build/crates/
+RUN cargo new --lib --vcs none shared
+COPY ./crates/shared/Cargo.toml ./shared
+
+WORKDIR /build
+>>>>>>> upstream/main
 
 # We use `fetch` to pre-download the files to the cache
 # Notice we do this in the target arch specific branch
@@ -80,9 +96,18 @@ WORKDIR /build
 COPY ./src ./src
 
 # ensure cargo picks up on the fact that we copied in our code
+<<<<<<< HEAD
 RUN touch ./src/main.rs ./src/build.rs
+||||||| 8ffe7d1e
+RUN touch ./crates/${APPLICATION_NAME}/src/main.rs ./crates/${APPLICATION_NAME}/src/build.rs
+=======
+RUN touch ./crates/${APPLICATION_NAME}/src/main.rs
+RUN touch ./crates/${APPLICATION_NAME}/src/build.rs
+>>>>>>> upstream/main
 
 ENV PATH="/output/bin:$PATH"
+
+RUN find /build
 
 # --release not needed, it is implied with install
 RUN --mount=type=cache,target=/build/target/${TARGET},sharing=locked \
