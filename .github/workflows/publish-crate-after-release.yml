@@ -29,7 +29,7 @@ jobs:
         shell: bash
         run: |
           has_crate="${{ vars.HAS_CRATE }}"
-          echo "has_crate=${has_crate:-false}" >> ${GITHUB_OUTPUT}
+          echo "has_crate=${has_crate:-false}" >> "${GITHUB_OUTPUT}"
 
   publish-crate:
     name: Publish crate

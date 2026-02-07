@@ -53,7 +53,7 @@ jobs:
           repository=${repository##*/}
 
           version=$(git-cliff --bumped-version --unreleased --github-token ${{ secrets.GITHUB_TOKEN }})
-          echo "version=$version" >> ${GITHUB_OUTPUT}
+          echo "version=$version" >> "${GITHUB_OUTPUT}"
 
           commit_message="chore(release): Release ${version}"
 
