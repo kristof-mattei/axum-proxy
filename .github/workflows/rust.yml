@@ -344,7 +344,7 @@ jobs:
       - cargo-fmt
       - cargo-test-and-report
     if: |
-      always()
+      !cancelled()
     steps:
       - name: Fail!
         shell: bash
