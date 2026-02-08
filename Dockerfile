@@ -48,13 +48,13 @@ COPY ./Cargo.toml ./Cargo.lock ./
 # main crate
 WORKDIR /build/crates/
 RUN cargo new --bin --vcs none ${APPLICATION_NAME}
-COPY ./crates/${APPLICATION_NAME}/Cargo.toml ./${APPLICATION_NAME}
+COPY ./crates/${APPLICATION_NAME}/Cargo.toml ./${APPLICATION_NAME}/Cargo.toml
 RUN echo "fn main() {}" > ./${APPLICATION_NAME}/src/build.rs
 
 # repeat this for each crate
 WORKDIR /build/crates/
 RUN cargo new --lib --vcs none shared
-COPY ./crates/shared/Cargo.toml ./shared
+COPY ./crates/shared/Cargo.toml ./shared/Cargo.toml
 
 WORKDIR /build
 
@@ -88,8 +88,7 @@ WORKDIR /build
 COPY ./crates ./crates
 
 # ensure cargo picks up on the fact that we copied in our code
-RUN touch ./crates/${APPLICATION_NAME}/src/main.rs
-RUN touch ./crates/${APPLICATION_NAME}/src/build.rs
+RUN find ./crates -type f -name '*.rs' -exec touch {} +
 
 ENV PATH="/output/bin:$PATH"
 

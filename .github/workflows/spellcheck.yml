@@ -111,7 +111,7 @@ jobs:
       - name: Install libclang-dev should cargo-spellcheck be built from source
         shell: bash
         run: |
-          sudo apt-get install libclang-dev
+          sudo apt-get install --no-install-recommends --yes libclang-dev
 
       - name: Install cargo-spellcheck to check the spelling
         uses: taiki-e/install-action@f176c07a0a40cbfdd08ee9aa8bf1655701d11e69 # v2.67.25
