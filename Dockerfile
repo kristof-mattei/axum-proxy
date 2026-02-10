@@ -68,21 +68,29 @@ COPY ./crates/shared/Cargo.toml ./shared/Cargo.toml
 WORKDIR /build
 
 # We use `fetch` to pre-download the files to the cache
-# Notice we do this in the target arch specific branch
-# We do this because we want to do it after `setup-env.sh`,
-# as the env is less likely to change than the code
-# We do lock the cache, to avoid corruption when building it for
-# both target platforms. It doesn't matter, as after unlocking the other one
-# just validates, but doesn't need to download anything
-RUN --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git/db,sharing=locked \
-    --mount=type=cache,id=cargo-registry-index,target=/usr/local/cargo/registry/index,sharing=locked \
-    --mount=type=cache,id=cargo-registry-cache,target=/usr/local/cargo/registry/cache,sharing=locked \
-    /build-scripts/build.sh fetch --locked
+# 1. Notice `sharing=locked` to avoid 2 processes concurrently writing and corrupting the cache, as `cp` is non-atomic
+# 2. We do the copy back-and-forth, as we do need the files in the image for the next layer.
+# 3.
+RUN --mount=type=cache,id=cargo-git,target=/tmp/cache/git/db,sharing=locked \
+    --mount=type=cache,id=cargo-registry-index,target=/tmp/cache/registry/index,sharing=locked \
+    --mount=type=cache,id=cargo-registry-cache,target=/tmp/cache/registry/cache,sharing=locked \
+    \
+    # Copy in from cache
+    mkdir -p /usr/local/cargo/git/db \
+             /usr/local/cargo/registry/index \
+             /usr/local/cargo/registry/cache && \
+    cp -rp /tmp/cache/git/db/. /usr/local/cargo/git/db/ || true && \
+    cp -rp /tmp/cache/registry/index/. /usr/local/cargo/registry/index/ || true && \
+    cp -rp /tmp/cache/registry/cache/. /usr/local/cargo/registry/cache/ || true && \
+    \
+    cargo fetch --locked && \
+    \
+    # copy out
+    cp -rp /usr/local/cargo/git/db/. /tmp/cache/git/db/ && \
+    cp -rp /usr/local/cargo/registry/index/. /tmp/cache/registry/index/ && \
+    cp -rp /usr/local/cargo/registry/cache/. /tmp/cache/registry/cache/
 
 RUN --mount=type=cache,id=target-${TARGETPLATFORMDASH},target=${CARGO_TARGET_DIR},sharing=locked \
-    --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git/db \
-    --mount=type=cache,id=cargo-registry-index,target=/usr/local/cargo/registry/index \
-    --mount=type=cache,id=cargo-registry-cache,target=/usr/local/cargo/registry/cache \
     /build-scripts/build.sh build --frozen --release
 
 # Rust full build
@@ -100,9 +108,6 @@ ENV PATH="/output/bin:$PATH"
 
 # --release not needed, it is implied with install
 RUN --mount=type=cache,id=target-${TARGETPLATFORMDASH},target=${CARGO_TARGET_DIR},sharing=locked \
-    --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git/db \
-    --mount=type=cache,id=cargo-registry-index,target=/usr/local/cargo/registry/index \
-    --mount=type=cache,id=cargo-registry-cache,target=/usr/local/cargo/registry/cache \
     /build-scripts/build.sh install --frozen --path "./crates/${APPLICATION_NAME}/" --root /output
 
 # Container user setup
