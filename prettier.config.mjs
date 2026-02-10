@@ -1,4 +1,5 @@
 /** @type {import("prettier").Config} */
+
 export default {
     arrowParens: "always",
     bracketSpacing: true,
@@ -42,5 +43,8 @@ export default {
             },
         },
     ],
-    plugins: ["prettier-plugin-sh", "prettier-plugin-toml"],
+    plugins: [
+        //"prettier-plugin-sh",
+        "prettier-plugin-toml",
+    ],
 };
