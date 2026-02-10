@@ -1,3 +1,6 @@
+# syntax=docker/dockerfile:1@sha256:b6afd42430b15f2d2a4c5a02b919e98a525b785b1aaff16747d2f623364e39b6
+# check=skip=SecretsUsedInArgOrEnv,error=true
+
 # Rust toolchain setup
 FROM --platform=${BUILDPLATFORM} rust:1.93.0-slim-trixie@sha256:760ad1d638d70ebbd0c61e06210e1289cbe45ff6425e3ea6e01241de3e14d08e AS rust-base
 
@@ -25,9 +28,15 @@ ARG TARGET=aarch64-unknown-linux-musl
 
 FROM rust-linux-${TARGETARCH} AS rust-cargo-build
 
-ARG DEBIAN_FRONTEND=noninteractive
-# expose into `build.sh`
+# amd64 or arm64
+ARG TARGETARCH
+# linux or ...
+ARG TARGETOS
+# used by `build.sh`, v2, v3 or empty
 ARG TARGETVARIANT
+# like TARGETPLATFORM, but with dashes
+ARG TARGETPLATFORMDASH="${TARGETOS}-${TARGETARCH}-${TARGETVARIANT:-base}"
+ARG CARGO_TARGET_DIR=/build/target/${TARGETPLATFORMDASH}
 
 COPY ./build-scripts /build-scripts
 
@@ -68,19 +77,16 @@ WORKDIR /build
 RUN --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git/db,sharing=locked \
     --mount=type=cache,id=cargo-registry-index,target=/usr/local/cargo/registry/index,sharing=locked \
     --mount=type=cache,id=cargo-registry-cache,target=/usr/local/cargo/registry/cache,sharing=locked \
-    cargo fetch
+    /build-scripts/build.sh fetch --locked
 
-RUN --mount=type=cache,target=/build/target/${TARGET},sharing=locked \
+RUN --mount=type=cache,id=target-${TARGETPLATFORMDASH},target=${CARGO_TARGET_DIR},sharing=locked \
     --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git/db \
     --mount=type=cache,id=cargo-registry-index,target=/usr/local/cargo/registry/index \
     --mount=type=cache,id=cargo-registry-cache,target=/usr/local/cargo/registry/cache \
-    /build-scripts/build.sh build --release --target-dir ./target/${TARGET}
+    /build-scripts/build.sh build --frozen --release
 
 # Rust full build
 FROM rust-cargo-build AS rust-build
-
-# to expose into `build.sh`
-ARG TARGETVARIANT
 
 WORKDIR /build
 
@@ -93,11 +99,11 @@ RUN find ./crates -type f -name '*.rs' -exec touch {} +
 ENV PATH="/output/bin:$PATH"
 
 # --release not needed, it is implied with install
-RUN --mount=type=cache,target=/build/target/${TARGET},sharing=locked \
+RUN --mount=type=cache,id=target-${TARGETPLATFORMDASH},target=${CARGO_TARGET_DIR},sharing=locked \
     --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git/db \
     --mount=type=cache,id=cargo-registry-index,target=/usr/local/cargo/registry/index \
     --mount=type=cache,id=cargo-registry-cache,target=/usr/local/cargo/registry/cache \
-    /build-scripts/build.sh install --path ./crates/${APPLICATION_NAME}/ --locked --target-dir ./target/${TARGET} --root /output
+    /build-scripts/build.sh install --frozen --path "./crates/${APPLICATION_NAME}/" --root /output
 
 # Container user setup
 FROM --platform=${BUILDPLATFORM} alpine:3.23.3@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659 AS passwd-build
