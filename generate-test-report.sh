@@ -19,6 +19,6 @@ grcov $(find . -name "profile-*.profraw" -print) \
     --ignore-not-existing \
     --keep-only "src/**" \
     --llvm \
-    --output-type html \
+    --output-type html,lcov \
     --output-path ./reports/ \
     --source-dir .
