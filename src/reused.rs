@@ -15,7 +15,7 @@ use hyper_util::client::legacy::connect::Connect;
 use tower_service::Service;
 
 use crate::future::RevProxyFuture;
-use crate::rewrite::PathRewriter;
+use crate::rewrite::RequestRewriter;
 use crate::{ProxyError, client};
 
 type BoxErr = Box<dyn std::error::Error + Send + Sync>;
@@ -365,7 +365,7 @@ where
     B: HttpBody + Send + 'static + Unpin,
     B::Data: Send,
     B::Error: Into<BoxErr>,
-    Pr: PathRewriter,
+    Pr: RequestRewriter,
 {
     type Response = Result<Response<Incoming>, ProxyError>;
     type Error = Infallible;
