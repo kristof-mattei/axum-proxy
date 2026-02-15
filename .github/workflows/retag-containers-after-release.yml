@@ -2,9 +2,8 @@
 name: Update semantic tags on repo & image after release
 
 on:
-  push:
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
+  release:
+    types: [released, prereleased]
 
 concurrency:
   group: "${{ github.workflow }}"
@@ -135,7 +134,7 @@ jobs:
         with:
           images: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
           tags: |
-            type=raw,value=latest
+            type=raw,value=latest,enable=${{ !github.event.release.prerelease }}
             type=semver,pattern=v{{version}}
 
       - name: Actually re-tag the container

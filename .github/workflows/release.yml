@@ -2,24 +2,33 @@
 name: Release
 
 on:
-  workflow_dispatch: # releasing is manual as we don't want to release every time
+  workflow_dispatch:
+    inputs:
+      prerelease:
+        description: "Pre-release?"
+        type: boolean
+        default: true
+      force-bump:
+        description: "Force bump?"
+        type: choice
+        default: auto
+        options:
+          - auto
+          - patch
+          - minor
+          - major
 
 concurrency:
   group: "${{ github.workflow }}"
   cancel-in-progress: true # only last step is important, which runs or doesn't
 
 permissions:
-  contents: write # to write tags
-  packages: write # to write tags to Docker registry
+  contents: write # to create branches
   issues: write
   pull-requests: write
 
 env:
   CARGO_TERM_COLOR: always
-  # Use docker.io for Docker Hub if empty
-  REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   release:
@@ -39,44 +48,82 @@ jobs:
         with:
           fetch-depth: 0
           show-progress: false
-          token: ${{ secrets.TOKEN_TO_TRIGGER_SUBSEQUENT_WORKFLOWS }}
 
       - name: Install git-cliff to generate changelog & next version number
         uses: taiki-e/install-action@288875dd3d64326724fa6d9593062d9f8ba0b131 # v2.67.30
         with:
           tool: git-cliff
 
-      - name: Get new version, generated updated changelog and update repo with updated changelog
+      - name: Compute version, generate changelog, create branch and open PR
         shell: bash
         id: release
         run: |
-          repository=${{ github.repository }}
-          # split at the last / and keep that (kristof-mattei/repo-name -> repo-name)
-          repository=${repository##*/}
+          git config --global user.name github-actions[bot]
+          git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
 
-          git config --global user.name ${repository}-release[bot]
-          git config --global user.email 864376+${repository}-release[bot]@users.noreply.github.com
+          version=$(git-cliff --bumped-version --unreleased --bump ${{ inputs.force-bump }} --github-token ${{ secrets.GITHUB_TOKEN }})
 
-          version=$(git-cliff --bumped-version --unreleased --github-token ${{ secrets.GITHUB_TOKEN }})
+          # Strip any -rc.* suffix git-cliff may have picked up
+          version="${version%%-rc.*}"
           echo "version=$version" >> "${GITHUB_OUTPUT}"
 
-          commit_message="chore(release): Release ${version}"
+          if [ "${{ inputs.prerelease }}" == "true" ]; then
+            # Determine the next rc number by finding the highest existing rc tag
+            latest_rc=$(git tag --list "${version}-rc.*" | sort --field-separator . --key 4 --numeric-sort | tail -1)
 
-          git-cliff --output CHANGELOG.md --bump --with-commit "${commit_message}" --github-token ${{ secrets.GITHUB_TOKEN }}
+            if [ -n "$latest_rc" ]; then
+              rc_number=$(( ${latest_rc##*-rc.} + 1 ))
+            else
+              rc_number=1
+            fi
+
+            release_version="${version}-rc.${rc_number}"
+          else
+            release_version="${version}"
+          fi
+
+          echo "release_version=$release_version" >> "${GITHUB_OUTPUT}"
+
+          branch="release/${release_version}"
+          echo "branch=$branch" >> "${GITHUB_OUTPUT}"
+
+          # Create or reset the branch to current main
+          if git ls-remote --exit-code --heads origin "${branch}" > /dev/null 2>&1; then
+            git checkout -B "${branch}" origin/main
+          else
+            git checkout -b "${branch}"
+          fi
+
+          commit_message="chore(release): Release ${release_version}"
+
+          git-cliff --output CHANGELOG.md --bump ${{ inputs.force-bump }} --with-commit "${commit_message}" --github-token ${{ secrets.GITHUB_TOKEN }}
 
           git add CHANGELOG.md
 
           git commit --message "${commit_message}"
 
-          git tag $version --message "${commit_message}"
+          git push --set-upstream origin "${branch}" --force
 
-          git push --follow-tags
+          git-cliff --output diff-CHANGELOG.md --unreleased --tag "${release_version}" --github-token ${{ secrets.GITHUB_TOKEN }}
 
-          git-cliff --output diff-CHANGELOG.md --current --github-token ${{ secrets.GITHUB_TOKEN }}
+      - name: Open or update pull request
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.TOKEN_TO_TRIGGER_SUBSEQUENT_WORKFLOWS }}
+        run: |
+          branch="${{ steps.release.outputs.branch }}"
+          release_version="${{ steps.release.outputs.release_version }}"
 
-      - name: Upload github release
-        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
-        with:
-          body_path: diff-CHANGELOG.md
-          tag_name: ${{ steps.release.outputs.version }}
-          token: ${{ secrets.TOKEN_TO_TRIGGER_SUBSEQUENT_WORKFLOWS }}
+          # Check if a PR already exists for this branch
+          existing_pr=$(gh pr list --head "${branch}" --state open --json number --jq '.[0].number // empty')
+
+          if [ -n "$existing_pr" ]; then
+            gh pr edit "$existing_pr" \
+              --body-file diff-CHANGELOG.md
+          else
+            gh pr create \
+              --base main \
+              --head "${branch}" \
+              --title "chore(release): Release ${release_version}" \
+              --body-file diff-CHANGELOG.md
+          fi
