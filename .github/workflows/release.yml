@@ -5,11 +5,16 @@ on:
   workflow_dispatch:
     inputs:
       prerelease:
-        description: "Pre-release?"
-        type: boolean
-        default: true
+        description: "Pre-release type:"
+        type: choice
+        default: rc
+        options:
+          - none
+          - alpha
+          - beta
+          - rc
       force-bump:
-        description: "Force bump?"
+        description: "Select the version increment level:"
         type: choice
         default: auto
         options:
@@ -64,21 +69,23 @@ jobs:
 
           version=$(git-cliff --bumped-version --unreleased --bump ${{ inputs.force-bump }} --github-token ${{ secrets.GITHUB_TOKEN }})
 
-          # Strip any -rc.* suffix git-cliff may have picked up
-          version="${version%%-rc.*}"
+          # Strip any pre-release suffix git-cliff may have picked up (keep only vX.Y.Z)
+          [[ "$version" =~ ^(v[0-9]+\.[0-9]+\.[0-9]+) ]] && version="${BASH_REMATCH[1]}"
           echo "version=$version" >> "${GITHUB_OUTPUT}"
 
-          if [ "${{ inputs.prerelease }}" == "true" ]; then
-            # Determine the next rc number by finding the highest existing rc tag
-            latest_rc=$(git tag --list "${version}-rc.*" | sort --field-separator . --key 4 --numeric-sort | tail -1)
+          prerelease="${{ inputs.prerelease }}"
 
-            if [ -n "$latest_rc" ]; then
-              rc_number=$(( ${latest_rc##*-rc.} + 1 ))
+          if [ "${prerelease}" != "none" ]; then
+            # Determine the next pre-release number by finding the highest existing tag with this suffix
+            latest_pre=$(git tag --list "${version}-${prerelease}.*" | sort --field-separator . --key 4 --numeric-sort | tail -1)
+
+            if [ -n "$latest_pre" ]; then
+              pre_number=$(( ${latest_pre##*-${prerelease}.} + 1 ))
             else
-              rc_number=1
+              pre_number=1
             fi
 
-            release_version="${version}-rc.${rc_number}"
+            release_version="${version}-${prerelease}.${pre_number}"
           else
             release_version="${version}"
           fi
