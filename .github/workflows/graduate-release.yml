@@ -74,6 +74,18 @@ jobs:
           TAG: ${{ steps.release.outputs.tag }}
           PRERELEASE: ${{ steps.release.outputs.prerelease }}
         run: |
+          # Truncate release-notes.md if it exceeds GitHub's 125000 character body limit
+          max_length=125000
+          truncation_message=$'\n\n---\n\n> **Note:** Release notes were truncated because they exceeded GitHub'"'"'s 125000 character limit.'
+          file_length=$(wc --chars < release-notes.md)
+
+          if [ "$file_length" -gt "$max_length" ]; then
+            truncated_length=$(( max_length - ${#truncation_message} ))
+            cut --characters=1-"$truncated_length" release-notes.md > release-notes-truncated.md
+            printf '%s' "$truncation_message" >> release-notes-truncated.md
+            mv release-notes-truncated.md release-notes.md
+          fi
+
           prerelease_flag=""
           if [ "${PRERELEASE}" == "true" ]; then
             prerelease_flag="--prerelease"
