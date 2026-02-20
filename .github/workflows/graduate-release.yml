@@ -81,7 +81,7 @@ jobs:
 
           if [ "$file_length" -gt "$max_length" ]; then
             truncated_length=$(( max_length - ${#truncation_message} ))
-            cut --characters=1-"$truncated_length" release-notes.md > release-notes-truncated.md
+            head --bytes="$truncated_length" release-notes.md > release-notes-truncated.md
             printf '%s' "$truncation_message" >> release-notes-truncated.md
             mv release-notes-truncated.md release-notes.md
           fi
