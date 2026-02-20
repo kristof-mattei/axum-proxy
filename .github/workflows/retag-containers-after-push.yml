@@ -118,7 +118,6 @@ jobs:
                 --strip-components=0 \
                 --no-overwrite-dir \
                 --extract \
-                --verbose \
                 --gunzip \
                 --file=-
 

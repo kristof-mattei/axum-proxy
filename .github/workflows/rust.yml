@@ -131,7 +131,7 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          cargo build ${{ env.CARGO_FEATURES }} --all-targets --frozen --workspace --verbose
+          cargo build ${{ env.CARGO_FEATURES }} --all-targets --frozen --workspace
 
   cargo-examples:
     name: Cargo examples
@@ -204,7 +204,7 @@ jobs:
       - name: Check formatting
         shell: bash
         run: |
-          cargo fmt --all -- --check --verbose
+          cargo fmt --all -- --check
 
   cargo-test-and-report:
     name: Cargo test (and report)
@@ -247,7 +247,7 @@ jobs:
           # build-* ones are not parsed by grcov
           LLVM_PROFILE_FILE: "profiling/build-%p-%m.profraw"
         run: |
-          cargo build ${{ env.CARGO_FEATURES }} --all-targets --frozen --workspace --verbose
+          cargo build ${{ env.CARGO_FEATURES }} --all-targets --frozen --workspace
 
       - name: Run nextest
         shell: bash
@@ -352,7 +352,7 @@ jobs:
       - name: Run Clippy for GitHub Actions report
         uses: actions-rs-plus/clippy-check@a25517dc6178320cb29e6e5e4d4db30348df6f3f # v2.4.2
         with:
-          args: ${{ env.CARGO_FEATURES }} --all-targets --frozen --workspace --verbose
+          args: ${{ env.CARGO_FEATURES }} --all-targets --frozen --workspace
 
   all-done:
     name: Rust All done
