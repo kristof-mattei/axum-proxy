@@ -7,7 +7,7 @@ export RUSTFLAGS="${BASE_RUSTFLAGS} --allow=warnings -Cinstrument-coverage"
 
 # build-* ones are not parsed by grcov
 export LLVM_PROFILE_FILE="profiling/build-%p-%m.profraw"
-cargo build ${CARGO_FEATURES} --all-targets --locked --workspace --verbose
+cargo build ${CARGO_FEATURES} --all-targets --locked --workspace
 
 # cleanup old values
 find -name '*.profraw' | xargs rm

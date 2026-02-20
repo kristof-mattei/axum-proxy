@@ -122,14 +122,14 @@ jobs:
           branch="${{ steps.release.outputs.branch }}"
           release_version="${{ steps.release.outputs.release_version }}"
 
-          # Truncate diff-CHANGELOG.md if it exceeds GitHub's 65536 character body limit
+          # Truncate diff-CHANGELOG.md if it exceeds GitHub's PR character body limit
           max_length=65536
-          truncation_message=$'\n\n---\n\n> **Note:** Changelog was truncated because it exceeded GitHub'"'"'s 65536 character limit.'
+          truncation_message=$'\n\n---\n\n> **Note:** Changelog was truncated because it exceeded GitHub'"'"'s 65,536 character limit.'
           file_length=$(wc --chars < diff-CHANGELOG.md)
 
           if [ "$file_length" -gt "$max_length" ]; then
             truncated_length=$(( max_length - ${#truncation_message} ))
-            cut --characters=1-"$truncated_length" diff-CHANGELOG.md > diff-CHANGELOG-truncated.md
+            head --bytes="$truncated_length" diff-CHANGELOG.md > diff-CHANGELOG-truncated.md
             printf '%s' "$truncation_message" >> diff-CHANGELOG-truncated.md
             mv diff-CHANGELOG-truncated.md diff-CHANGELOG.md
           fi
