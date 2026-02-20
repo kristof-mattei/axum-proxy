@@ -134,7 +134,7 @@ jobs:
           images: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
           tags: |
             type=raw,value=latest,enable=${{ !github.event.release.prerelease }}
-            type=semver,pattern=v{{version}}
+            type=semver,pattern={{version}},prefix=v
 
       - name: Actually re-tag the container
         shell: bash
