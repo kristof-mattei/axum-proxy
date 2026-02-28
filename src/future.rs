@@ -10,7 +10,7 @@ use hyper_util::client::legacy::connect::Connect;
 use hyper_util::client::legacy::{Client, ResponseFuture};
 
 use crate::ProxyError;
-use crate::rewrite::PathRewriter;
+use crate::rewrite::RequestRewriter;
 
 type BoxErr = Box<dyn std::error::Error + Send + Sync>;
 
@@ -31,10 +31,10 @@ impl RevProxyFuture {
         B: HttpBody + Send + 'static + Unpin,
         B::Data: Send,
         B::Error: Into<BoxErr>,
-        Pr: PathRewriter,
+        Pr: RequestRewriter,
     {
         let inner = path
-            .rewrite_uri(&mut req, scheme, authority)
+            .rewrite(&mut req, scheme, authority)
             .map(|()| client.request(req))
             .map_err(Some);
         Self { inner }

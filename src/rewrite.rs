@@ -4,27 +4,42 @@
 
 use std::borrow::Cow;
 
+use http::header::InvalidHeaderValue;
 use http::uri::{Authority, Scheme, Uri};
-use http::{Error as HttpError, Request};
+use http::{Error as HttpError, HeaderMap, HeaderValue, Request};
 use regex::{Regex as LibRegex, Replacer};
 
+// RequestRewriter
 /// Represents a rule to rewrite a path `/foo/bar/baz` to new one.
 ///
 /// A "path" does not include a query. See [`http::uri::Uri`].
-pub trait PathRewriter {
-    fn rewrite<'a>(&'a mut self, path: &'a str) -> Cow<'a, str>;
+pub trait RequestRewriter {
+    fn rewrite_path<'a>(&'a mut self, path: &'a str) -> Cow<'a, str> {
+        path.into()
+    }
 
     /// # Errors
     ///
-    /// When the rewritten path is invalid
-    fn rewrite_uri<B>(
+    /// When the headers are invalid
+    fn rewrite_headers(
+        &mut self,
+        _headers: &mut HeaderMap<HeaderValue>,
+    ) -> Result<(), InvalidHeaderValue> {
+        Ok(())
+    }
+
+    /// # Errors
+    ///
+    /// * When the rewritten path is invalid
+    /// * When the headers are invalid
+    fn rewrite<B>(
         &mut self,
         request: &mut Request<B>,
         scheme: &Scheme,
         authority: &Authority,
     ) -> Result<(), HttpError> {
         let original_uri = request.uri();
-        let path = self.rewrite(original_uri.path());
+        let path = self.rewrite_path(original_uri.path());
 
         let rewritten_path = {
             if let Some(query) = original_uri.query() {
@@ -46,6 +61,27 @@ pub trait PathRewriter {
 
         *request.uri_mut() = rewritten_uri;
 
+        self.rewrite_headers(request.headers_mut())?;
+
+        Ok(())
+    }
+}
+
+pub struct StaticHostRewrite<'a>(pub &'a str);
+
+impl RequestRewriter for StaticHostRewrite<'_> {
+    #[inline]
+    fn rewrite_headers(
+        &mut self,
+        headers: &mut HeaderMap<HeaderValue>,
+    ) -> Result<(), InvalidHeaderValue> {
+        match headers.get_mut("Host") {
+            Some(header_value) => *header_value = self.0.try_into()?,
+            None => {
+                headers.insert("Host", self.0.try_into()?);
+            },
+        }
+
         Ok(())
     }
 }
@@ -59,9 +95,9 @@ pub trait PathRewriter {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Identity;
 
-impl PathRewriter for Identity {
+impl RequestRewriter for Identity {
     #[inline]
-    fn rewrite<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
+    fn rewrite_path<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
         path.into()
     }
 }
@@ -75,9 +111,9 @@ impl PathRewriter for Identity {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Static<'a>(pub &'a str);
 
-impl PathRewriter for Static<'_> {
+impl RequestRewriter for Static<'_> {
     #[inline]
-    fn rewrite<'a>(&'a mut self, _path: &'a str) -> Cow<'a, str> {
+    fn rewrite_path<'a>(&'a mut self, _path: &'a str) -> Cow<'a, str> {
         self.0.into()
     }
 }
@@ -91,8 +127,8 @@ impl PathRewriter for Static<'_> {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ReplaceAll<'a>(pub &'a str, pub &'a str);
 
-impl PathRewriter for ReplaceAll<'_> {
-    fn rewrite<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
+impl RequestRewriter for ReplaceAll<'_> {
+    fn rewrite_path<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
         if path.contains(self.0) {
             path.replace(self.0, self.1).into()
         } else {
@@ -111,8 +147,8 @@ impl PathRewriter for ReplaceAll<'_> {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ReplaceN<'a>(pub &'a str, pub &'a str, pub usize);
 
-impl PathRewriter for ReplaceN<'_> {
-    fn rewrite<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
+impl RequestRewriter for ReplaceN<'_> {
+    fn rewrite_path<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
         if path.contains(self.0) {
             path.replacen(self.0, self.1, self.2).into()
         } else {
@@ -131,8 +167,8 @@ impl PathRewriter for ReplaceN<'_> {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TrimPrefix<'a>(pub &'a str);
 
-impl PathRewriter for TrimPrefix<'_> {
-    fn rewrite<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
+impl RequestRewriter for TrimPrefix<'_> {
+    fn rewrite_path<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
         if let Some(stripped) = path.strip_prefix(self.0) {
             stripped.into()
         } else {
@@ -151,8 +187,8 @@ impl PathRewriter for TrimPrefix<'_> {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TrimSuffix<'a>(pub &'a str);
 
-impl PathRewriter for TrimSuffix<'_> {
-    fn rewrite<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
+impl RequestRewriter for TrimSuffix<'_> {
+    fn rewrite_path<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
         if let Some(stripped) = path.strip_suffix(self.0) {
             stripped.into()
         } else {
@@ -170,8 +206,8 @@ impl PathRewriter for TrimSuffix<'_> {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct AppendPrefix<'a>(pub &'a str);
 
-impl PathRewriter for AppendPrefix<'_> {
-    fn rewrite<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
+impl RequestRewriter for AppendPrefix<'_> {
+    fn rewrite_path<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
         let mut ret = String::with_capacity(self.0.len() + path.len());
         ret.push_str(self.0);
         ret.push_str(path);
@@ -188,8 +224,8 @@ impl PathRewriter for AppendPrefix<'_> {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct AppendSuffix<'a>(pub &'a str);
 
-impl PathRewriter for AppendSuffix<'_> {
-    fn rewrite<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
+impl RequestRewriter for AppendSuffix<'_> {
+    fn rewrite_path<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
         let mut ret = String::with_capacity(self.0.len() + path.len());
         ret.push_str(path);
         ret.push_str(self.0);
@@ -214,8 +250,8 @@ impl PathRewriter for AppendSuffix<'_> {
 #[derive(Debug, Clone)]
 pub struct RegexAll<Rep>(pub LibRegex, pub Rep);
 
-impl<Rep: Replacer> PathRewriter for RegexAll<Rep> {
-    fn rewrite<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
+impl<Rep: Replacer> RequestRewriter for RegexAll<Rep> {
+    fn rewrite_path<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
         self.0.replace_all(path, self.1.by_ref())
     }
 }
@@ -241,8 +277,8 @@ impl<Rep: Replacer> PathRewriter for RegexAll<Rep> {
 #[derive(Debug, Clone)]
 pub struct RegexN<Rep>(pub LibRegex, pub Rep, pub usize);
 
-impl<Rep: Replacer> PathRewriter for RegexN<Rep> {
-    fn rewrite<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
+impl<Rep: Replacer> RequestRewriter for RegexN<Rep> {
+    fn rewrite_path<'a>(&mut self, path: &'a str) -> Cow<'a, str> {
         self.0.replacen(path, self.2, self.1.by_ref())
     }
 }
@@ -258,11 +294,11 @@ impl<Rep: Replacer> PathRewriter for RegexN<Rep> {
 /// ```
 pub struct Func<F>(pub F);
 
-impl<F> PathRewriter for Func<F>
+impl<F> RequestRewriter for Func<F>
 where
     for<'a> F: FnMut(&'a str) -> String,
 {
-    fn rewrite<'a>(&'a mut self, path: &'a str) -> Cow<'a, str> {
+    fn rewrite_path<'a>(&'a mut self, path: &'a str) -> Cow<'a, str> {
         self.0(path).into()
     }
 }
@@ -280,52 +316,52 @@ mod test {
     fn rewrite_static() {
         let path = "/foo/bar";
         let mut rw = Static("/baz");
-        assert_eq!(rw.rewrite(path), "/baz");
+        assert_eq!(rw.rewrite_path(path), "/baz");
     }
 
     #[test]
     fn replace() {
         let path = "/foo/bar/foo/baz/foo";
         let mut rw = ReplaceAll("foo", "FOO");
-        assert_eq!(rw.rewrite(path), "/FOO/bar/FOO/baz/FOO");
+        assert_eq!(rw.rewrite_path(path), "/FOO/bar/FOO/baz/FOO");
 
         let path = "/foo/bar/foo/baz/foo";
         let mut rw = ReplaceAll("/foo", "");
-        assert_eq!(rw.rewrite(path), "/bar/baz");
+        assert_eq!(rw.rewrite_path(path), "/bar/baz");
 
         let path = "/foo/bar/foo/baz/foo";
         let mut rw = ReplaceN("foo", "FOO", 2);
-        assert_eq!(rw.rewrite(path), "/FOO/bar/FOO/baz/foo");
+        assert_eq!(rw.rewrite_path(path), "/FOO/bar/FOO/baz/foo");
     }
 
     #[test]
     fn trim() {
         let path = "/foo/foo/bar";
         let mut rw = TrimPrefix("/foo");
-        assert_eq!(rw.rewrite(path), "/foo/bar");
+        assert_eq!(rw.rewrite_path(path), "/foo/bar");
 
         let path = "/foo/foo/bar";
         let mut rw = TrimPrefix("foo");
-        assert_eq!(rw.rewrite(path), "/foo/foo/bar");
+        assert_eq!(rw.rewrite_path(path), "/foo/foo/bar");
 
         let path = "/bar/foo/foo";
         let mut rw = TrimSuffix("foo");
-        assert_eq!(rw.rewrite(path), "/bar/foo/");
+        assert_eq!(rw.rewrite_path(path), "/bar/foo/");
 
         let path = "/bar/foo/foo";
         let mut rw = TrimSuffix("foo/");
-        assert_eq!(rw.rewrite(path), "/bar/foo/foo");
+        assert_eq!(rw.rewrite_path(path), "/bar/foo/foo");
     }
 
     #[test]
     fn append() {
         let path = "/foo/bar";
         let mut rw = AppendPrefix("/baz");
-        assert_eq!(rw.rewrite(path), "/baz/foo/bar");
+        assert_eq!(rw.rewrite_path(path), "/baz/foo/bar");
 
         let path = "/foo/bar";
         let mut rw = AppendSuffix("/baz");
-        assert_eq!(rw.rewrite(path), "/foo/bar/baz");
+        assert_eq!(rw.rewrite_path(path), "/foo/bar/baz");
     }
 
     #[test]
@@ -335,7 +371,7 @@ mod test {
             LibRegex::new(r"(?P<y>\d{4})/(?P<m>\d{2})/(?P<d>\d{2})").unwrap(),
             "$m-$d-$y",
         );
-        assert_eq!(rw.rewrite(path), "/10-21-2021/12-02-2021/01-13-2022");
+        assert_eq!(rw.rewrite_path(path), "/10-21-2021/12-02-2021/01-13-2022");
 
         let path = "/2021/10/21/2021/12/02/2022/01/13";
         let mut rw = RegexN(
@@ -343,13 +379,29 @@ mod test {
             "$m-$d-$y",
             2,
         );
-        assert_eq!(rw.rewrite(path), "/10-21-2021/12-02-2021/2022/01/13");
+        assert_eq!(rw.rewrite_path(path), "/10-21-2021/12-02-2021/2022/01/13");
     }
 
     #[test]
     fn func() {
         let path = "/abcdefg";
         let mut rw = Func(|path: &str| path.len().to_string());
-        assert_eq!(rw.rewrite(path), "8");
+        assert_eq!(rw.rewrite_path(path), "8");
+    }
+
+    #[test]
+    fn rewrite_host() {
+        let new_host = "example.com";
+        let mut rw = StaticHostRewrite(new_host);
+
+        let mut headers = HeaderMap::new();
+        headers.append("Host", "example.org".try_into().unwrap());
+
+        rw.rewrite_headers(&mut headers).unwrap();
+
+        assert_eq!(
+            headers.get("Host"),
+            Some(&HeaderValue::try_from(new_host).unwrap())
+        );
     }
 }
