@@ -7,12 +7,13 @@ on:
       prerelease:
         description: "Pre-release type"
         type: choice
-        default: rc
+        # default: rc
+        default: none
         options:
           - none
-          - alpha
-          - beta
-          - rc
+          # - alpha
+          # - beta
+          # - rc
       force-bump:
         description: "Select the version increment level"
         type: choice
