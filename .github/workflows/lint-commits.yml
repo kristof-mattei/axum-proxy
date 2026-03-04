@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install cocogitto to lint commits
-        uses: taiki-e/install-action@edba51d32f66935a112c0516fec65a13d420cbc6 # v2.68.17
+        uses: taiki-e/install-action@205eb1d74c6feda89abb1f3a09360601953286c0 # v2.68.18
         with:
           tool: cocogitto
 
