@@ -4,8 +4,6 @@
 
 /profiling
 /reports
-/src   # rust-fmt
-/tests # rust-fmt
 /target
 
 /Cargo.lock
