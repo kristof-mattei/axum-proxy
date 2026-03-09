@@ -27,7 +27,6 @@ env:
     amd64
     amd64/v2
     amd64/v3
-  # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
 
 jobs:
@@ -252,7 +251,6 @@ jobs:
           local_registry=${local_registry,,}
           echo "full_image_name_local_registry=${local_registry}/${image_name}" >> "${GITHUB_OUTPUT}"
 
-  # this name is also used in `publish-crate-after-release.yml`
   docker-build:
     name: Build Docker container on ${{ matrix.runs-on }} for ${{ matrix.platform }}
     strategy:
@@ -289,7 +287,7 @@ jobs:
       - name: Apply version bump patch
         shell: bash
         run: |
-          git apply /tmp/version-bump.patch
+          git apply --allow-empty /tmp/version-bump.patch
 
           echo "Applied patch:"
           git diff
