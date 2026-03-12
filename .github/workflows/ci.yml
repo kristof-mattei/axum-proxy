@@ -33,6 +33,7 @@ jobs:
   architectures:
     name: Build matrix
     runs-on: ubuntu-slim
+    if: ${{ !startsWith(github.head_ref, 'release/') }}
     outputs:
       architectures: ${{ steps.matrix.outputs.architectures }}
     steps:
@@ -49,6 +50,7 @@ jobs:
 
   rust-build:
     name: Build Rust code
+    if: ${{ !startsWith(github.head_ref, 'release/') }}
     uses: ./.github/workflows/rust.yml
     secrets: inherit
     permissions:
@@ -60,6 +62,7 @@ jobs:
   repo-has-container:
     name: Repo has container?
     runs-on: ubuntu-slim
+    if: ${{ !startsWith(github.head_ref, 'release/') }}
     outputs:
       has_container: ${{ steps.determine.outputs.has_container }}
     steps:
@@ -73,6 +76,7 @@ jobs:
   changes:
     name: Detect changes
     runs-on: ubuntu-slim
+    if: ${{ !startsWith(github.head_ref, 'release/') }}
     permissions:
       contents: read
       pull-requests: read
