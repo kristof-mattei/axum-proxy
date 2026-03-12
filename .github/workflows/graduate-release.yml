@@ -106,6 +106,6 @@ jobs:
             --state open \
             --json number,headRefName \
             --jq '.[] | select(.headRefName | startswith("release/v")) | .number' \
-          | while read pr_number; do
+          | while IFS= read -r pr_number; do
             gh pr close "$pr_number" --delete-branch
           done
