@@ -80,50 +80,6 @@ jobs:
             echo "The incoming push isn't a merge, ergo it's not a PR"
           fi
 
-      - name: Download crane tar, extract, and add folder to path.
-        shell: bash
-        run: |
-          # name of the file in releases we're looking for
-          file_name=go-containerregistry_Linux_x86_64.tar.gz
-
-          # temp location
-          temp_path=$(mktemp --directory --tmpdir=${RUNNER_TEMP})
-
-          # where to download the releases to
-          json_path=${temp_path}/releases.json
-
-          # where to download the archive to
-          archive_path=${temp_path}/${file_name}
-
-          url_to_krane=$(wget \
-              --output-document=- \
-              --timeout=10 \
-              --waitretry=3 \
-              --retry-connrefused \
-              --progress=dot:mega \
-              "https://api.github.com/repos/google/go-containerregistry/releases/latest" \
-              | jq \
-                  --raw-output \
-                  ".assets.[] | select(.browser_download_url | contains(\"${file_name}\")) | .browser_download_url")
-
-          wget \
-            --output-document=- \
-            --timeout=10 \
-            --waitretry=3 \
-            --retry-connrefused \
-            --progress=dot:mega \
-            "${url_to_krane}" \
-            | tar \
-                --directory=${temp_path}/ \
-                --strip-components=0 \
-                --no-overwrite-dir \
-                --extract \
-                --gunzip \
-                --file=-
-
-          # append to path
-          echo "${temp_path}" >> ${GITHUB_PATH}
-
       - name: Set up Docker
         uses: docker/setup-docker-action@1a6edb0ba9ac496f6850236981f15d8f9a82254d # v5.0.0
         with:
@@ -149,22 +105,21 @@ jobs:
         run: |
           echo "FULL_IMAGE_NAME=${REGISTRY,,}/${IMAGE_NAME,,}" >> ${GITHUB_ENV}
 
-      - name: Find all tags for ${{ env.FULL_IMAGE_NAME }}
+      - name: Find source tag using GitHub CLI
         shell: bash
-        run: |
-          crane ls ${FULL_IMAGE_NAME} >> existing_tags
-
-          echo "These are the existing tags on ${FULL_IMAGE_NAME}:"
-          cat existing_tags
-
-      - name: Check if the incoming PR has a Docker container, which will be our old tag, if not, or if it's just a push, find the appropriate old tag
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_TAG: "pr-${{ github.event.before }}-${{ env.INCOMING_PR_HEAD_COMMIT }}"
-        shell: bash
         run: |
-          # search for the tag, there can only be zero or one match
-          # we need the || true because otherwise grep returns exit code 1 and github actions then dies
-          pr_tag_found=$(cat existing_tags | grep -c "^${{ env.PR_TAG }}\$") || true
+          REPO="${{ github.repository }}"
+          REPO_LOWER="${REPO,,}"
+
+          ALL_TAGS=$(gh api /users/${{ github.repository_owner }}/packages/container/${REPO_LOWER##*/}/versions \
+            --paginate \
+            --jq '.[] | .metadata.container.tags[]')
+
+          # search for the PR tag, there can only be zero or one match
+          pr_tag_found=$(echo "${ALL_TAGS}" | grep -c "^${{ env.PR_TAG }}\$") || true
 
           if [ $pr_tag_found -eq 1 ]
           then
@@ -181,7 +136,7 @@ jobs:
             # so we find the last commit that github processed before this one
             # which will have gone through the same retagging process
             # and use that sha as our key to find the Docker container related to that commit
-            old_tag=$(cat existing_tags | grep "^sha-${{ github.event.before }}-.*\$") # .* is actual or retag
+            old_tag=$(echo "${ALL_TAGS}" | grep "^sha-${{ github.event.before }}-.*\$") # .* is actual or retag
 
             echo "OLD_TAG=${old_tag}" >> ${GITHUB_ENV}
             echo "SUFFIX=retag" >> ${GITHUB_ENV}
@@ -201,7 +156,7 @@ jobs:
       - name: Actually re-tag the container
         shell: bash
         run: |
-          echo "${{ steps.meta.outputs.tags }}" | while read new_tag
-          do
-            docker buildx imagetools create --tag ${new_tag} "${FULL_IMAGE_NAME}:${OLD_TAG}"
+          echo "${{ steps.meta.outputs.tags }}" | while IFS= read -r new_tag
+            do
+              docker buildx imagetools create --tag "${new_tag}" "${FULL_IMAGE_NAME}:${OLD_TAG}"
           done

@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
-name: Update semantic tags on repo & image after release
+name: Retag container after release
 
 on:
   release:
@@ -43,50 +43,6 @@ jobs:
     if: |
       fromJSON(needs.repo-has-container.outputs.has_container) == true
     steps:
-      - name: Download crane tar, extract, and add folder to path.
-        shell: bash
-        run: |
-          # name of the file in releases we're looking for
-          file_name=go-containerregistry_Linux_x86_64.tar.gz
-
-          # temp location
-          temp_path=$(mktemp --directory --tmpdir=${RUNNER_TEMP})
-
-          # where to download the releases to
-          json_path=${temp_path}/releases.json
-
-          # where to download the archive to
-          archive_path=${temp_path}/${file_name}
-
-          url_to_krane=$(wget \
-              --output-document=- \
-              --timeout=10 \
-              --waitretry=3 \
-              --retry-connrefused \
-              --progress=dot:mega \
-              "https://api.github.com/repos/google/go-containerregistry/releases/latest" \
-              | jq \
-                  --raw-output \
-                  ".assets.[] | select(.browser_download_url | contains(\"${file_name}\")) | .browser_download_url")
-
-          wget \
-            --output-document=- \
-            --timeout=10 \
-            --waitretry=3 \
-            --retry-connrefused \
-            --progress=dot:mega \
-            "${url_to_krane}" \
-            | tar \
-                --directory=${temp_path}/ \
-                --strip-components=0 \
-                --no-overwrite-dir \
-                --extract \
-                --gunzip \
-                --file=-
-
-          # append to path
-          echo "${temp_path}" >> ${GITHUB_PATH}
-
       - name: Set up Docker
         uses: docker/setup-docker-action@1a6edb0ba9ac496f6850236981f15d8f9a82254d # v5.0.0
         with:
@@ -112,20 +68,24 @@ jobs:
         run: |
           echo "FULL_IMAGE_NAME=${REGISTRY,,}/${IMAGE_NAME,,}" >> ${GITHUB_ENV}
 
-      - name: Find all tags for ${{ env.FULL_IMAGE_NAME }}
+      - name: Find source tag using GitHub CLI
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          crane ls ${FULL_IMAGE_NAME} >> existing_tags
+          REPO="${{ github.repository }}"
+          REPO_LOWER="${REPO,,}"
 
-          echo "These are the existing tags on ${FULL_IMAGE_NAME}:"
-          cat existing_tags
+          OLD_TAG=$(gh api /users/${{ github.repository_owner }}/packages/container/${REPO_LOWER##*/}/versions \
+            --paginate \
+            --jq '.[] | .metadata.container.tags[]' | grep "^sha-${{ github.sha }}-.*\$" | head --lines 1) # .* is actual or retag
 
-      - name: Check if the incoming PR has a Docker container, which will be our old tag
-        shell: bash
-        run: |
-          old_tag=$(cat existing_tags | grep "^sha-${{ github.sha }}-.*\$") # .* is actual or retag
+          if [ -z "${OLD_TAG}" ]; then
+            echo "::error::No matching source tag found for SHA ${{ github.sha }}"
+            exit 1
+          fi
 
-          echo "OLD_TAG=${old_tag}" >> ${GITHUB_ENV}
+          echo "OLD_TAG=${OLD_TAG}" >> ${GITHUB_ENV}
 
       - name: Set the new TAGs
         id: meta
@@ -139,7 +99,7 @@ jobs:
       - name: Actually re-tag the container
         shell: bash
         run: |
-          echo "${{ steps.meta.outputs.tags }}" | while read new_tag
-          do
-            docker buildx imagetools create --tag ${new_tag} "${FULL_IMAGE_NAME}:${OLD_TAG}"
+          echo "${{ steps.meta.outputs.tags }}" | while IFS= read -r new_tag
+            do
+              docker buildx imagetools create --tag "${new_tag}" "${FULL_IMAGE_NAME}:${OLD_TAG}"
           done
