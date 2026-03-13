@@ -65,16 +65,16 @@ jobs:
       - name: Find out if current commit is a merge
         shell: bash
         run: |
-          EXIT_CODE=0
+          exit_code=0
           # a commit always has a parent, but if it has 2, the commit is a merge
           # so lets see if we have one
           # since we're listening to the push event we have to do this manually
-          parent2=$(git rev-parse "HEAD^2" --quiet 2>/dev/null) || EXIT_CODE=$?
+          parent2=$(git rev-parse "HEAD^2" --quiet 2>/dev/null) || exit_code=$?
 
-          if [ ${EXIT_CODE} -eq 0 ]
+          if [ ${exit_code} -eq 0 ]
           then
             echo "The head of the incoming PR is ${parent2}"
-            echo "INCOMING_PR_HEAD_COMMIT=${parent2}" >> ${GITHUB_ENV}
+            echo "INCOMING_PR_HEAD_COMMIT=${parent2}" >> "${GITHUB_ENV}"
 
           else
             echo "The incoming push isn't a merge, ergo it's not a PR"
@@ -103,7 +103,7 @@ jobs:
       - name: Set full image name
         shell: bash
         run: |
-          echo "FULL_IMAGE_NAME=${REGISTRY,,}/${IMAGE_NAME,,}" >> ${GITHUB_ENV}
+          echo "FULL_IMAGE_NAME=${REGISTRY,,}/${IMAGE_NAME,,}" >> "${GITHUB_ENV}"
 
       - name: Find source tag using GitHub CLI
         shell: bash
@@ -111,22 +111,22 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_TAG: "pr-${{ github.event.before }}-${{ env.INCOMING_PR_HEAD_COMMIT }}"
         run: |
-          REPO="${{ github.repository }}"
-          REPO_LOWER="${REPO,,}"
+          repo="${{ github.repository }}"
+          repo_lower="${repo,,}"
 
-          ALL_TAGS=$(gh api /users/${{ github.repository_owner }}/packages/container/${REPO_LOWER##*/}/versions \
+          all_tags=$(gh api /users/${{ github.repository_owner }}/packages/container/${repo_lower##*/}/versions \
             --paginate \
             --jq '.[] | .metadata.container.tags[]')
 
           # search for the PR tag, there can only be zero or one match
-          pr_tag_found=$(echo "${ALL_TAGS}" | grep -c "^${{ env.PR_TAG }}\$") || true
+          pr_tag_found=$(echo "${all_tags}" | grep -c "^${{ env.PR_TAG }}\$") || true
 
           if [ $pr_tag_found -eq 1 ]
           then
             echo "Incoming PR produced a Docker image"
 
-            echo "OLD_TAG=${{ env.PR_TAG }}" >> ${GITHUB_ENV}
-            echo "SUFFIX=actual" >> ${GITHUB_ENV}
+            echo "OLD_TAG=${{ env.PR_TAG }}" >> "${GITHUB_ENV}"
+            echo "SUFFIX=actual" >> "${GITHUB_ENV}"
           else
             # If we don't have an old tag, then the incoming PR didn't produce a container.
             # In which case we're going to find the container referenced to the base commit, and add our current sha as a tag to it
@@ -136,10 +136,10 @@ jobs:
             # so we find the last commit that github processed before this one
             # which will have gone through the same retagging process
             # and use that sha as our key to find the Docker container related to that commit
-            old_tag=$(echo "${ALL_TAGS}" | grep "^sha-${{ github.event.before }}-.*\$") # .* is actual or retag
+            old_tag=$(echo "${all_tags}" | grep "^sha-${{ github.event.before }}-.*\$") # .* is actual or retag
 
-            echo "OLD_TAG=${old_tag}" >> ${GITHUB_ENV}
-            echo "SUFFIX=retag" >> ${GITHUB_ENV}
+            echo "OLD_TAG=${old_tag}" >> "${GITHUB_ENV}"
+            echo "SUFFIX=retag" >> "${GITHUB_ENV}"
           fi
 
       - name: Set the new TAGs

@@ -3,55 +3,55 @@
 set -euo pipefail
 
 # Configuration
-ORG=""
-USER=""
-PACKAGE_NAME="package"
-PER_PAGE=100
-DRY_RUN=false
-SKIP_CONFIRMATION=false
-DAYS_THRESHOLD=30
+org=""
+user=""
+package_name="package"
+per_page=100
+dry_run=false
+skip_confirmation=false
+days_threshold=30
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
         --org)
-            if [[ -n "$USER" ]]; then
+            if [[ -n "$user" ]]; then
                 echo "Error: --org and --user are mutually exclusive" >&2
                 exit 1
             fi
-            ORG="$2"
+            org="$2"
             shift 2
             ;;
         --user)
-            if [[ -n "$ORG" ]]; then
+            if [[ -n "$org" ]]; then
                 echo "Error: --org and --user are mutually exclusive" >&2
                 exit 1
             fi
-            USER="$2"
+            user="$2"
             shift 2
             ;;
         --package)
-            PACKAGE_NAME="$2"
+            package_name="$2"
             shift 2
             ;;
         --days)
-            DAYS_THRESHOLD="$2"
+            days_threshold="$2"
             shift 2
             ;;
         --dry-run)
-            DRY_RUN=true
+            dry_run=true
             shift
             ;;
         --yes)
-            SKIP_CONFIRMATION=true
+            skip_confirmation=true
             shift
             ;;
         --help)
             echo "Usage: $0 [--org ORG | --user USER] [--package PACKAGE_NAME] [--days DAYS] [--dry-run] [--yes] [--help]"
             echo "  --org              GitHub organization name"
             echo "  --user             GitHub username"
-            echo "  --package          Package name (default: $PACKAGE_NAME)"
-            echo "  --days             Age threshold in days for tagged versions (default: $DAYS_THRESHOLD)"
+            echo "  --package          Package name (default: $package_name)"
+            echo "  --days             Age threshold in days for tagged versions (default: $days_threshold)"
             echo "  --dry-run          Show what would be deleted without actually deleting"
             echo "  --yes              Skip confirmation prompt"
             echo "  --help             Show this help message"
@@ -67,20 +67,20 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Validate that either --org or --user is specified
-if [[ -z "$ORG" && -z "$USER" ]]; then
+if [[ -z "$org" && -z "$user" ]]; then
     echo "Error: Either --org or --user must be specified" >&2
     exit 1
 fi
 
 # Set the target and API path based on whether we're using org or user
-if [[ -n "$ORG" ]]; then
-    TARGET="$ORG"
-    API_PATH="/orgs/$ORG"
-    TARGET_TYPE="organization"
+if [[ -n "$org" ]]; then
+    target="$org"
+    api_path="/orgs/$org"
+    target_type="organization"
 else
-    TARGET="$USER"
-    API_PATH="/users/$USER"
-    TARGET_TYPE="user"
+    target="$user"
+    api_path="/users/$user"
+    target_type="user"
 fi
 
 # Check if gh CLI is installed and authenticated
@@ -116,7 +116,7 @@ get_versions_page() {
     gh api \
         --header "Accept: application/vnd.github+json" \
         --header "X-GitHub-Api-Version: 2022-11-28" \
-        "$API_PATH/packages/container/$PACKAGE_NAME/versions?per_page=$PER_PAGE&page=$page"
+        "$api_path/packages/container/$package_name/versions?per_page=$per_page&page=$page"
 }
 
 # Delete a version
@@ -124,7 +124,7 @@ delete_version() {
     local version_id=$1
     local description="$2"
 
-    if [[ "$DRY_RUN" == "true" ]]; then
+    if [[ "$dry_run" == "true" ]]; then
         echo "[DRY RUN] Would delete version ID: $version_id ($description)"
         return 0
     fi
@@ -134,7 +134,7 @@ delete_version() {
         --method DELETE \
         --header "Accept: application/vnd.github+json" \
         --header "X-GitHub-Api-Version: 2022-11-28" \
-        "$API_PATH/packages/container/$PACKAGE_NAME/versions/$version_id" 2> /dev/null; then
+        "$api_path/packages/container/$package_name/versions/$version_id" 2> /dev/null; then
         echo "Successfully deleted version ID: $version_id"
         return 0
     else
@@ -146,7 +146,7 @@ delete_version() {
 # Check if a date is older than threshold
 is_older_than_threshold() {
     local date_str="$1"
-    local threshold_seconds=$((DAYS_THRESHOLD * 24 * 60 * 60))
+    local threshold_seconds=$((days_threshold * 24 * 60 * 60))
     local current_timestamp
     local version_timestamp
 
@@ -162,8 +162,8 @@ is_older_than_threshold() {
 
 # ========== PHASE 1: COLLECT ALL VERSION DATA ==========
 
-echo "Querying container versions for $TARGET_TYPE $TARGET, package $PACKAGE_NAME..."
-echo "Will delete tagged versions older than $DAYS_THRESHOLD days..."
+echo "Querying container versions for $target_type $target, package $package_name..."
+echo "Will delete tagged versions older than $days_threshold days..."
 
 # Collect all version IDs to delete
 untagged_versions=()
@@ -220,8 +220,8 @@ while true; do
         fi
     done <<< "$(echo "$response" | jq --compact-output '.[]')"
 
-    # Check if we got a full page (if less than PER_PAGE, we're done)
-    if [[ $version_count -lt $PER_PAGE ]]; then
+    # Check if we got a full page (if less than per_page, we're done)
+    if [[ $version_count -lt $per_page ]]; then
         break
     fi
 
@@ -260,13 +260,13 @@ if [[ $total_to_delete -eq 0 ]]; then
     exit 0
 fi
 
-if [[ "$DRY_RUN" == "true" ]]; then
+if [[ "$dry_run" == "true" ]]; then
     echo "[DRY RUN] Would delete $total_to_delete versions total"
 fi
 
 # ========== PHASE 3: DELETION ==========
 
-if [[ "$DRY_RUN" == "false" && "$SKIP_CONFIRMATION" == "false" ]]; then
+if [[ "$dry_run" == "false" && "$skip_confirmation" == "false" ]]; then
     echo ""
     read -p "Are you sure you want to delete $total_to_delete versions? (y/N): " -n 1 -r
     echo
@@ -311,7 +311,7 @@ echo ""
 echo "=========================================="
 echo "           CLEANUP COMPLETE"
 echo "=========================================="
-if [[ "$DRY_RUN" == "false" ]]; then
+if [[ "$dry_run" == "false" ]]; then
     echo "Successfully deleted: $deleted_count"
     if [[ $failed_count -gt 0 ]]; then
         echo "Failed to delete:     $failed_count"

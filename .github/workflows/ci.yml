@@ -356,7 +356,7 @@ jobs:
             org.opencontainers.image.description=${{ needs.docker-prepare-variables.outputs.description }} (${{ matrix.platform }})
             org.opencontainers.image.revision=${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}
             org.opencontainers.image.source=${{ github.event.pull_request.html_url }}
-            org.opencontainers.image.version=pr-${{ github.event.number }}
+            org.opencontainers.image.version=v${{ needs.calculate-version.outputs.version }}
           images: ${{ needs.docker-prepare-variables.outputs.full_image_name_local_registry }}
           tags: |
             type=raw,value=${{ steps.variables.outputs.unique_tag_arch }}
@@ -399,6 +399,7 @@ jobs:
     permissions:
       packages: write
     needs:
+      - calculate-version
       - docker-prepare-variables
       - docker-build
       - rust-build
@@ -431,12 +432,12 @@ jobs:
         uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
         id: meta
         with:
-          images: ${{ needs.docker-prepare-variables.outputs.full_image_name_remote_registry }}
           labels: |
             org.opencontainers.image.description=${{ needs.docker-prepare-variables.outputs.description }}
             org.opencontainers.image.revision=${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}
             org.opencontainers.image.source=${{ github.event.pull_request.html_url }}
-            org.opencontainers.image.version=pr-${{ github.event.number }}
+            org.opencontainers.image.version=v${{ needs.calculate-version.outputs.version }}
+          images: ${{ needs.docker-prepare-variables.outputs.full_image_name_remote_registry }}
           tags: |
             type=raw,value=${{ needs.docker-prepare-variables.outputs.unique_tag }}
             type=ref,event=pr,suffix=-latest

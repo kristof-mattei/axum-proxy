@@ -3,63 +3,63 @@
 set -euo pipefail
 
 # Configuration
-ORG=""
-USER=""
-PACKAGE_NAME="package"
-PER_PAGE=100
-DRY_RUN=false
-SKIP_CONFIRMATION=false
-CLEANUP_PR_IMAGES=true
-PR_IMAGE_AGE_DAYS=30
+org=""
+user=""
+package_name="package"
+per_page=100
+dry_run=false
+skip_confirmation=false
+cleanup_pr_images=true
+pr_image_age_days=30
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
         --org)
-            if [[ -n "$USER" ]]; then
+            if [[ -n "$user" ]]; then
                 echo "Error: --org and --user are mutually exclusive" >&2
                 exit 1
             fi
-            ORG="$2"
+            org="$2"
             shift 2
             ;;
         --user)
-            if [[ -n "$ORG" ]]; then
+            if [[ -n "$org" ]]; then
                 echo "Error: --org and --user are mutually exclusive" >&2
                 exit 1
             fi
-            USER="$2"
+            user="$2"
             shift 2
             ;;
         --package)
-            PACKAGE_NAME="$2"
+            package_name="$2"
             shift 2
             ;;
         --dry-run)
-            DRY_RUN=true
+            dry_run=true
             shift
             ;;
         --yes)
-            SKIP_CONFIRMATION=true
+            skip_confirmation=true
             shift
             ;;
         --skip-pr-cleanup)
-            CLEANUP_PR_IMAGES=false
+            cleanup_pr_images=false
             shift
             ;;
         --pr-age-days)
-            PR_IMAGE_AGE_DAYS="$2"
+            pr_image_age_days="$2"
             shift 2
             ;;
         --help)
             echo "Usage: $0 [--org ORG | --user USER] [--package PACKAGE_NAME] [--dry-run] [--yes] [--skip-pr-cleanup] [--pr-age-days DAYS] [--help]"
             echo "  --org              GitHub organization name"
             echo "  --user             GitHub username"
-            echo "  --package          Package name (default: $PACKAGE_NAME)"
+            echo "  --package          Package name (default: $package_name)"
             echo "  --dry-run          Show what would be deleted without actually deleting"
             echo "  --yes              Skip confirmation prompt"
             echo "  --skip-pr-cleanup  Skip cleanup of old PR images"
-            echo "  --pr-age-days      Age in days for PR images to be considered old (default: $PR_IMAGE_AGE_DAYS)"
+            echo "  --pr-age-days      Age in days for PR images to be considered old (default: $pr_image_age_days)"
             echo "  --help             Show this help message"
             echo ""
             echo "Note: --org and --user are mutually exclusive. One must be specified."
@@ -75,21 +75,21 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Validate that either --org or --user is specified
-if [[ -z "$ORG" && -z "$USER" ]]; then
+if [[ -z "$org" && -z "$user" ]]; then
     echo "Error: Either --org or --user must be specified" >&2
     exit 1
 fi
 
 # Set the target and API path based on whether we're using org or user
-if [[ -n "$ORG" ]]; then
-    TARGET="$ORG"
-    API_PATH="/orgs/$ORG"
+if [[ -n "$org" ]]; then
+    target="$org"
+    api_path="/orgs/$org"
 else
-    TARGET="$USER"
-    API_PATH="/users/$USER"
+    target="$user"
+    api_path="/users/$user"
 fi
 
-REGISTRY_BASE="ghcr.io/$TARGET/$PACKAGE_NAME"
+registry_base="ghcr.io/$target/$package_name"
 
 # Check if gh CLI is installed and authenticated
 if ! command -v gh &> /dev/null; then
@@ -117,11 +117,11 @@ if ! command -v jq &> /dev/null; then
 fi
 
 # Check if crane or docker is available for manifest inspection
-MANIFEST_TOOL=""
+manifest_tool=""
 if command -v crane &> /dev/null; then
-    MANIFEST_TOOL="crane"
+    manifest_tool="crane"
 elif command -v docker &> /dev/null; then
-    MANIFEST_TOOL="docker"
+    manifest_tool="docker"
 else
     echo "Warning: Neither 'crane' nor 'docker' found. Cannot inspect multi-platform manifests." >&2
     echo "         Platform-specific images may be incorrectly deleted." >&2
@@ -136,7 +136,7 @@ get_versions_page() {
     gh api \
         --header "Accept: application/vnd.github+json" \
         --header "X-GitHub-Api-Version: 2022-11-28" \
-        "$API_PATH/packages/container/$PACKAGE_NAME/versions?per_page=$PER_PAGE&page=$page"
+        "$api_path/packages/container/$package_name/versions?per_page=$per_page&page=$page"
 }
 
 # Delete a version
@@ -144,7 +144,7 @@ delete_version() {
     local version_id=$1
     local description="$2"
 
-    if [[ "$DRY_RUN" == "true" ]]; then
+    if [[ "$dry_run" == "true" ]]; then
         echo "[DRY RUN] Would delete version ID: $version_id ($description)"
         return 0
     fi
@@ -154,7 +154,7 @@ delete_version() {
         --method DELETE \
         --header "Accept: application/vnd.github+json" \
         --header "X-GitHub-Api-Version: 2022-11-28" \
-        "$API_PATH/packages/container/$PACKAGE_NAME/versions/$version_id" 2> /dev/null; then
+        "$api_path/packages/container/$package_name/versions/$version_id" 2> /dev/null; then
         echo "Successfully deleted version ID: $version_id"
         return 0
     else
@@ -220,14 +220,14 @@ get_first_tag() {
 get_referenced_digests() {
     local image_ref="$1"
 
-    if [[ -z "$MANIFEST_TOOL" ]]; then
+    if [[ -z "$manifest_tool" ]]; then
         return 0
     fi
 
     local manifest=""
-    if [[ "$MANIFEST_TOOL" == "crane" ]]; then
+    if [[ "$manifest_tool" == "crane" ]]; then
         manifest=$(crane manifest "$image_ref" 2> /dev/null) || return 0
-    elif [[ "$MANIFEST_TOOL" == "docker" ]]; then
+    elif [[ "$manifest_tool" == "docker" ]]; then
         manifest=$(docker buildx imagetools inspect --raw "$image_ref" 2> /dev/null) || return 0
     fi
 
@@ -251,7 +251,7 @@ get_referenced_digests() {
 
 # ========== PHASE 1: COLLECT ALL VERSION DATA ==========
 
-echo "Querying container versions for $TARGET, package $PACKAGE_NAME..."
+echo "Querying container versions for $target, package $package_name..."
 
 # Associative arrays for version data
 declare -A version_tags      # version_id -> tags JSON
@@ -302,7 +302,7 @@ while true; do
         fi
     done <<< "$(echo "$response" | jq --compact-output '.[]')"
 
-    if [[ "$version_count" -lt "$PER_PAGE" ]]; then
+    if [[ "$version_count" -lt "$per_page" ]]; then
         break
     fi
 
@@ -339,12 +339,12 @@ for version_id in "${all_version_ids[@]}"; do
         # Fetch manifest to protect referenced platform-specific images
         first_tag=$(get_first_tag "$tags")
         if [[ -n "$first_tag" ]]; then
-            echo "Inspecting manifest for protected image: $REGISTRY_BASE:$first_tag"
+            echo "Inspecting manifest for protected image: $registry_base:$first_tag"
             while IFS= read -r ref_digest; do
                 [[ -z "$ref_digest" ]] && continue
                 protected_digests["$ref_digest"]="referenced by $first_tag manifest"
                 echo "  Protected platform-specific digest: ${ref_digest:0:12}..."
-            done <<< "$(get_referenced_digests "$REGISTRY_BASE:$first_tag")"
+            done <<< "$(get_referenced_digests "$registry_base:$first_tag")"
         fi
         continue
     fi
@@ -361,8 +361,8 @@ for version_id in "${all_version_ids[@]}"; do
     fi
 
     # Check for old PR images
-    if [[ "$CLEANUP_PR_IMAGES" == "true" ]]; then
-        if is_older_than_days "$created_at" "$PR_IMAGE_AGE_DAYS"; then
+    if [[ "$cleanup_pr_images" == "true" ]]; then
+        if is_older_than_days "$created_at" "$pr_image_age_days"; then
             tags_str=$(echo "$tags" | jq --raw-output '.[]' | tr '\n' ',' | sed 's/,$//')
 
             if has_pr_latest_tag "$tags"; then
@@ -388,7 +388,7 @@ for version_id in "${all_version_ids[@]}"; do
             if [[ -z "$ref_version_id" ]] || [[ -z "${delete_candidates[$ref_version_id]:-}" ]]; then
                 protected_digests["$ref_digest"]="referenced by $first_tag manifest"
             fi
-        done <<< "$(get_referenced_digests "$REGISTRY_BASE:$first_tag")"
+        done <<< "$(get_referenced_digests "$registry_base:$first_tag")"
     fi
 done
 
@@ -490,13 +490,13 @@ if [[ $total_to_delete -eq 0 ]]; then
     exit 0
 fi
 
-if [[ "$DRY_RUN" == "true" ]]; then
+if [[ "$dry_run" == "true" ]]; then
     echo "[DRY RUN] Would delete $total_to_delete versions total"
 fi
 
 # ========== PHASE 6: DELETION ==========
 
-if [[ "$DRY_RUN" == "false" && "$SKIP_CONFIRMATION" == "false" ]]; then
+if [[ "$dry_run" == "false" && "$skip_confirmation" == "false" ]]; then
     echo ""
     read -p "Are you sure you want to delete $total_to_delete versions? (y/N): " -n 1 -r
     echo
@@ -541,7 +541,7 @@ echo ""
 echo "=========================================="
 echo "           CLEANUP COMPLETE"
 echo "=========================================="
-if [[ "$DRY_RUN" == "false" ]]; then
+if [[ "$dry_run" == "false" ]]; then
     echo "Successfully deleted: $deleted_count"
     if [[ $failed_count -gt 0 ]]; then
         echo "Failed to delete:     $failed_count"

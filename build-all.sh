@@ -2,14 +2,14 @@
 set -e
 
 build() {
-    APPLICATION_NAME=$1
-    PLATFORM=$2
+    application_name=$1
+    platform=$2
     docker buildx \
         build \
         --file Dockerfile . \
-        --tag $APPLICATION_NAME:latest \
-        --build-arg APPLICATION_NAME=$APPLICATION_NAME \
-        --platform $PLATFORM \
+        --tag $application_name:latest \
+        --build-arg APPLICATION_NAME=$application_name \
+        --platform $platform \
         --progress=plain
 }
 

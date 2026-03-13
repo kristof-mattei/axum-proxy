@@ -1,26 +1,26 @@
 #!/bin/bash
 
-NEW_NAME=$1
+new_name=$1
 
-FILTERED_NAME=$(echo "${NEW_NAME}" | sed -e "s/[a-z0-9-]//g")
+filtered_name=$(echo "${new_name}" | sed -e "s/[a-z0-9-]//g")
 
-echo "New name = ${NEW_NAME}"
+echo "New name = ${new_name}"
 
-if [[ ${#FILTERED_NAME} != 0 ]]; then
-    echo "Name only allows [a-z0-9-], found ${FILTERED_NAME} (length = ${#FILTERED_NAME})"
+if [[ ${#filtered_name} != 0 ]]; then
+    echo "Name only allows [a-z0-9-], found ${filtered_name} (length = ${#filtered_name})"
     exit 1
 fi
 
-NEW_NAME_WITH_UNDERSCORE=$(echo "${NEW_NAME}" | sed -e "s/-/_/g")
+new_name_with_underscore=$(echo "${new_name}" | sed -e "s/-/_/g")
 
-echo "New name with underscore = ${NEW_NAME_WITH_UNDERSCORE}"
+echo "New name with underscore = ${new_name_with_underscore}"
 
-PART_NAME="rust-"
-OLD_NAME="${PART_NAME}seed"
-OLD_NAME_WITH_UNDERSCORE=$(echo "${OLD_NAME}" | sed -e "s/-/_/g")
+part_name="rust-"
+old_name="${part_name}seed"
+old_name_with_underscore=$(echo "${old_name}" | sed -e "s/-/_/g")
 
-echo ${OLD_NAME_WITH_UNDERSCORE}
+echo ${old_name_with_underscore}
 
-rg --hidden --glob '!.git/*' --files-with-matches ${OLD_NAME} | xargs -i sed -i "s/${OLD_NAME}/${NEW_NAME}/g" {}
-rg --hidden --glob '!.git/*' --files-with-matches ${OLD_NAME_WITH_UNDERSCORE}
-rg --hidden --glob '!.git/*' --files-with-matches ${OLD_NAME_WITH_UNDERSCORE} | xargs -i sed -i "s/${OLD_NAME_WITH_UNDERSCORE}/${NEW_NAME_WITH_UNDERSCORE}/g" {}
+rg --hidden --glob '!.git/*' --files-with-matches ${old_name} | xargs -i sed -i "s/${old_name}/${new_name}/g" {}
+rg --hidden --glob '!.git/*' --files-with-matches ${old_name_with_underscore}
+rg --hidden --glob '!.git/*' --files-with-matches ${old_name_with_underscore} | xargs -i sed -i "s/${old_name_with_underscore}/${new_name_with_underscore}/g" {}
