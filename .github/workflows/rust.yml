@@ -350,7 +350,7 @@ jobs:
       - *set_up_toolchain
 
       - name: Run Clippy for GitHub Actions report
-        uses: actions-rs-plus/clippy-check@a25517dc6178320cb29e6e5e4d4db30348df6f3f # v2.4.2
+        uses: actions-rs-plus/clippy-check@23b52efac3da0e2b197a9ad2e7be0f515502aaaf # v2.5.0
         with:
           args: ${{ env.CARGO_FEATURES }} --all-targets --frozen --workspace
 
