@@ -236,7 +236,7 @@ jobs:
           rustup update
 
       - name: Install nextest, custom test runner, with native support for junit and grcov
-        uses: taiki-e/install-action@94a7388bec5d4c8dd93e3ebf09e0ff448f3f6f4d # v2.68.35
+        uses: taiki-e/install-action@3a911424851a96b72dc168c8dd71fd98ed215d66 # v2.68.36
         with:
           tool: cargo-nextest, grcov
 
