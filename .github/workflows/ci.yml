@@ -122,7 +122,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install git-cliff to generate changelog & next version number
-        uses: taiki-e/install-action@a7e592b24782184db1613493a5e65d2e12199f80 # v2.69.4
+        uses: taiki-e/install-action@b988c18e3de947a10207d5289ed90fae4e2c51f1 # v2.69.5
         with:
           tool: git-cliff
 
@@ -193,7 +193,7 @@ jobs:
           cargo --version
 
       - name: Install cargo-edit to do set-version
-        uses: taiki-e/install-action@a7e592b24782184db1613493a5e65d2e12199f80 # v2.69.4
+        uses: taiki-e/install-action@b988c18e3de947a10207d5289ed90fae4e2c51f1 # v2.69.5
         with:
           tool: cargo-edit
 
