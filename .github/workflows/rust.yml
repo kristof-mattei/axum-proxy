@@ -11,6 +11,8 @@ env:
   CARGO_FEATURES: --all-features
   CARGO_TERM_COLOR: always
   RUSTFLAGS: --deny=warnings
+  RUSTC_WRAPPER: "sccache"
+  SCCACHE_GHA_ENABLED: "true"
 
 jobs:
   warm-up-cache:
@@ -59,6 +61,10 @@ jobs:
           rustup show
 
           cargo --version
+
+      - &set_up_sccache
+        name: Set up sccache
+        uses: mozilla-actions/sccache-action@7d986dd989559c6ecdb630a3fd2557667be217ad # v0.0.9
 
       - name: Fetch
         shell: bash
@@ -110,6 +116,10 @@ jobs:
             ~/.cargo/git/db/
           key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-${{ github.workflow }}-warm-up-cache
 
+      - *set_up_mold
+
+      - *set_up_toolchain
+
       - &cache_target
         name: Cache target
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
@@ -124,9 +134,7 @@ jobs:
             ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
             ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
 
-      - *set_up_mold
-
-      - *set_up_toolchain
+      - *set_up_sccache
 
       - name: Build
         shell: bash
@@ -142,32 +150,17 @@ jobs:
       github.event_name == 'pull_request' &&
       fromJSON(needs.changes.outputs.rust) == true
     steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          show-progress: false
+      - *checkout
 
-      - name: Cache dependencies
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
-        env:
-          CACHE_NAME: cargo-cache-dependencies
-        with:
-          path: |
-            ~/.cargo
-            ./target
-          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-examples
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
+      - *cache_cargo
 
-      - name: Set up toolchain
-        shell: bash
-        run: |
-          rm ${HOME}/.cargo/bin/rustfmt
-          rm ${HOME}/.cargo/bin/cargo-fmt
-          rustup update
+      - *set_up_mold
 
-          cargo --version
+      - *set_up_toolchain
+
+      - *cache_target
+
+      - *set_up_sccache
 
       - name: Run examples
         shell: bash
@@ -221,11 +214,13 @@ jobs:
 
       - *cache_cargo
 
-      - *cache_target
-
       - *set_up_mold
 
       - *set_up_toolchain
+
+      - *cache_target
+
+      - *set_up_sccache
 
       - name: Install llvm-tools
         shell: bash
@@ -343,11 +338,13 @@ jobs:
 
       - *cache_cargo
 
-      - *cache_target
-
       - *set_up_mold
 
       - *set_up_toolchain
+
+      - *cache_target
+
+      - *set_up_sccache
 
       - name: Run Clippy for GitHub Actions report
         uses: actions-rs-plus/clippy-check@23b52efac3da0e2b197a9ad2e7be0f515502aaaf # v2.5.0

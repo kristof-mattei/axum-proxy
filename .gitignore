@@ -8,3 +8,5 @@ profiling/
 
 # samply output
 /profile.json
+
+.env

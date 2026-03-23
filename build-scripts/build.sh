@@ -41,4 +41,4 @@ declare -x "${cxx_var}=${cpp_compiler}"
 cargo_target_linker_var=CARGO_TARGET_${target_upper}_LINKER
 declare -x "${cargo_target_linker_var}=${c_compiler}"
 
-RUSTFLAGS=$rustflags cargo $@ --target ${TARGET}
+RUSTFLAGS="$rustflags" cargo "$@" --target ${TARGET}
