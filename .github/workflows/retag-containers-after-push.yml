@@ -4,7 +4,8 @@ name: Retag containers after new push / PR
 on:
   # Triggers the workflow pushes to main. They can be either direct pushes, or PRs being merged
   push:
-    branches: [main]
+    branches:
+      - main
 
   # note how we're not doing
   # pull_request_target, as it isn't what we need.

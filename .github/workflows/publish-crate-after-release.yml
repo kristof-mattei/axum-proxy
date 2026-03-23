@@ -3,7 +3,9 @@ name: Publish crate
 
 on:
   release:
-    types: [released, prereleased]
+    types:
+      - released
+      - prereleased
 
 concurrency:
   group: "${{ github.workflow }}"
