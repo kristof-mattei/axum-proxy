@@ -1,0 +1,153 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Retag build cache PR
+
+on:
+  # Triggers the workflow pushes to main. They can be either direct pushes, or PRs being merged
+  push:
+    branches:
+      - main
+
+  # note how we're not doing
+  # pull_request_target, as it isn't what we need.
+  # we need the push event to make it show up nicely in the UI
+  # this however brings a whole new slew of problems, like how do we identify the
+  # incoming PR's artifacts?
+  # in this workflow, build cache images for PRs are tagged as
+  # buildcache-pr-{pr_number}-...
+  # we use the GitHub API / push event context to determine the PR number
+  # associated with this push and then retag those build cache images accordingly
+  # Problem solved
+
+concurrency:
+  group: "${{ github.workflow }}"
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+  pull-requests: read
+
+env:
+  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_VARIANTS: |-
+    arm64
+    amd64
+    amd64/v2
+    amd64/v3
+  REGISTRY: ghcr.io
+
+jobs:
+  repo-has-container:
+    name: Repo has container?
+    runs-on: ubuntu-slim
+    outputs:
+      has_container: ${{ steps.determine.outputs.has_container }}
+    steps:
+      - name: Repo has docker container?
+        id: determine
+        shell: bash
+        run: |
+          has_container="${{ vars.HAS_CONTAINER }}"
+          echo "has_container=${has_container:-false}" >> "${GITHUB_OUTPUT}"
+
+  architectures:
+    name: Build matrix
+    runs-on: ubuntu-slim
+    outputs:
+      architectures: ${{ steps.matrix.outputs.architectures }}
+    steps:
+      - name: Build matrix
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        id: matrix
+        with:
+          script: |
+            const architectures = process.env.IMAGE_VARIANTS.trim().split("\n").map((a) => a.trim());
+
+            const json = JSON.stringify(architectures);
+
+            core.setOutput("architectures", json);
+
+  retag-build-cache-main:
+    name: Retag build cache on ${{ matrix.runs-on }} for ${{ matrix.platform }}
+    strategy:
+      matrix:
+        runs-on:
+          - "ubuntu-latest"
+          - "ubuntu-24.04-arm"
+        platform: ${{ fromJSON(needs.architectures.outputs.architectures) }}
+    runs-on: ${{ matrix.runs-on }}
+    needs:
+      - architectures
+      - repo-has-container
+    if: |
+      fromJSON(needs.repo-has-container.outputs.has_container) == true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          show-progress: false
+          fetch-depth: 2
+
+      - name: Set up Docker
+        uses: docker/setup-docker-action@1a6edb0ba9ac496f6850236981f15d8f9a82254d # v5.0.0
+        with:
+          daemon-config: |
+            {
+              "features": {
+                "containerd-snapshotter": true
+              }
+            }
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
+        with:
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+
+      - name: Retag PR build cache as main build cache
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          platform_no_slashes="${{ matrix.platform }}"
+          platform_no_slashes="${platform_no_slashes//\//-}"
+
+          image_name="${{ env.IMAGE_NAME }}"
+          image_name="${image_name,,}"
+          registry="${{ env.REGISTRY }}"
+          registry="${registry,,}"
+
+          runner_arch="${{ runner.arch }}"
+          runner_arch="${runner_arch,,}"
+
+          target_ref="${registry}/${image_name}-cache:buildcache-main-${runner_arch}-${platform_no_slashes}"
+
+          parent2=$(git rev-parse "HEAD^2" --quiet 2>/dev/null) || true
+
+          pr_number=""
+
+          if [ -n "${parent2}" ]; then
+            pr_number=$(gh api /repos/${{ github.repository }}/commits/${parent2}/pulls --jq '.[0].number')
+          fi
+
+          if [ -z "${pr_number}" ]; then
+            echo "No PR number found, skipping cache retag"
+            exit 0
+          fi
+
+          source_ref="${registry}/${image_name}-cache:buildcache-pr-${pr_number}-${runner_arch}-${platform_no_slashes}"
+
+          echo "Checking if source cache exists: ${source_ref}"
+          if ! docker buildx imagetools inspect "${source_ref}" > /dev/null 2>&1; then
+            echo "PR build cache not found (PR may not have changed Docker/Rust files), skipping"
+
+            exit 0
+          fi
+
+          echo "Retagging ${source_ref} -> ${target_ref}"
+
+          docker buildx imagetools create --tag "${target_ref}" "${source_ref}"
