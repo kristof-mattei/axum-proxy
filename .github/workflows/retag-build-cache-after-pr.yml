@@ -129,7 +129,7 @@ jobs:
           source_ref="${registry}/${image_name}-cache:buildcache-pr-${pr_number}-${runner_arch}-${platform_no_slashes}"
 
           echo "Checking if source cache exists: ${source_ref}"
-          if ! skopeo inspect "docker://${source_ref}" > /dev/null 2>&1; then
+          if ! skopeo inspect --raw "docker://${source_ref}" > /dev/null 2>&1; then
             echo "PR build cache not found (PR may not have changed Docker/Rust files), skipping"
 
             exit 0
@@ -137,4 +137,4 @@ jobs:
 
           echo "Retagging ${source_ref} -> ${target_ref}"
 
-          skopeo copy "docker://${source_ref}" "docker://${target_ref}"
+          skopeo copy --all "docker://${source_ref}" "docker://${target_ref}"
