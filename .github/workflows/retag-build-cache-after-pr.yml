@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
-name: Retag build cache PR
+name: Retag build cache after PR
 
 on:
   # Triggers the workflow pushes to main. They can be either direct pushes, or PRs being merged
