@@ -116,16 +116,16 @@ if ! command -v jq &> /dev/null; then
     exit 1
 fi
 
-# Check if crane or docker is available for manifest inspection
+# Check if skopeo or docker is available for manifest inspection
 manifest_tool=""
-if command -v crane &> /dev/null; then
-    manifest_tool="crane"
+if command -v skopeo &> /dev/null; then
+    manifest_tool="skopeo"
 elif command -v docker &> /dev/null; then
     manifest_tool="docker"
 else
-    echo "Warning: Neither 'crane' nor 'docker' found. Cannot inspect multi-platform manifests." >&2
+    echo "Warning: Neither 'skopeo' nor 'docker' found. Cannot inspect multi-platform manifests." >&2
     echo "         Platform-specific images may be incorrectly deleted." >&2
-    echo "         Install 'crane' (go-containerregistry) or 'docker' to fix this." >&2
+    echo "         Install 'skopeo' or 'docker' to fix this." >&2
 fi
 
 # ========== UTILITY FUNCTIONS ==========
@@ -225,8 +225,8 @@ get_referenced_digests() {
     fi
 
     local manifest=""
-    if [[ "$manifest_tool" == "crane" ]]; then
-        manifest=$(crane manifest "$image_ref" 2> /dev/null) || return 0
+    if [[ "$manifest_tool" == "skopeo" ]]; then
+        manifest=$(skopeo inspect --raw "docker://${image_ref}" 2> /dev/null) || return 0
     elif [[ "$manifest_tool" == "docker" ]]; then
         manifest=$(docker buildx imagetools inspect --raw "$image_ref" 2> /dev/null) || return 0
     fi
