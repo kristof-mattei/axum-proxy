@@ -88,19 +88,6 @@ jobs:
           show-progress: false
           fetch-depth: 2
 
-      - name: Set up Docker
-        uses: docker/setup-docker-action@1a6edb0ba9ac496f6850236981f15d8f9a82254d # v5.0.0
-        with:
-          daemon-config: |
-            {
-              "features": {
-                "containerd-snapshotter": true
-              }
-            }
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
-
       - name: Log into registry ${{ env.REGISTRY }}
         uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
         with:
@@ -142,7 +129,7 @@ jobs:
           source_ref="${registry}/${image_name}-cache:buildcache-pr-${pr_number}-${runner_arch}-${platform_no_slashes}"
 
           echo "Checking if source cache exists: ${source_ref}"
-          if ! docker buildx imagetools inspect "${source_ref}" > /dev/null 2>&1; then
+          if ! skopeo inspect "docker://${source_ref}" > /dev/null 2>&1; then
             echo "PR build cache not found (PR may not have changed Docker/Rust files), skipping"
 
             exit 0
@@ -150,4 +137,4 @@ jobs:
 
           echo "Retagging ${source_ref} -> ${target_ref}"
 
-          docker buildx imagetools create --tag "${target_ref}" "${source_ref}"
+          skopeo copy "docker://${source_ref}" "docker://${target_ref}"
