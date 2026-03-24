@@ -63,9 +63,12 @@ jobs:
           show-progress: false
           fetch-depth: 2
 
-      - name: Find out if current commit is a merge
+      - name: Resolve base and PR head SHAs
         shell: bash
         run: |
+          # push event, HEAD^2 is the tip of the incoming PR branch
+          echo "BASE_SHA=${{ github.event.before }}" >> "${GITHUB_ENV}"
+
           exit_code=0
           # a commit always has a parent, but if it has 2, the commit is a merge
           # so lets see if we have one
@@ -76,7 +79,6 @@ jobs:
           then
             echo "The head of the incoming PR is ${parent2}"
             echo "INCOMING_PR_HEAD_COMMIT=${parent2}" >> "${GITHUB_ENV}"
-
           else
             echo "The incoming push isn't a merge, ergo it's not a PR"
           fi
@@ -110,7 +112,7 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_TAG: "pr-${{ github.event.before }}-${{ env.INCOMING_PR_HEAD_COMMIT }}"
+          PR_TAG: "pr-${{ env.BASE_SHA }}-${{ env.INCOMING_PR_HEAD_COMMIT }}"
         run: |
           repo="${{ github.repository }}"
           repo_lower="${repo,,}"
@@ -137,7 +139,7 @@ jobs:
             # so we find the last commit that github processed before this one
             # which will have gone through the same retagging process
             # and use that sha as our key to find the Docker container related to that commit
-            old_tag=$(echo "${all_tags}" | grep "^sha-${{ github.event.before }}-.*\$") # .* is actual or retag
+            old_tag=$(echo "${all_tags}" | grep "^sha-${{ env.BASE_SHA }}-.*\$") # .* is actual or retag
 
             echo "OLD_TAG=${old_tag}" >> "${GITHUB_ENV}"
             echo "SUFFIX=retag" >> "${GITHUB_ENV}"
