@@ -113,7 +113,7 @@ jobs:
           sudo apt-get install --no-install-recommends --yes libclang-dev
 
       - name: Install cargo-spellcheck to check the spelling
-        uses: taiki-e/install-action@7bc99eee1f1b8902a125006cf790a1f4c8461e63 # v2.69.8
+        uses: taiki-e/install-action@328a871ad8f62ecac78390391f463ccabc974b72 # v2.69.9
         with:
           tool: cargo-spellcheck
 
