@@ -123,7 +123,6 @@ where
     }
 }
 
-#[cfg(any(feature = "https", feature = "nativetls"))]
 impl<Pr, B> OneshotService<Pr, NativeTlsConnector<HttpConnector>, B>
 where
     B: HttpBody + Send,
@@ -140,6 +139,7 @@ where
     /// # Errors
     ///
     /// When `authority` cannot be converted into an [`Authority`].
+    #[cfg(any(feature = "https", feature = "nativetls"))]
     #[cfg_attr(docsrs, doc(cfg(any(feature = "https", feature = "nativetls"))))]
     pub fn https_default<A>(authority: A, path: Pr) -> Result<Self, HttpError>
     where
@@ -154,23 +154,17 @@ where
             path,
         })
     }
-}
 
-#[cfg(feature = "nativetls")]
-impl<Pr, B> OneshotService<Pr, NativeTlsConnector<HttpConnector>, B>
-where
-    B: HttpBody + Send,
-    B::Data: Send,
-{
     /// Use [`client::nativetls_default()`] to build a client.
     ///
     /// For the meaning of "authority", refer to the documentation of [`Uri`](http::uri::Uri).
     ///
     /// The `path` should implement [`PathRewriter`].
-    #[cfg_attr(docsrs, doc(cfg(feature = "nativetls")))]
     /// # Errors
     ///
     /// When `authority` cannot be converted into an [`Authority`].
+    #[cfg(feature = "nativetls")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "nativetls")))]
     pub fn nativetls_default<A>(authority: A, path: Pr) -> Result<Self, HttpError>
     where
         Authority: TryFrom<A>,

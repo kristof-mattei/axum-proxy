@@ -268,7 +268,6 @@ where
     }
 }
 
-#[cfg(any(feature = "https", feature = "nativetls"))]
 impl<Pr, B> ReusedService<Pr, NativeTlsConnector<HttpConnector>, B>
 where
     B: HttpBody + Send,
@@ -280,6 +279,7 @@ where
     ///
     /// When `authority` cannot be converted into an [`Authority`].
     #[cfg_attr(docsrs, doc(cfg(any(feature = "https", feature = "nativetls"))))]
+    #[cfg(any(feature = "https", feature = "nativetls"))]
     pub fn with_https_client<A>(
         client: Arc<Client<NativeTlsConnector<HttpConnector>, B>>,
         authority: A,
@@ -297,19 +297,13 @@ where
             path,
         })
     }
-}
 
-#[cfg(feature = "nativetls")]
-impl<Pr, B> ReusedService<Pr, NativeTlsConnector<HttpConnector>, B>
-where
-    B: HttpBody + Send,
-    B::Data: Send,
-{
     ///
     /// # Errors
     ///
     /// When `authority` cannot be converted into an [`Authority`].
     #[cfg_attr(docsrs, doc(cfg(feature = "nativetls")))]
+    #[cfg(feature = "nativetls")]
     pub fn with_nativetls_client<A>(
         client: Arc<Client<NativeTlsConnector<HttpConnector>, B>>,
         authority: A,
