@@ -79,35 +79,15 @@ jobs:
               exit 1
           fi
 
-      - name: Set up mold
-        uses: rui314/setup-mold@725a8794d15fc7563f59595bd9556495c0564878 # v1
+      - name: Set up binstall
+        uses: cargo-bins/cargo-binstall@113a77a4ce971c41332f2129c3d995df993cf746 # v1.17.8
 
-      - name: Set up toolchain
-        shell: bash
+      - name: Install custom cargo-spellcheck
         run: |
-          rm ${HOME}/.cargo/bin/cargo-fmt
-          rm ${HOME}/.cargo/bin/rust-analyzer
-          rm ${HOME}/.cargo/bin/rustfmt
-
-          rustup self update
-          rustup update
-          rustup show active-toolchain || rustup toolchain install
-          rustup show
-
-          cargo --version
-
-      - name: Set up sccache
-        uses: mozilla-actions/sccache-action@7d986dd989559c6ecdb630a3fd2557667be217ad # v0.0.9
-
-      - name: Install libclang-dev should cargo-spellcheck be built from source
-        shell: bash
-        run: |
-          sudo apt-get install --no-install-recommends --yes libclang-dev
-
-      - name: Install cargo-spellcheck to check the spelling
-        uses: taiki-e/install-action@704f92c11daa75bff5b4e01fcb083350c16c47b9 # v2.69.13
-        with:
-          tool: cargo-spellcheck
+          cargo binstall cargo-spellcheck@0.15.6 \
+            --no-confirm \
+            --pkg-fmt bin \
+            --pkg-url "https://github.com/kristof-mattei/cargo-spellcheck/releases/download/v{ version }/{ name }-v{ version }-{ target }"
 
       - name: Run cargo-spellcheck
         run: |
