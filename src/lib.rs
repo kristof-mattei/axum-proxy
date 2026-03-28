@@ -181,6 +181,12 @@ pub use reused::{builder, builder_http};
 compile_error!("http1 is a mandatory feature");
 
 #[cfg(all(
+    feature = "__rustls",
+    not(any(feature = "rustls-ring", feature = "rustls-aws-lc"))
+))]
+compile_error!("When enabling __rustls, you must enable rustls-ring and/or rustls-aws-lc");
+
+#[cfg(all(
     any(feature = "rustls-ring", feature = "rustls-aws-lc"),
     not(any(feature = "rustls-webpki-roots", feature = "rustls-native-roots"))
 ))]
