@@ -365,6 +365,11 @@ jobs:
             org.opencontainers.image.revision=${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}
             org.opencontainers.image.source=${{ github.event.pull_request.html_url }}
             org.opencontainers.image.version=v${{ needs.calculate-version.outputs.version }}
+          labels: |
+            org.opencontainers.image.description=${{ needs.docker-prepare-variables.outputs.description }} (${{ matrix.platform }})
+            org.opencontainers.image.revision=${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}
+            org.opencontainers.image.source=${{ github.event.pull_request.html_url }}
+            org.opencontainers.image.version=v${{ needs.calculate-version.outputs.version }}
           images: ${{ needs.docker-prepare-variables.outputs.full_image_name_local_registry }}
           tags: |
             type=raw,value=${{ steps.variables.outputs.unique_tag_arch }}
@@ -382,6 +387,7 @@ jobs:
             type=registry,ref=${{ steps.variables.outputs.buildcache_main_ref }}
           cache-to: type=registry,ref=${{ steps.variables.outputs.buildcache_pr_ref }},mode=max
           annotations: ${{ steps.meta.outputs.annotations }}
+          labels: ${{ steps.meta.outputs.labels }}
           outputs: type=oci,dest=/tmp/${{ steps.variables.outputs.unique_tag_arch }}.tar
           platforms: linux/${{ matrix.platform }}
           tags: ${{ steps.meta.outputs.tags }}
