@@ -14,15 +14,6 @@ on:
           # - alpha
           # - beta
           # - rc
-      force-bump:
-        description: "Select the version increment level"
-        type: choice
-        default: auto
-        options:
-          - auto
-          - patch
-          - minor
-          - major
 
 concurrency:
   group: "${{ github.workflow }}"
@@ -68,7 +59,25 @@ jobs:
           git config --global user.name github-actions[bot]
           git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
 
-          version=$(git-cliff --bumped-version --unreleased --bump ${{ inputs.force-bump }} --github-token ${{ secrets.GITHUB_TOKEN }})
+          latest_tag=$(git describe --tags --abbrev=0 || true)
+
+          if [ -z "$(git log "${latest_tag}..HEAD" --oneline)" ]; then
+            echo "No commits since ${latest_tag}. Nothing to release."
+            exit 1
+          fi
+
+          bump_flag="auto"
+          bumped=$(git-cliff --bumped-version --bump auto --unreleased --github-token ${{ secrets.GITHUB_TOKEN }})
+
+          # If git-cliff didn't bump (e.g. chore/ci only commits), force a patch increment
+          # so we never release the same version as the last tag.
+          if [ "${bumped}" = "${latest_tag}" ]; then
+            bump_flag="patch"
+            bumped=$(git-cliff --bumped-version --bump patch --unreleased --github-token ${{ secrets.GITHUB_TOKEN }})
+            echo "Force bumping to ${bumped}"
+          fi
+
+          version="${bumped}"
 
           # Strip any pre-release suffix git-cliff may have picked up (keep only vX.Y.Z)
           [[ "$version" =~ ^(v[0-9]+\.[0-9]+\.[0-9]+) ]] && version="${BASH_REMATCH[1]}"
@@ -105,7 +114,7 @@ jobs:
 
           commit_message="chore(release): Release ${release_version}"
 
-          git-cliff --output CHANGELOG.md --bump ${{ inputs.force-bump }} --with-commit "${commit_message}" --github-token ${{ secrets.GITHUB_TOKEN }}
+          git-cliff --output CHANGELOG.md --bump ${bump_flag} --with-commit "${commit_message}" --github-token ${{ secrets.GITHUB_TOKEN }}
 
           git add CHANGELOG.md
 
