@@ -53,23 +53,44 @@ jobs:
         env:
           TAG: ${{ steps.release.outputs.tag }}
         run: |
-          git config --global user.name github-actions[bot]
-          git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
+          if git ls-remote --tags origin "refs/tags/${TAG}" | grep --quiet "refs/tags/${TAG}$"; then
+            echo "Tag ${TAG} already exists remotely, skipping creation"
+          else
+            git config --global user.name github-actions[bot]
+            git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
 
-          git tag "${TAG}" --message "chore(release): Release ${TAG}"
-          git push origin "${TAG}"
+            git tag "${TAG}" --message "chore(release): Release ${TAG}"
+            git push origin "${TAG}"
+          fi
+
+      - name: Check if release exists
+        id: check_release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          if gh release view "${TAG}" &>/dev/null; then
+            echo "Release ${TAG} already exists, bailing"
+            echo "exists=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "exists=false" >> "${GITHUB_OUTPUT}"
+          fi
 
       - name: Install git-cliff to generate changelog
+        if: steps.check_release.outputs.exists == 'false'
         uses: taiki-e/install-action@6ef672efc2b5aabc787a9e94baf4989aa02a97df # v2.70.3
         with:
           tool: git-cliff
 
       - name: Generate release notes
+        if: steps.check_release.outputs.exists == 'false'
         shell: bash
         run: |
           git-cliff --output release-notes.md --current --github-token ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create GitHub release
+        if: steps.check_release.outputs.exists == 'false'
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.TOKEN_TO_TRIGGER_SUBSEQUENT_WORKFLOWS }}
@@ -96,9 +117,11 @@ jobs:
           gh release create "${TAG}" \
             --notes-file release-notes.md \
             --title "${TAG}" \
+            --verify-tag \
             ${prerelease_flag}
 
       - name: Close stale release PRs
+        if: steps.check_release.outputs.exists == 'false'
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
