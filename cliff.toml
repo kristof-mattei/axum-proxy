@@ -22,7 +22,7 @@ body = """
     - {% if commit.scope %}*({{ commit.scope }})* {% endif %}\
         {% if commit.breaking %}[**breaking**] {% endif %}\
         {{ commit.message | split(pat="\n") | first | trim | upper_first }}\
-        {% if commit.remote.username %} by @{{ commit.remote.username }}{%- endif %}\
+        {% if commit.remote.username %} by [@{{ commit.remote.username }}](https://github.com/{{ commit.remote.username }}){%- endif %}\
         {% if commit.remote.pr_number %} in #{{ commit.remote.pr_number }}{%- endif %}\
         {% if commit.id %} ([`{{ commit.id | truncate(length=7, end="") }}`]({{ self::remote_url() }}/commit/{{ commit.id }})){%- endif %}\
 {% endmacro -%}
@@ -119,7 +119,7 @@ link_parsers = []
 # Include only the tags that belong to the current branch.
 use_branch_tags = false
 # Order releases topologically instead of chronologically.
-topo_order = true
+topo_order = false
 # Order releases topologically instead of chronologically.
 topo_order_commits = true
 # Order of commits in each group/release within the changelog.

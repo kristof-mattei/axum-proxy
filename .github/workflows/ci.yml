@@ -164,41 +164,6 @@ jobs:
     steps:
       - *checkout
 
-      - name: Set up mold
-        uses: rui314/setup-mold@725a8794d15fc7563f59595bd9556495c0564878 # v1
-
-      - name: Cache cargo
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
-        env:
-          CACHE_NAME: cargo
-        with:
-          path: |
-            ~/.cargo/.crates.toml
-            ~/.cargo/.crates2.json
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-${{ github.workflow }}-${{ github.job }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-${{ github.workflow }}-
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
-
-      - name: Set up toolchain
-        shell: bash
-        run: |
-          rm ${HOME}/.cargo/bin/cargo-fmt
-          rm ${HOME}/.cargo/bin/rust-analyzer
-          rm ${HOME}/.cargo/bin/rustfmt
-
-          rustup self update
-          rustup update
-          rustup show active-toolchain || rustup toolchain install
-          rustup show
-
-          cargo --version
-
       - name: Install cargo-edit to do set-version
         uses: taiki-e/install-action@a1df9120380005ebdc788c62449b841b205541dd # v2.71.0
         with:
