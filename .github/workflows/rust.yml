@@ -347,6 +347,45 @@ jobs:
         with:
           args: ${{ env.CARGO_FEATURES }} --all-targets --frozen --workspace
 
+  cargo-msrv:
+    name: Cargo MSRV
+    runs-on: ubuntu-latest
+    needs:
+      - changes
+      - warm-up-cache
+    if: |
+      github.event_name == 'pull_request' &&
+      fromJSON(needs.changes.outputs.rust) == true
+    steps:
+      - *checkout
+
+      - *cache_cargo
+
+      - *set_up_mold
+
+      - name: Get MSRV from Cargo.toml
+        id: msrv
+        shell: bash
+        run: |
+          msrv=$(cargo metadata --format-version 1 --no-deps | jq '.packages[] | .rust_version' --raw-output)
+          echo "msrv=${msrv}" >> "${GITHUB_OUTPUT}"
+
+      - name: Install MSRV toolchain
+        shell: bash
+        run: |
+          rustup toolchain install ${{ steps.msrv.outputs.msrv }} --profile minimal
+
+      - *cache_target
+
+      - *set_up_sccache
+
+      - name: Check with MSRV
+        shell: bash
+        env:
+          RUSTFLAGS: ""
+        run: |
+          cargo +${{ steps.msrv.outputs.msrv }} check --frozen
+
   all-done:
     name: Rust All done
     # this is the job that should be marked as required on GitHub. It's the only one that'll reliably trigger
@@ -361,6 +400,7 @@ jobs:
       - cargo-clippy-and-report
       - cargo-examples
       - cargo-fmt
+      - cargo-msrv
       - cargo-test-and-report
     if: |
       !cancelled()
