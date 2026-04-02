@@ -72,7 +72,7 @@ where
 ///
 /// 2. Scheme
 ///
-/// HTTPS only
+/// HTTPS only.
 ///
 /// 3. HTTP version
 ///

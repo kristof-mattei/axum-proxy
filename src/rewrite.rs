@@ -16,7 +16,7 @@ pub trait PathRewriter {
 
     /// # Errors
     ///
-    /// When the rewritten path is invalid
+    /// When the rewritten path is invalid.
     fn rewrite_uri<B>(
         &mut self,
         request: &mut Request<B>,
