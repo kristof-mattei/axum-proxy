@@ -268,6 +268,7 @@ where
     }
 }
 
+#[cfg(feature = "nativetls")]
 impl<Pr, B> ReusedService<Pr, NativeTlsConnector<HttpConnector>, B>
 where
     B: HttpBody + Send,
