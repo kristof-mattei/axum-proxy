@@ -375,8 +375,6 @@ jobs:
         run: |
           rustup toolchain install ${{ steps.msrv.outputs.msrv }} --profile minimal
 
-      - *cache_target
-
       - *set_up_sccache
 
       - name: Check with MSRV
@@ -385,6 +383,36 @@ jobs:
           RUSTFLAGS: ""
         run: |
           cargo +${{ steps.msrv.outputs.msrv }} check --frozen
+
+  cargo-docs:
+    name: Cargo docs (nightly)
+    runs-on: ubuntu-latest
+    needs:
+      - changes
+      - warm-up-cache
+    if: |
+      github.event_name == 'pull_request' &&
+      fromJSON(needs.changes.outputs.rust) == true
+    steps:
+      - *checkout
+
+      - *cache_cargo
+
+      - *set_up_mold
+
+      - name: Install nightly toolchain
+        shell: bash
+        run: |
+          rustup toolchain install nightly --profile minimal
+
+      - *set_up_sccache
+
+      - name: Build docs
+        shell: bash
+        env:
+          RUSTDOCFLAGS: "--cfg docsrs --deny=warnings"
+        run: |
+          cargo +nightly doc ${{ env.CARGO_FEATURES }} --frozen --workspace --no-deps
 
   all-done:
     name: Rust All done
@@ -398,6 +426,7 @@ jobs:
       - changes
       - cargo-build
       - cargo-clippy-and-report
+      - cargo-docs
       - cargo-examples
       - cargo-fmt
       - cargo-msrv
