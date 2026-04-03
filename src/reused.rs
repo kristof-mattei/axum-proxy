@@ -20,7 +20,14 @@ use crate::{ProxyError, client};
 
 type BoxErr = Box<dyn std::error::Error + Send + Sync>;
 
-/// The return type of [`builder()`], [`builder_http()`] and [`builder_https()`].
+#[cfg_attr(
+    not(any(feature = "https", feature = "nativetls")),
+    doc = "The return type of [`builder()`], [`builder_http()`]."
+)]
+#[cfg_attr(
+    any(feature = "https", feature = "nativetls"),
+    doc = "The return type of [`builder()`], [`builder_http()`] and [`builder_https()`]."
+)]
 #[derive(Debug)]
 pub struct Builder<C = HttpConnector, B = Incoming> {
     client: Arc<Client<C, B>>,

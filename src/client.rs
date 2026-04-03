@@ -1,5 +1,11 @@
-//! Includes helper functions to build [`Client`]s, and some re-exports from [`hyper::client`] or
-//! [`hyper_tls`].
+#![cfg_attr(
+    not(feature = "https"),
+    doc = "Includes helper functions to build [`Client`]s, and some re-exports from [`hyper::client`]."
+)]
+#![cfg_attr(
+    feature = "https",
+    doc = "Includes helper functions to build [`Client`]s, and some re-exports from [`hyper::client`] or [`hyper_tls`]."
+)]
 //!
 use hyper::body::Body as HttpBody;
 #[cfg(feature = "__rustls")]
@@ -21,7 +27,7 @@ pub fn builder() -> Builder {
     Builder::new(hyper_util::rt::TokioExecutor::new())
 }
 
-/// Same as [`Client::new()`], except for the `B` parameter.
+/// With the default [`hyper_util::client::legacy::connect::HttpConnector`].
 #[must_use]
 pub fn http_default<B>() -> Client<HttpConnector, B>
 where
@@ -63,9 +69,9 @@ where
 /// 1. Cert roots
 ///
 /// - if the feature `rustls-webpki-roots` is enabled, then use
-///   [`HttpsConnector::with_webpki_roots()`](hyper_rustls::HttpsConnector::with_webpki_roots());
+///   [`HttpsConnectorBuilder::with_webpki_roots()`](hyper_rustls::HttpsConnectorBuilder::with_webpki_roots());
 /// - if `rustls-webpki-roots` is disabled and `rustls-native-roots` enabled, then
-///   [`HttpsConnector::with_native_roots()`](hyper_rustls::HttpsConnector::with_native_roots());
+///   [`HttpsConnectorBuilder::with_native_roots()`](hyper_rustls::HttpsConnectorBuilder::with_native_roots());
 /// - otherwise compilation fails.
 ///
 /// The feature `rustls` is equivalent to `rustls-webpki-roots`.
@@ -77,9 +83,9 @@ where
 /// 3. HTTP version
 ///
 /// - if the feature `http1` is enabled, then call
-///   [`HttpsConnector::enable_http1()`](hyper_rustls::HttpsConnector::enable_http1());
+///   [`HttpsConnectorBuilder::enable_http1()`](hyper_rustls::HttpsConnectorBuilder::enable_http1());
 /// - if the feature `rustls-http2` is enabled, then call
-///   [`HttpsConnector::enable_http2()`](hyper_rustls::HttpsConnector::enable_http2()).
+///   [`HttpsConnectorBuilder::enable_http2()`](hyper_rustls::HttpsConnectorBuilder::enable_http2()).
 ///
 /// This is not exclusive: if both features are enabled, then both methods are called.
 ///

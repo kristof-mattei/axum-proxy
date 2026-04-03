@@ -3,9 +3,16 @@
 //! `axum-proxy` is tower [`Service`s](tower_service::Service) that performs "reverse
 //! proxy" with various rewriting rules.
 //!
-//! Internally these services use [`hyper::Client`] to send an incoming request to the another
-//! server. The [`connector`](hyper::client::connect::Connect) for a client can be
-//! [`HttpConnector`](hyper::client::HttpConnector), [`HttpsConnector`](hyper_tls::HttpsConnector),
+//! Internally these services use [`hyper_util::client::legacy::Client`] to send an incoming request to the another
+//! server. The [`connector`](hyper_util::client::legacy::connect::Connect) for a client can be
+#![cfg_attr(
+    not(any(feature = "https", feature = "nativetls")),
+    doc = "[`HttpConnector`](hyper_util::client::legacy::connect::HttpConnector),"
+)]
+#![cfg_attr(
+    any(feature = "https", feature = "nativetls"),
+    doc = "[`HttpConnector`](hyper_util::client::legacy::connect::HttpConnector), [`HttpsConnector`](hyper_tls::HttpsConnector),"
+)]
 //! or any ones whichever you want.
 //!
 //! # Examples
@@ -91,16 +98,22 @@
 //!
 //! # Return Types
 //!
-//! The return type ([`Future::Output`](std::future::Future::Output)) of [`ReusedService`] and
-//! [`OneshotService`] is `Result<Result<Response, Error>, Infallible>`. This is because axum's
-//! [`Router`](axum::Router) accepts only such `Service`s.
+//! The return type ([`Future::Output`]) of [`ReusedService`] and
+//! [`OneshotService`] is `Result<Result<Response, Error>, Infallible>`.
+#![cfg_attr(
+    any(feature = "axum"),
+    doc = "This is because axum's [`Router`](axum::Router) accepts only such `Service`s."
+)]
 //!
-//! The [`Error`] type implements [`IntoResponse`](axum::response::IntoResponse) if you enable the
-//! `axum`feature.
-//! It returns an empty body, with the status code `INTERNAL_SERVER_ERROR`. The description of this
-//! error will be logged out at [error](`log::error`) level in the
-//! [`into_response()`](axum::response::IntoResponse::into_response()) method.
-//!
+#![cfg_attr(
+    any(feature = "axum"),
+    doc = "The [`error::ProxyError`] type implements [`IntoResponse`](axum::response::IntoResponse) if you enable the \
+    `axum` feature. \
+    It returns an empty body, with the status code `INTERNAL_SERVER_ERROR`. The description of this \
+    error will be logged out at [error](`tracing::Level`) level in the \
+    [`into_response()`](axum::response::IntoResponse::into_response()) method. \
+"
+)]
 //!
 //! # Features
 //!
@@ -114,8 +127,11 @@
 //! - `rustls-webpki-roots`: uses the `hyper-rustls` crate, with the feature `webpki-roots`
 //! - `rustls-native-roots`: uses the `hyper-rustls` crate, with the feature `rustls-native-certs`
 //! - `rustls-http2`: `http2` plus `rustls`, and `rustls/http2` is enabled
-//! - `axum`: implements [`IntoResponse`](axum::response::IntoResponse) for [`Error`]
-//!
+
+#![cfg_attr(
+    any(feature = "axum"),
+    doc = " - `axum`: implements [`IntoResponse`](axum::response::IntoResponse) for [`error::ProxyError`]"
+)]
 //! You must turn on either `http1`or `http2`. You cannot use the services if, for example, only
 //! the `https` feature is on.
 //!
