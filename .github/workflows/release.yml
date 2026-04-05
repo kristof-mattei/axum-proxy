@@ -61,13 +61,13 @@ jobs:
 
           latest_tag=$(git describe --tags --abbrev=0 || true)
 
-          if [ -z "$(git log "${latest_tag}..HEAD" --oneline)" ]; then
+          if [ -n "${latest_tag}" ] && [ -z "$(git log "${latest_tag}..HEAD" --oneline)" ]; then
             echo "No commits since ${latest_tag}. Nothing to release."
             exit 1
           fi
 
           bump_flag="auto"
-          bumped=$(git-cliff --bumped-version --bump auto --unreleased --github-token ${{ secrets.GITHUB_TOKEN }})
+          bumped=$(git-cliff --bumped-version --bump ${bump_flag} --unreleased --github-token ${{ secrets.GITHUB_TOKEN }})
 
           # If git-cliff didn't bump (e.g. chore/ci only commits), force a patch increment
           # so we never release the same version as the last tag.

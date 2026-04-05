@@ -476,18 +476,11 @@ jobs:
       - name: Push from local registry to remote with new tags
         shell: bash
         run: |
-          new_tags=()
+          source="docker://${{ needs.docker-prepare-variables.outputs.full_image_name_local_registry }}:${{ needs.docker-prepare-variables.outputs.unique_tag }}"
+
           while IFS= read -r tag; do
-            new_tags+=(--tag)
-            new_tags+=("${tag}")
+            skopeo copy --all --preserve-digests --src-tls-verify=false --command-timeout 70s --retry-times 5 "${source}" "docker://${tag}"
           done <<< "${{ steps.meta.outputs.tags }}"
-
-          until timeout --kill-after=70 60 docker buildx imagetools create "${new_tags[@]}" \
-            "${{ needs.docker-prepare-variables.outputs.full_image_name_local_registry }}:${{ needs.docker-prepare-variables.outputs.unique_tag }}"; do
-            echo "Timeout exceeded / command failed, trying again..."
-
-            sleep 2
-          done
 
       - name: Inspect new remote tags
         shell: bash
@@ -495,11 +488,7 @@ jobs:
           while IFS= read -r new_tag; do
             echo "Inspecting ${new_tag}:"
 
-            until timeout --kill-after=70 60 docker buildx imagetools inspect --raw "${new_tag}"; do
-              echo "Timeout exceeded / command failed, trying again..."
-
-              sleep 2
-            done
+            skopeo inspect --raw --command-timeout 70s --retry-times 5 "docker://${new_tag}"
 
             # empty to get newline
             echo ""
@@ -513,6 +502,7 @@ jobs:
       attestations: write
       id-token: write
       packages: write
+      pull-requests: write
     needs:
       - docker-prepare-variables
       - docker-build
@@ -552,6 +542,28 @@ jobs:
           subject-name: ${{ needs.docker-prepare-variables.outputs.full_image_name_remote_registry }}
           subject-digest: ${{ needs.docker-publish.outputs.digest }}
           push-to-registry: true
+
+      - name: Docker Scout Compare (linux/amd64)
+        uses: docker/scout-action@8910519cee8ac046f3ee99686b0dc6654d5ba1a7 # v1.20.3
+        with:
+          command: compare
+          image: "${{ needs.docker-prepare-variables.outputs.full_image_name_remote_registry }}:pr-${{ github.event.pull_request.number }}-latest"
+          platform: linux/amd64
+          to: "${{ needs.docker-prepare-variables.outputs.full_image_name_remote_registry }}:edge"
+          dockerhub-user: ${{ vars.DOCKERHUB_USERNAME }}
+          dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          organization: ${{ vars.DOCKERHUB_USERNAME }}
+
+      - name: Docker Scout Compare (linux/arm64)
+        uses: docker/scout-action@8910519cee8ac046f3ee99686b0dc6654d5ba1a7 # v1.20.3
+        with:
+          command: compare
+          image: "${{ needs.docker-prepare-variables.outputs.full_image_name_remote_registry }}:pr-${{ github.event.pull_request.number }}-latest"
+          platform: linux/arm64
+          to: "${{ needs.docker-prepare-variables.outputs.full_image_name_remote_registry }}:edge"
+          dockerhub-user: ${{ vars.DOCKERHUB_USERNAME }}
+          dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          organization: ${{ vars.DOCKERHUB_USERNAME }}
 
   all-done:
     name: All done

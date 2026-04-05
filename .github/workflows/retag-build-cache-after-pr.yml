@@ -137,4 +137,4 @@ jobs:
 
           echo "Retagging ${source_ref} -> ${target_ref}"
 
-          skopeo copy --all "docker://${source_ref}" "docker://${target_ref}"
+          skopeo copy --all --preserve-digests "docker://${source_ref}" "docker://${target_ref}"

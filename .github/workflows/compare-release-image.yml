@@ -1,0 +1,85 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Compare release image
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: read
+  pull-requests: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  repo-has-container:
+    name: Repo has container?
+    runs-on: ubuntu-slim
+    if: startsWith(github.head_ref, 'release/v')
+    outputs:
+      has_container: ${{ steps.determine.outputs.has_container }}
+    steps:
+      - name: Repo has docker container?
+        shell: bash
+        id: determine
+        run: |
+          has_container="${{ vars.HAS_CONTAINER }}"
+          echo "has_container=${has_container:-false}" >> "${GITHUB_OUTPUT}"
+
+  compare:
+    name: Compare release image against latest
+    runs-on: ubuntu-latest
+    needs:
+      - repo-has-container
+    if: fromJSON(needs.repo-has-container.outputs.has_container) == true
+    steps:
+      - name: Set full image name
+        shell: bash
+        run: |
+          echo "FULL_IMAGE_NAME=${REGISTRY,,}/${IMAGE_NAME,,}" >> "${GITHUB_ENV}"
+
+      - name: Set up Docker
+        uses: docker/setup-docker-action@1a6edb0ba9ac496f6850236981f15d8f9a82254d # v5.0.0
+        with:
+          daemon-config: |
+            {
+              "features": {
+                "containerd-snapshotter": true
+              }
+            }
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker Scout Compare (linux/amd64)
+        uses: docker/scout-action@8910519cee8ac046f3ee99686b0dc6654d5ba1a7 # v1.20.3
+        with:
+          command: compare
+          image: "${{ env.FULL_IMAGE_NAME }}:edge"
+          platform: linux/amd64
+          to: "${{ env.FULL_IMAGE_NAME }}:latest"
+          dockerhub-user: ${{ vars.DOCKERHUB_USERNAME }}
+          dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          organization: ${{ vars.DOCKERHUB_USERNAME }}
+
+      - name: Docker Scout Compare (linux/arm64)
+        uses: docker/scout-action@8910519cee8ac046f3ee99686b0dc6654d5ba1a7 # v1.20.3
+        with:
+          command: compare
+          image: "${{ env.FULL_IMAGE_NAME }}:edge"
+          platform: linux/arm64
+          to: "${{ env.FULL_IMAGE_NAME }}:latest"
+          dockerhub-user: ${{ vars.DOCKERHUB_USERNAME }}
+          dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
+          organization: ${{ vars.DOCKERHUB_USERNAME }}
