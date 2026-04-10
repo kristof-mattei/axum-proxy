@@ -7,16 +7,15 @@ on:
       prerelease:
         description: "Pre-release type"
         type: choice
-        # default: rc
         default: none
         options:
           - none
-          # - alpha
-          # - beta
-          # - rc
+          - alpha
+          - beta
+          - rc
 
 concurrency:
-  group: "${{ github.workflow }}"
+  group: "${{ github.workflow }}-${{ inputs.prerelease }}"
   cancel-in-progress: true # only last step is important, which runs or doesn't
 
 permissions:
@@ -61,9 +60,36 @@ jobs:
 
           latest_tag=$(git describe --tags --abbrev=0 || true)
 
+          prerelease="${{ inputs.prerelease }}"
+
+          echo "::notice::Latest tag: ${latest_tag:-none}"
+          echo "::notice::Pre-release type: ${prerelease}"
+
           if [ -n "${latest_tag}" ] && [ -z "$(git log "${latest_tag}..HEAD" --oneline)" ]; then
-            echo "No commits since ${latest_tag}. Nothing to release."
-            exit 1
+            # no commits since last tag, only allow if this is a promotion through pre-release stages
+            tier_of() {
+              case "$1" in
+                alpha) echo 0 ;;
+                beta)  echo 1 ;;
+                rc)    echo 2 ;;
+                none)  echo 3 ;;
+                *)     echo -1 ;;
+              esac
+            }
+
+            if [[ "${latest_tag}" =~ -(alpha|beta|rc)\.[0-9]+$ ]]; then
+              latest_type="${BASH_REMATCH[1]}"
+            else
+              latest_type="none"
+            fi
+
+            latest_tier=$(tier_of "${latest_type}")
+            requested_tier=$(tier_of "${prerelease}")
+
+            if [ "${requested_tier}" -le "${latest_tier}" ]; then
+              echo "::error::No commits since ${latest_tag} and ${prerelease} is not a promotion from ${latest_type}."
+              exit 1
+            fi
           fi
 
           bump_flag="auto"
@@ -74,18 +100,38 @@ jobs:
           if [ "${bumped}" = "${latest_tag}" ]; then
             bump_flag="patch"
             bumped=$(git-cliff --bumped-version --bump patch --unreleased --github-token ${{ secrets.GITHUB_TOKEN }})
-            echo "Force bumping to ${bumped}"
+            echo "::notice::No conventional bump detected, forcing patch bump"
           fi
 
           version="${bumped}"
 
           # Strip any pre-release suffix git-cliff may have picked up (keep only vX.Y.Z)
           [[ "$version" =~ ^(v[0-9]+\.[0-9]+\.[0-9]+) ]] && version="${BASH_REMATCH[1]}"
+          echo "::notice::Base version: ${version}"
           echo "version=$version" >> "${GITHUB_OUTPUT}"
 
-          prerelease="${{ inputs.prerelease }}"
-
           if [ "${prerelease}" != "none" ]; then
+            # Pre-release types in ascending order
+            pre_types=("alpha" "beta" "rc")
+
+            # Find the index of the requested pre-release type
+            requested_index=-1
+            for i in "${!pre_types[@]}"; do
+              if [ "${pre_types[$i]}" = "${prerelease}" ]; then
+                requested_index=$i
+              fi
+            done
+
+            # Check if a higher-tier pre-release already exists for this base version
+            for i in "${!pre_types[@]}"; do
+              if [ "$i" -gt "$requested_index" ]; then
+                if git tag --list "${version}-${pre_types[$i]}.*" | grep -q .; then
+                  echo "::error::Cannot create ${prerelease} pre-release: ${pre_types[$i]} pre-release already exists for ${version}."
+                  exit 1
+                fi
+              fi
+            done
+
             # Determine the next pre-release number by finding the highest existing tag with this suffix
             latest_pre=$(git tag --list "${version}-${prerelease}.*" | sort --field-separator . --key 4 --numeric-sort | tail -1)
 
@@ -100,9 +146,11 @@ jobs:
             release_version="${version}"
           fi
 
+          echo "::notice::Release version: ${release_version}"
           echo "release_version=$release_version" >> "${GITHUB_OUTPUT}"
 
           branch="release/${release_version}"
+          echo "::notice::Branch: ${branch}"
           echo "branch=$branch" >> "${GITHUB_OUTPUT}"
 
           # Create or reset the branch to current main
@@ -112,9 +160,9 @@ jobs:
             git checkout -b "${branch}"
           fi
 
-          commit_message="chore(release): Release ${release_version}"
+          commit_message="chore(release): prepare for ${release_version}"
 
-          git-cliff --output CHANGELOG.md --bump ${bump_flag} --with-commit "${commit_message}" --github-token ${{ secrets.GITHUB_TOKEN }}
+          git-cliff --output CHANGELOG.md --tag "${release_version}" --github-token ${{ secrets.GITHUB_TOKEN }}
 
           git add CHANGELOG.md
 
