@@ -290,7 +290,7 @@ jobs:
           # flags: tests
           files: reports/lcov
           name: code-coverage
-          plugins: ""
+          plugins: noop
           report_type: "coverage"
           use_oidc: true
 
@@ -304,7 +304,7 @@ jobs:
           # flags: tests
           files: reports/results.xml
           name: test-results
-          plugins: ""
+          plugins: noop
           report_type: "test_results"
           use_oidc: true
 
