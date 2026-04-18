@@ -170,7 +170,16 @@ jobs:
 
           git push --set-upstream origin "${branch}" --force
 
-          git-cliff --output diff-CHANGELOG.md --unreleased --tag "${release_version}" --github-token ${{ secrets.GITHUB_TOKEN }}
+          # Build the PR-body changelog from a context whose compare-link target
+          # is the release-branch head SHA, because the ${release_version} tag
+          # doesn't exist until after this PR is merged.
+          release_sha=$(git rev-parse HEAD)
+
+          git-cliff --context --unreleased --tag "${release_version}" --github-token ${{ secrets.GITHUB_TOKEN }} \
+            | jq --arg sha "${release_sha}" '.[0].extra = {compare_to: $sha}' \
+            > diff-context.json
+
+          git-cliff --from-context diff-context.json --output diff-CHANGELOG.md
 
       - name: Open or update pull request
         shell: bash
