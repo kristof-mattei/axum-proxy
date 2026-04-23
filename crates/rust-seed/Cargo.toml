@@ -1,0 +1,26 @@
+[package]
+name = "rust-seed"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+description.workspace = true
+license.workspace = true
+categories.workspace = true
+keywords.workspace = true
+repository.workspace = true
+include.workspace = true
+build = "src/build.rs"
+
+[features]
+default = []
+
+[dependencies]
+color-eyre = "0.6.5"
+mimalloc = "0.1.50"
+
+[dev-dependencies]
+pretty_assertions = "=1.4.1"
+
+[lints]
+workspace = true
