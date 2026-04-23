@@ -1,26 +1,297 @@
 [package]
-name = "rust-seed"
-version.workspace = true
-edition.workspace = true
-rust-version.workspace = true
-authors.workspace = true
-description.workspace = true
-license.workspace = true
-categories.workspace = true
-keywords.workspace = true
-repository.workspace = true
-include.workspace = true
-build = "src/build.rs"
+name = "axum-proxy"
+version = "0.0.0-development"
+edition = "2024"
+rust-version = "1.88.0"
+authors = ["Kristof Mattei", "Masato Nakata <masaton@naughie.com>"]
+description = "Tower service for reverse proxy"
+license = "MIT OR Apache-2.0"
+categories = ["asynchronous", "web-programming", "web-programming::http-server"]
+keywords = ["http", "tower", "axum", "reverse", "proxy"]
+repository = "https://github.com/kristof-mattei/axum-proxy"
+documentation = "https://docs.rs/axum-proxy"
+readme = "README.md"
+include = ["src/**", "/LICENSE", "/LICENSE-*"]
 
 [features]
-default = []
+default = ["http1"]
+http1 = ["hyper/http1", "hyper-util/http1"]
+http2 = ["hyper/http2", "hyper-util/http2"]
+https = ["nativetls"]
+nativetls = ["hyper-tls"]
+rustls = ["rustls-webpki-roots"]
+rustls-http2 = ["http2", "rustls", "hyper-rustls/http2"]
+rustls-native-roots = ["__rustls", "hyper-rustls/rustls-native-certs"]
+rustls-webpki-roots = ["__rustls", "hyper-rustls/webpki-roots"]
+rustls-ring = ["__rustls", "hyper-rustls/ring"]
+rustls-aws-lc = ["__rustls", "hyper-rustls/aws-lc-rs"]
+
+__rustls = ["hyper-rustls"]
 
 [dependencies]
-color-eyre = "0.6.5"
-mimalloc = "0.1.50"
+axum = { version = "0.8.6", optional = true }
+http = "1.3.1"
+hyper = { version = "1.7.0", features = ["client"] }
+hyper-rustls = { version = "0.27.7", default-features = false, features = [
+    "http1",
+    "logging",
+    "native-tokio",
+    "tls12",
+], optional = true }
+hyper-tls = { version = "0.6.0", optional = true }
+hyper-util = { version = "0.1.17", features = [
+    "client",
+    "client-legacy",
+    "tokio",
+] }
+regex = "1.12.2"
+tower-service = "0.3.3"
+tracing = "0.1.41"
 
 [dev-dependencies]
-pretty_assertions = "=1.4.1"
+axum = "0.8.6"
+http-body-util = "0.1.3"
+mockito = "1.7.0"
+pretty_assertions = "1.4.1"
+reqwest = "0.13.1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 
-[lints]
-workspace = true
+[[example]]
+doc-scrape-examples = true
+name = "http2-proxy"
+required-features = ["axum"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[package.metadata.spellcheck]
+config = "spellcheck.toml"
+
+[lints.clippy]
+# don't stop from compiling / running
+all = "warn"
+cargo = "warn"
+complexity = "warn"
+correctness = "warn"
+pedantic = "warn"
+perf = "warn"
+style = "warn"
+suspicious = "warn"
+
+# restriction
+absolute_paths = { level = "deny", priority = 127 }
+# Lib only
+# alloc_instead_of_core = { level = "deny", priority = 127 }
+allow_attributes = { level = "deny", priority = 127 }
+allow_attributes_without_reason = { level = "deny", priority = 127 }
+# No
+# arbitrary_source_item_ordering = { level = "deny", priority = 127 }
+# Debatable
+# arithmetic_side_effects = { level = "deny", priority = 127 }
+# Debatable, the ones below deny more specific occurences
+# as_conversions = { level = "deny", priority = 127 }
+as_pointer_underscore = { level = "deny", priority = 127 }
+as_underscore = { level = "deny", priority = 127 }
+assertions_on_result_states = { level = "deny", priority = 127 }
+big_endian_bytes = { level = "deny", priority = 127 }
+cfg_not_test = { level = "deny", priority = 127 }
+# ensure we do Arc::clone(&arc) instead of arc.clone()
+clone_on_ref_ptr = { level = "deny", priority = 127 }
+# No
+# cognitive_complexity = { level = "deny", priority = 127 }
+create_dir = { level = "deny", priority = 127 }
+dbg_macro = { level = "deny", priority = 127 }
+decimal_literal_representation = { level = "deny", priority = 127 }
+# No, false positives / false negatives
+# default_numeric_fallback = { level = "deny", priority = 127 }
+default_union_representation = { level = "deny", priority = 127 }
+deref_by_slicing = { level = "deny", priority = 127 }
+# No, we already have `non_ascii_idents` which is even better
+# disallowed_script_idents = { level = "deny", priority = 127 }
+doc_include_without_cfg = { level = "deny", priority = 127 }
+doc_paragraphs_missing_punctuation = { level = "deny", priority = 127 }
+else_if_without_else = { level = "deny", priority = 127 }
+empty_drop = { level = "deny", priority = 127 }
+# Lib only
+# empty_enum_variants_with_brackets = { level = "deny", priority = 127 }
+# Lib only
+# empty_structs_with_brackets = { level = "deny", priority = 127 }
+error_impl_error = { level = "deny", priority = 127 }
+# Lib only
+# exhaustive_enums = { level = "deny", priority = 127 }
+# Lib only
+# exhaustive_structs = { level = "deny", priority = 127 }
+exit = { level = "deny", priority = 127 }
+# No, unwrap (or expect) is information to the reader
+# expect_used = { level = "deny", priority = 127 }
+field_scoped_visibility_modifiers = { level = "deny", priority = 127 }
+filetype_is_file = { level = "deny", priority = 127 }
+# Debatable
+# float_arithmetic = { level = "deny", priority = 127 }
+float_cmp_const = { level = "deny", priority = 127 }
+fn_to_numeric_cast_any = { level = "deny", priority = 127 }
+# No, `.get().unwrap()` is more explicit than []. This is not about `.get().expect()`
+# get_unwrap = { level = "deny", priority = 127 }
+host_endian_bytes = { level = "deny", priority = 127 }
+# Debatable
+# if_then_some_else_none = { level = "deny", priority = 127 }
+impl_trait_in_params = { level = "deny", priority = 127 }
+# We want implicit return
+# implicit_return = { level = "deny", priority = 127 }
+# Debatable, but probably should be turned on in the future
+# indexing_slicing = { level = "deny", priority = 127 }
+infinite_loop = { level = "deny", priority = 127 }
+inline_asm_x86_att_syntax = { level = "deny", priority = 127 }
+# We want intel
+# inline_asm_x86_intel_syntax = { level = "deny", priority = 127 }
+# Debatable
+# integer_division = { level = "deny", priority = 127 }
+# Debatable
+# integer_division_remainder_used = { level = "deny", priority = 127 }
+iter_over_hash_type = { level = "deny", priority = 127 }
+large_include_file = { level = "deny", priority = 127 }
+let_underscore_must_use = { level = "deny", priority = 127 }
+let_underscore_untyped = { level = "deny", priority = 127 }
+little_endian_bytes = { level = "deny", priority = 127 }
+lossy_float_literal = { level = "deny", priority = 127 }
+# Debatable
+# map_err_ignore = { level = "deny", priority = 127 }
+map_with_unused_argument_over_ranges = { level = "deny", priority = 127 }
+mem_forget = { level = "deny", priority = 127 }
+# Debatable
+# min_ident_chars = { level = "deny", priority = 127 }
+missing_assert_message = { level = "deny", priority = 127 }
+# Debatable
+# missing_asserts_for_indexing = { level = "deny", priority = 127 }
+# No
+# missing_docs_in_private_items = { level = "deny", priority = 127 }
+# Lib only
+# missing_inline_in_public_items = { level = "deny", priority = 127 }
+# No
+# missing_trait_methods = { level = "deny", priority = 127 }
+mixed_read_write_in_expression = { level = "deny", priority = 127 }
+mod_module_files = { level = "deny", priority = 127 }
+# Debatable
+# module_name_repetitions = { level = "deny", priority = 127 }
+modulo_arithmetic = { level = "deny", priority = 127 }
+multiple_inherent_impl = { level = "deny", priority = 127 }
+multiple_unsafe_ops_per_block = { level = "deny", priority = 127 }
+mutex_atomic = { level = "deny", priority = 127 }
+mutex_integer = { level = "deny", priority = 127 }
+needless_raw_strings = { level = "deny", priority = 127 }
+non_ascii_literal = { level = "deny", priority = 127 }
+non_zero_suggestions = { level = "deny", priority = 127 }
+# No
+# panic = { level = "deny", priority = 127 }
+panic_in_result_fn = { level = "deny", priority = 127 }
+partial_pub_fields = { level = "deny", priority = 127 }
+# No, `.join()` does `.clone()`
+# pathbuf_init_then_push = { level = "deny", priority = 127 }
+pattern_type_mismatch = { level = "deny", priority = 127 }
+# No
+# pointer_format = { level = "deny", priority = 127 }
+precedence_bits = { level = "deny", priority = 127 }
+# Debatable
+# print_stderr = { level = "deny", priority = 127 }
+# Debatable
+# print_stdout = { level = "deny", priority = 127 }
+# Disabled in libs
+# pub_use = { level = "deny", priority = 127 }
+# No, we want the shorthand
+# pub_with_shorthand = { level = "deny", priority = 127 }
+pub_without_shorthand = { level = "deny", priority = 127 }
+# No
+# question_mark_used = { level = "deny", priority = 127 }
+rc_buffer = { level = "deny", priority = 127 }
+rc_mutex = { level = "deny", priority = 127 }
+redundant_test_prefix = { level = "deny", priority = 127 }
+# No, explicitness trumps brevity
+# redundant_type_annotations = { level = "deny", priority = 127 }
+# No, explicitness
+# ref_patterns = { level = "deny", priority = 127 }
+renamed_function_params = { level = "deny", priority = 127 }
+rest_pat_in_fully_bound_structs = { level = "deny", priority = 127 }
+return_and_then = { level = "deny", priority = 127 }
+# Debatable, but probably should be turned on in the future
+# same_name_method = { level = "deny", priority = 127 }
+# No, we don't want `mod.rs`
+# self_named_module_files = { level = "deny", priority = 127 }
+semicolon_inside_block = { level = "deny", priority = 127 }
+# No, we want them outside, not inside
+# semicolon_outside_block = { level = "deny", priority = 127 }
+# No, we want them to be separated by `_`
+# separated_literal_suffix = { level = "deny", priority = 127 }
+# Debatable
+# shadow_reuse = { level = "deny", priority = 127 }
+# Debatable
+# shadow_same = { level = "deny", priority = 127 }
+# Debatable
+# shadow_unrelated = { level = "deny", priority = 127 }
+# No, clarity is important, also, this helps against binary bloat when doing monomorphization
+# single_call_fn = { level = "deny", priority = 127 }
+# No
+# single_char_lifetime_names = { level = "deny", priority = 127 }
+# Lib only
+# std_instead_of_alloc = { level = "deny", priority = 127 }
+# Lib only
+# std_instead_of_core = { level = "deny", priority = 127 }
+str_to_string = { level = "deny", priority = 127 }
+string_add = { level = "deny", priority = 127 }
+string_lit_chars_any = { level = "deny", priority = 127 }
+string_slice = { level = "deny", priority = 127 }
+suspicious_xor_used_as_pow = { level = "deny", priority = 127 }
+tests_outside_test_module = { level = "deny", priority = 127 }
+todo = { level = "deny", priority = 127 }
+try_err = { level = "deny", priority = 127 }
+undocumented_unsafe_blocks = { level = "deny", priority = 127 }
+unimplemented = { level = "deny", priority = 127 }
+unnecessary_safety_comment = { level = "deny", priority = 127 }
+unnecessary_safety_doc = { level = "deny", priority = 127 }
+unnecessary_self_imports = { level = "deny", priority = 127 }
+unneeded_field_pattern = { level = "deny", priority = 127 }
+# No, this is information for the reader and compiler
+# unreachable = { level = "deny", priority = 127 }
+unseparated_literal_suffix = { level = "deny", priority = 127 }
+unused_result_ok = { level = "deny", priority = 127 }
+unused_trait_names = { level = "deny", priority = 127 }
+# No, unwrap (or expect) is information to the reader
+# unwrap_in_result = { level = "deny", priority = 127 }
+# No, unwrap (or expect) is information to the reader
+# unwrap_used = { level = "deny", priority = 127 }
+# No, we know that we shouldn't test on debug formats
+# use_debug  = { level = "deny", priority = 127 }
+verbose_file_reads = { level = "deny", priority = 127 }
+wildcard_enum_match_arm = { level = "deny", priority = 127 }
+
+# end restriction
+
+# merging ifs can hurts legibility, so it's not a good deny lint
+collapsible_if = { level = "allow", priority = 127 }
+
+# this has 0 performance implications, the binding is compiled away, and it could cause issues
+# when done blindly, plus it makes it harder to debug as you cannot put breakpoints on return
+# values of functions (yet)
+let_and_return = { level = "allow", priority = 127 }
+
+# nothing we can do about multiple crate versions, so this lint just creates noise
+multiple_crate_versions = { level = "allow", priority = 127 }
+
+# this one is debatable. continue is used in places to be explicit, and to guard against
+# issues when refactoring
+needless_continue = { level = "allow", priority = 127 }
+
+# fights with `pattern_type_mismatch`
+needless_borrowed_reference = { level = "allow", priority = 127 }
+
+# Conflicts with `else_if_without_else`
+redundant_else = { level = "allow", priority = 127 }
+
+# this one causes confusion when combining variables (`foo`) and
+# dereferenced variables (`foo.bar`). The latter cannot be inlined
+# so we don't inline anything
+uninlined_format_args = { level = "allow", priority = 127 }
+
+[lints.rust]
+let_underscore_drop = { level = "deny", priority = 127 }
+non_ascii_idents = { level = "deny", priority = 127 }
