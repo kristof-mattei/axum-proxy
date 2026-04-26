@@ -13,6 +13,10 @@ on:
           - alpha
           - beta
           - rc
+      auto_merge:
+        description: "Enable auto-merge on the release PR"
+        type: boolean
+        default: false
 
 concurrency:
   group: "${{ github.workflow }}-${{ inputs.prerelease }}"
@@ -207,10 +211,15 @@ jobs:
           if [ -n "$existing_pr" ]; then
             gh pr edit "$existing_pr" \
               --body-file diff-CHANGELOG.md
+            pr_number="$existing_pr"
           else
-            gh pr create \
+            pr_number=$(gh pr create \
               --base main \
               --head "${branch}" \
               --title "chore(release): Release ${release_version}" \
-              --body-file diff-CHANGELOG.md
+              --body-file diff-CHANGELOG.md)
+          fi
+
+          if [ "${{ inputs.auto_merge }}" = "true" ]; then
+            gh pr merge "$pr_number" --auto --merge
           fi
