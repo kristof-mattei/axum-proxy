@@ -9,8 +9,7 @@ absolute-paths-allowed-crates = [
 disallowed-macros = [
     { path = "std::assert_ne", reason = "use `pretty_assertions::assert_ne` instead" },
     { path = "std::assert_eq", reason = "use `pretty_assertions::assert_eq` instead" },
-    # https://doc.rust-lang.org/std/assert_matches/macro.assert_matches.html
-    # { path = "std::assert_matches", reason = "use `pretty_assertions::assert_matches` instead" },
+    { path = "std::assert_matches", reason = "use `pretty_assertions::assert_matches` instead" },
 ]
 disallowed-methods = [
     # https://github.com/serde-rs/json/issues/160
