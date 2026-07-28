@@ -1,0 +1,22 @@
+{
+    "version": "0.2",
+    "language": "en-US",
+    "useGitignore": true,
+    "enableGlobDot": true,
+    "dictionaryDefinitions": [
+        {
+            "name": "project-words",
+            "path": "./project-words.txt",
+            "addWords": true
+        }
+    ],
+    "dictionaries": ["project-words", "bash", "docker", "rust", "rust-crates"],
+    "ignorePaths": [
+        ".git",
+        "CHANGELOG.md",
+        "Cargo.lock",
+        "cspell.json",
+        "pnpm-lock.yaml",
+        "project-words.txt"
+    ]
+}

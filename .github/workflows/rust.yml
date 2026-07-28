@@ -9,39 +9,40 @@ permissions:
 
 env:
   CARGO_FEATURES: --all-features
+  CARGO_INCREMENTAL: "0"
   CARGO_TERM_COLOR: always
   RUSTFLAGS: --deny=warnings
   RUSTC_WRAPPER: "sccache"
   SCCACHE_GHA_ENABLED: "true"
 
 jobs:
-  warm-up-cache:
-    name: Warm up the cache
-    runs-on: ubuntu-latest
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-slim
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      rust: ${{ steps.filter.outputs.rust }}
     steps:
       - &checkout
         name: Check out code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           show-progress: false
 
-      - name: Cache cargo
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        env:
-          CACHE_NAME: cargo
+      - name: Check if we actually made changes
+        uses: dorny/paths-filter@7b450fff21473bca461d4b92ce414b9d0420d706 # v4.0.2
+        id: filter
         with:
-          path: |
-            ~/.cargo/.crates.toml
-            ~/.cargo/.crates2.json
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-${{ github.workflow }}-warm-up-cache
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-${{ github.workflow }}-
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
+          token: ${{ secrets.GITHUB_TOKEN }}
+          filters: .github/file-filters.yml
+
+  cargo-build:
+    name: Cargo build
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout
 
       - &set_up_mold
         name: Set up mold
@@ -66,76 +67,10 @@ jobs:
         name: Set up sccache
         uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
 
-      - name: Fetch
-        shell: bash
-        run: |
-          cargo fetch --locked
-
-  changes:
-    name: Detect changes
-    runs-on: ubuntu-slim
-    permissions:
-      contents: read
-      pull-requests: read
-    outputs:
-      rust: ${{ steps.filter.outputs.rust }}
-    steps:
-      - *checkout
-
-      - name: Check if we actually made changes
-        uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
-        id: filter
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          filters: .github/file-filters.yml
-
-  cargo-build:
-    name: Cargo build
-    runs-on: ubuntu-latest
-    needs:
-      - warm-up-cache
-    steps:
-      - *checkout
-
-      - &cache_cargo
-        name: Cache cargo
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        env:
-          CACHE_NAME: cargo
-        with:
-          path: |
-            ~/.cargo/.crates.toml
-            ~/.cargo/.crates2.json
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-${{ github.workflow }}-warm-up-cache
-
-      - *set_up_mold
-
-      - *set_up_toolchain
-
-      - &cache_target
-        name: Cache target
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        env:
-          CACHE_NAME: target
-        with:
-          path: |
-            ./target
-          key: ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-${{ github.workflow }}-${{ github.job }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-${{ github.workflow }}-
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-${{ hashFiles('Cargo.lock') }}-
-            ${{ runner.os }}-${{ runner.arch }}-build-${{ env.CACHE_NAME }}-
-
-      - *set_up_sccache
-
       - name: Build
         shell: bash
         run: |
-          cargo build ${{ env.CARGO_FEATURES }} --all-targets --frozen --workspace
+          cargo build ${{ env.CARGO_FEATURES }} --all-targets --locked --workspace
 
   cargo-examples:
     name: Cargo examples
@@ -148,13 +83,9 @@ jobs:
     steps:
       - *checkout
 
-      - *cache_cargo
-
       - *set_up_mold
 
       - *set_up_toolchain
-
-      - *cache_target
 
       - *set_up_sccache
 
@@ -171,14 +102,11 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - changes
-      - warm-up-cache
     if: |
       github.event_name == 'pull_request' &&
       fromJSON(needs.changes.outputs.rust) == true
     steps:
       - *checkout
-
-      - *cache_cargo
 
       - *set_up_toolchain
 
@@ -198,8 +126,6 @@ jobs:
   cargo-test-and-report:
     name: Cargo test (and report)
     runs-on: ubuntu-latest
-    needs:
-      - warm-up-cache
     permissions:
       checks: write
       contents: read
@@ -208,13 +134,9 @@ jobs:
     steps:
       - *checkout
 
-      - *cache_cargo
-
       - *set_up_mold
 
       - *set_up_toolchain
-
-      - *cache_target
 
       - *set_up_sccache
 
@@ -227,7 +149,7 @@ jobs:
           rustup update
 
       - name: Install nextest, custom test runner, with native support for junit and grcov
-        uses: taiki-e/install-action@9bcaee1dcae34154180f412e2fa69355a7cda9f6 # v2.82.6
+        uses: taiki-e/install-action@18b1216eba7f8039b0f8d131d5473787f0edce68 # v2.85.3
         with:
           tool: cargo-nextest, grcov
 
@@ -238,7 +160,7 @@ jobs:
           # build-* ones are not parsed by grcov
           LLVM_PROFILE_FILE: "profiling/build-%p-%m.profraw"
         run: |
-          cargo build ${{ env.CARGO_FEATURES }} --all-targets --frozen --workspace
+          cargo build ${{ env.CARGO_FEATURES }} --all-targets --locked --workspace
 
       - name: Run nextest
         shell: bash
@@ -325,41 +247,33 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - changes
-      - warm-up-cache
     if: |
       github.event_name == 'pull_request' &&
       fromJSON(needs.changes.outputs.rust) == true
     steps:
       - *checkout
 
-      - *cache_cargo
-
       - *set_up_mold
 
       - *set_up_toolchain
 
-      - *cache_target
-
       - *set_up_sccache
 
       - name: Run Clippy for GitHub Actions report
-        uses: actions-rs-plus/clippy-check@23b52efac3da0e2b197a9ad2e7be0f515502aaaf # v2.5.0
+        uses: actions-rs-plus/clippy-check@ca09b7b0955125d97749648eed836a9100ec25f4 # v2.6.0
         with:
-          args: ${{ env.CARGO_FEATURES }} --all-targets --frozen --workspace
+          args: ${{ env.CARGO_FEATURES }} --all-targets --locked --workspace
 
   cargo-msrv:
     name: Cargo MSRV
     runs-on: ubuntu-latest
     needs:
       - changes
-      - warm-up-cache
     if: |
       github.event_name == 'pull_request' &&
       fromJSON(needs.changes.outputs.rust) == true
     steps:
       - *checkout
-
-      - *cache_cargo
 
       - *set_up_mold
 
@@ -382,21 +296,18 @@ jobs:
         env:
           RUSTFLAGS: ""
         run: |
-          cargo +${{ steps.msrv.outputs.msrv }} check --frozen
+          cargo +${{ steps.msrv.outputs.msrv }} check --locked
 
   cargo-docs:
     name: Cargo docs (nightly)
     runs-on: ubuntu-latest
     needs:
       - changes
-      - warm-up-cache
     if: |
       github.event_name == 'pull_request' &&
       fromJSON(needs.changes.outputs.rust) == true
     steps:
       - *checkout
-
-      - *cache_cargo
 
       - *set_up_mold
 
@@ -412,7 +323,7 @@ jobs:
         env:
           RUSTDOCFLAGS: "--cfg docsrs --deny=warnings"
         run: |
-          cargo +nightly doc ${{ env.CARGO_FEATURES }} --frozen --workspace --no-deps
+          cargo +nightly doc ${{ env.CARGO_FEATURES }} --locked --workspace --no-deps
 
   all-done:
     name: Rust All done

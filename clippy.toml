@@ -10,6 +10,17 @@ disallowed-macros = [
     { path = "std::assert_ne", reason = "use `pretty_assertions::assert_ne` instead" },
     { path = "std::assert_eq", reason = "use `pretty_assertions::assert_eq` instead" },
     { path = "std::assert_matches", reason = "use `pretty_assertions::assert_matches` instead" },
+    { path = "std::dbg", reason = "use ::tracing::event!(::tracing::Level::DEBUG, ...) instead, dbg! bypasses the log pipeline" },
+    { path = "tracing::trace", reason = "use ::tracing::event!(::tracing::Level::TRACE, ...) instead" },
+    { path = "tracing::debug", reason = "use ::tracing::event!(::tracing::Level::DEBUG, ...) instead" },
+    { path = "tracing::info", reason = "use ::tracing::event!(::tracing::Level::INFO, ...) instead" },
+    { path = "tracing::warn", reason = "use ::tracing::event!(::tracing::Level::WARN, ...) instead" },
+    { path = "tracing::error", reason = "use ::tracing::event!(::tracing::Level::ERROR, ...) instead" },
+    { path = "tracing::trace_span", reason = "use ::tracing::span!(::tracing::Level::TRACE, ...) instead" },
+    { path = "tracing::debug_span", reason = "use ::tracing::span!(::tracing::Level::DEBUG, ...) instead" },
+    { path = "tracing::info_span", reason = "use ::tracing::span!(::tracing::Level::INFO, ...) instead" },
+    { path = "tracing::warn_span", reason = "use ::tracing::span!(::tracing::Level::WARN, ...) instead" },
+    { path = "tracing::error_span", reason = "use ::tracing::span!(::tracing::Level::ERROR, ...) instead" },
 ]
 disallowed-methods = [
     # https://github.com/serde-rs/json/issues/160
@@ -17,8 +28,8 @@ disallowed-methods = [
 ]
 disallowed-names = ["bar", "baz", "e", "err", "foo", "ok", "quux"]
 disallowed-types = [
-    { path = "std::collections::HashMap", replacement = "hashbrown::HashMap", reason = "The standard library version sacrificies performance for HashDos resistance, which should be chosen explicitly" },
-    { path = "std::collections::HashSet", replacement = "hashbrown::HashSet", reason = "The standard library version sacrificies performance for HashDos resistance, which should be chosen explicitly" },
+    { path = "std::collections::HashMap", replacement = "hashbrown::HashMap", reason = "The standard library version sacrifices performance for HashDos resistance, which should be chosen explicitly" },
+    { path = "std::collections::HashSet", replacement = "hashbrown::HashSet", reason = "The standard library version sacrifices performance for HashDos resistance, which should be chosen explicitly" },
 ]
 enforced-import-renames = [
     { path = "serde_json::from_slice", rename = "from_json_slice" },
