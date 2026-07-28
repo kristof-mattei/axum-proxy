@@ -1,5 +1,8 @@
 # Axum-Proxy
 
+> [!IMPORTANT]
+> This repository is no longer maintained. Development continues in [tower-proxy](https://github.com/kristof-mattei/tower-proxy).
+
 ## Purpose
 
 `axum-proxy` is [tower](https://crates.io/crates/tower) `Service`s that allows it to reverse proxy requests.
