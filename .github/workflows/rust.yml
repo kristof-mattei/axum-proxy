@@ -343,7 +343,7 @@ jobs:
       - *set_up_sccache
 
       - name: Run Clippy for GitHub Actions report
-        uses: actions-rs-plus/clippy-check@23b52efac3da0e2b197a9ad2e7be0f515502aaaf # v2.5.0
+        uses: actions-rs-plus/clippy-check@ca09b7b0955125d97749648eed836a9100ec25f4 # v2.6.0
         with:
           args: ${{ env.CARGO_FEATURES }} --all-targets --frozen --workspace
 
