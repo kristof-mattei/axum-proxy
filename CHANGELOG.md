@@ -1,4 +1,63 @@
 <!-- header goes here -->
+## [0.8.0](https://github.com/kristof-mattei/axum-proxy/compare/v0.7.0..v0.8.0) - 2026-07-28
+
+### 🚀 Features
+
+- Checkbox to allow for auto-merging a release PR by [@kristof-mattei](https://github.com/kristof-mattei) ([`8b67c89`](https://github.com/kristof-mattei/axum-proxy/commit/8b67c89b30a8d6b3d4822110734fa4497caabe28))
+- Document this crate is no longer maintained by [@kristof-mattei](https://github.com/kristof-mattei) ([`b877acf`](https://github.com/kristof-mattei/axum-proxy/commit/b877acfe15abe3ba439a9856de9489cc74082c2a))
+
+### 🐛 Bug Fixes
+
+- *(ci)* Parallel upload by [@kristof-mattei](https://github.com/kristof-mattei) ([`c690c06`](https://github.com/kristof-mattei/axum-proxy/commit/c690c0622b43647b20f2f31e5a2b8fcab6418b3c))
+- *(ci)* Disable caching ./target by [@kristof-mattei](https://github.com/kristof-mattei) ([`b9452ad`](https://github.com/kristof-mattei/axum-proxy/commit/b9452adde2041cfb056b250b9dc1fe33ff81347b))
+- *(ci)* `warm-up-cache` does not need mold by [@kristof-mattei](https://github.com/kristof-mattei) ([`b1f29a5`](https://github.com/kristof-mattei/axum-proxy/commit/b1f29a5cf0d51fb9b9d5c86f3a437548832b04e9))
+- *(ci)* Don't cache cargo registry by [@kristof-mattei](https://github.com/kristof-mattei) ([`4122327`](https://github.com/kristof-mattei/axum-proxy/commit/41223274ed701eafd121660d73c9d77bb073167d))
+- *(ci)* Disable registry caching in crate release by [@kristof-mattei](https://github.com/kristof-mattei) ([`227ac02`](https://github.com/kristof-mattei/axum-proxy/commit/227ac0201fe4cf8ad8a6f8d5df08c1c369b11df5))
+- *(ci)* Add missing read permissions by [@kristof-mattei](https://github.com/kristof-mattei) ([`0272238`](https://github.com/kristof-mattei/axum-proxy/commit/027223880c30bf615630839cf7913ba63549b4fd))
+- *(ci)* Retry installing spellcheck, it's sometimes flaky, also disable compile when the HTTP request fails by [@kristof-mattei](https://github.com/kristof-mattei) ([`1dd49a7`](https://github.com/kristof-mattei/axum-proxy/commit/1dd49a7b7cda4f75ec810e29fdea0c7e7357abd5))
+- *(ci)* Disable asking for funds when installing pnpm by [@kristof-mattei](https://github.com/kristof-mattei) ([`b661b33`](https://github.com/kristof-mattei/axum-proxy/commit/b661b336aeed70395e1a0a25484b48d88f6d3cb4))
+- *(ci)* Merge the PR based on the branch name, not the url by [@kristof-mattei](https://github.com/kristof-mattei) ([`b0af60a`](https://github.com/kristof-mattei/axum-proxy/commit/b0af60a01b2f10665e3d2ffaf658fc5e9f4c1cff))
+- *(deps)* `mimalloc` by default now is v3, removing flag by [@kristof-mattei](https://github.com/kristof-mattei) ([`c0fdb8a`](https://github.com/kristof-mattei/axum-proxy/commit/c0fdb8aa5fae0dd08bcfb2441388bd458dd23a0c))
+- *(deps)* Update rust crate mimalloc to 0.1.50 by [@renovate[bot]](https://github.com/renovate[bot]) ([`f488e9c`](https://github.com/kristof-mattei/axum-proxy/commit/f488e9c023782304221631029603e77be7779648))
+- *(deps)* Update rust crate mimalloc to 0.1.51 by [@renovate[bot]](https://github.com/renovate[bot]) ([`297ccb0`](https://github.com/kristof-mattei/axum-proxy/commit/297ccb05fd6ab86c94994ef240d04deb57450250))
+- *(deps)* Update rust crate mimalloc to 0.1.51 (#2814) by [@renovate[bot]](https://github.com/renovate[bot]) ([`bdb432d`](https://github.com/kristof-mattei/axum-proxy/commit/bdb432da30a587fbec7fa48d6e3c4b94081c9a98))
+- *(deps)* Update rust crate mimalloc to 0.1.52 by [@renovate[bot]](https://github.com/renovate[bot]) ([`1890f97`](https://github.com/kristof-mattei/axum-proxy/commit/1890f97240cf108d41c370179666282ebe343759))
+- *(deps)* Update rust crate mimalloc to 0.1.52 (#2820) by [@renovate[bot]](https://github.com/renovate[bot]) ([`f964185`](https://github.com/kristof-mattei/axum-proxy/commit/f964185dff4cee94f1a89e05ca7be9ae0d4f862a))
+- *(deps)* Pin dependencies by [@renovate[bot]](https://github.com/renovate[bot]) ([`6e3faf5`](https://github.com/kristof-mattei/axum-proxy/commit/6e3faf5afa52deaeb3d8539dc6e2f79268559d11))
+- *(deps)* Pin dependencies (#2912) by [@renovate[bot]](https://github.com/renovate[bot]) ([`46f9507`](https://github.com/kristof-mattei/axum-proxy/commit/46f9507f444363f354156e26de94617fe0539ade))
+- We can now release without having ANY tags on the repo by [@kristof-mattei](https://github.com/kristof-mattei) ([`80cbc44`](https://github.com/kristof-mattei/axum-proxy/commit/80cbc44189bf721637640dbf7257f852ca82f877))
+- Disable plugins by [@kristof-mattei](https://github.com/kristof-mattei) ([`3725751`](https://github.com/kristof-mattei/axum-proxy/commit/37257510cce405e0426a57c6e76ec53d73454c91))
+- Sane settings for libraries by [@kristof-mattei](https://github.com/kristof-mattei) ([`70a9b5c`](https://github.com/kristof-mattei/axum-proxy/commit/70a9b5cb47c0a9081b1fcfd25254d26905b59663))
+- `cargo-fmt` does not need cache, and shouldn't try to restore it, worse, it could save a broken cache should `warm-up-cache` fail by [@kristof-mattei](https://github.com/kristof-mattei) ([`f30035a`](https://github.com/kristof-mattei/axum-proxy/commit/f30035a937be4e0f0ff705beb239c300b7d7c3a4))
+- Remove the `-build` in the cache name by [@kristof-mattei](https://github.com/kristof-mattei) ([`ec0649f`](https://github.com/kristof-mattei/axum-proxy/commit/ec0649fb55579105c509cadd533d83e0143eb150))
+- Only restore by [@kristof-mattei](https://github.com/kristof-mattei) ([`cb8f178`](https://github.com/kristof-mattei/axum-proxy/commit/cb8f1786ae3b72f919f13b8a73410ba63c0b2b86))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(ci)* Upload edge to docker.io by [@kristof-mattei](https://github.com/kristof-mattei) ([`f235bac`](https://github.com/kristof-mattei/axum-proxy/commit/f235bac7e7bf720a4c42711f12fa57cb361c6adf))
+- *(ci)* Reattest every stage by [@kristof-mattei](https://github.com/kristof-mattei) ([`19c7f04`](https://github.com/kristof-mattei/axum-proxy/commit/19c7f048fad6474f798c9d810dbe1d2278731d6d))
+- *(ci)* Use skopeo wherever possible by [@kristof-mattei](https://github.com/kristof-mattei) ([`50a6786`](https://github.com/kristof-mattei/axum-proxy/commit/50a678665fd200021293e938c0b493891077a5ef))
+- *(ci)* Scout for visualizing cves etc by [@kristof-mattei](https://github.com/kristof-mattei) ([`2fe6e06`](https://github.com/kristof-mattei/axum-proxy/commit/2fe6e06ada42423eeacec95be6a29ccbd3806068))
+- *(ci)* Username is not secret by [@kristof-mattei](https://github.com/kristof-mattei) ([`7d168f4`](https://github.com/kristof-mattei/axum-proxy/commit/7d168f446d7bbdabaf2bd58c2818af2a65b07c41))
+- *(ci)* Restore ability to do prerelease versions by [@kristof-mattei](https://github.com/kristof-mattei) ([`7c5b0ea`](https://github.com/kristof-mattei/axum-proxy/commit/7c5b0ea895c5e92aa3c69fec62e3a7156f2ca183))
+- *(ci)* Allow re-release pre-release without having to add features by [@kristof-mattei](https://github.com/kristof-mattei) ([`657a7db`](https://github.com/kristof-mattei/axum-proxy/commit/657a7db145169f1dd3cd17b587324fae32ec4d04))
+- *(ci)* Long-form options by [@kristof-mattei](https://github.com/kristof-mattei) ([`8cc89ce`](https://github.com/kristof-mattei/axum-proxy/commit/8cc89ce310fd951216ebb9bf5dad46a9eb5b4cab))
+- *(release)* Link in release proposal now points to sha as tag doesn't exist yet by [@kristof-mattei](https://github.com/kristof-mattei) ([`f2bcfc8`](https://github.com/kristof-mattei/axum-proxy/commit/f2bcfc8ed61488c9863b26533432becd6e7267df))
+- Correct links in docs by [@kristof-mattei](https://github.com/kristof-mattei) ([`3270273`](https://github.com/kristof-mattei/axum-proxy/commit/3270273c367edaec998aa432e2419bfc6ed791e4))
+- Fix fmt by [@kristof-mattei](https://github.com/kristof-mattei) ([`1c63af5`](https://github.com/kristof-mattei/axum-proxy/commit/1c63af585079ee98e0b241fc6683c31982159106))
+- Move to keep track by [@kristof-mattei](https://github.com/kristof-mattei) ([`a305458`](https://github.com/kristof-mattei/axum-proxy/commit/a30545800ba46746328e4ad96f22857c689a776c))
+- Restore by [@kristof-mattei](https://github.com/kristof-mattei) ([`a37794e`](https://github.com/kristof-mattei/axum-proxy/commit/a37794ef26591a2a8d9d76d865f30f069c0a0ae7))
+- No spellcheck when pushing to main by [@kristof-mattei](https://github.com/kristof-mattei) ([`c15e836`](https://github.com/kristof-mattei/axum-proxy/commit/c15e836d8369b51cccab9eb573264f428b190a2f))
+- Node v26 and pnpm 11.2.2 by [@kristof-mattei](https://github.com/kristof-mattei) ([`16139f7`](https://github.com/kristof-mattei/axum-proxy/commit/16139f7f5ad75af955e9cb7cce9a5968d478ee04))
+- Enable `as_conversions` lint by [@kristof-mattei](https://github.com/kristof-mattei) ([`3bfb7bb`](https://github.com/kristof-mattei/axum-proxy/commit/3bfb7bb6d1a60f11ecfa7c46b7b6f3d5f4e795a0))
+- Re-establish link by [@kristof-mattei](https://github.com/kristof-mattei) ([`0abfc45`](https://github.com/kristof-mattei/axum-proxy/commit/0abfc456f5768ad7f42d133a5b835db52badf992))
+- Re-establish contents by [@kristof-mattei](https://github.com/kristof-mattei) ([`1ac0746`](https://github.com/kristof-mattei/axum-proxy/commit/1ac07463009a301c5cd44da8afa6a32eccabe6da))
+- Mandate `pretty_assertions::assert_matches` over `std` version by [@kristof-mattei](https://github.com/kristof-mattei) ([`d5e030c`](https://github.com/kristof-mattei/axum-proxy/commit/d5e030cf9a767a50b2c10ad5eac80bf2257c49ab))
+- Tasks.json should not be executable by [@kristof-mattei](https://github.com/kristof-mattei) ([`5527290`](https://github.com/kristof-mattei/axum-proxy/commit/552729080cf37c4ef92e90228e73971c42540bd9))
+- Missing codeql.yml permission by [@kristof-mattei](https://github.com/kristof-mattei) ([`760bd59`](https://github.com/kristof-mattei/axum-proxy/commit/760bd592b94e4b01b2220f40a96ff8430a312015))
+- Missing attestation permission by [@kristof-mattei](https://github.com/kristof-mattei) ([`babe2a3`](https://github.com/kristof-mattei/axum-proxy/commit/babe2a3c30a87c76a47a9429c24330ab8fb09859))
+- Ban more macros by [@kristof-mattei](https://github.com/kristof-mattei) ([`602457a`](https://github.com/kristof-mattei/axum-proxy/commit/602457a4d5bcd65f5214d48e5601836041bebc0f))
+- Cspell by [@kristof-mattei](https://github.com/kristof-mattei) ([`9f5797a`](https://github.com/kristof-mattei/axum-proxy/commit/9f5797a16adf5f2880b5bbdea2827ad7cf465688))
 ## [0.7.0](https://github.com/kristof-mattei/axum-proxy/compare/v0.6.0..v0.7.0) - 2026-04-03
 
 ### 🚀 Features
@@ -121,7 +180,7 @@
 - *(ci)* Comment cleanup by [@kristof-mattei](https://github.com/kristof-mattei) ([`4fa99d9`](https://github.com/kristof-mattei/axum-proxy/commit/4fa99d9cace57656b0c725fa995cbf85cedd07b4))
 - *(fmt)* Fmt by [@kristof-mattei](https://github.com/kristof-mattei) ([`f7b0a11`](https://github.com/kristof-mattei/axum-proxy/commit/f7b0a1189c2e2b834199e2fc876b95aa63c8a246))
 - *(release)* Release 0.0.1 ([`a075d2d`](https://github.com/kristof-mattei/axum-proxy/commit/a075d2d69cd0202de3d42c8a888ca14b49e0051f))
-- *(release)* Release v0.7.0
+- *(release)* Release v0.7.0 by [@github-actions[bot]](https://github.com/github-actions[bot]) ([`b057ae5`](https://github.com/kristof-mattei/axum-proxy/commit/b057ae5f84ae016a0da9366a0abb2a541b4213d3))
 - Use slim-trixie instead of trixie by [@kristof-mattei](https://github.com/kristof-mattei) ([`ecd2b0e`](https://github.com/kristof-mattei/axum-proxy/commit/ecd2b0e978c392b1ed12726877de4e78f19980e7))
 - Cleanup by [@kristof-mattei](https://github.com/kristof-mattei) ([`fb181c3`](https://github.com/kristof-mattei/axum-proxy/commit/fb181c3e899c70d21a4d0081ebf2ddf44192012e))
 - Don't show progress by [@kristof-mattei](https://github.com/kristof-mattei) ([`e08f1a3`](https://github.com/kristof-mattei/axum-proxy/commit/e08f1a3f42403d0c564f2672cffea0c22709897a))
