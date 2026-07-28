@@ -44,14 +44,14 @@ jobs:
           exit 1
 
       - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           show-progress: false
           token: ${{ secrets.TOKEN_TO_TRIGGER_SUBSEQUENT_WORKFLOWS }}
 
       - name: Install git-cliff to generate changelog & next version number
-        uses: taiki-e/install-action@9bcaee1dcae34154180f412e2fa69355a7cda9f6 # v2.82.6
+        uses: taiki-e/install-action@18b1216eba7f8039b0f8d131d5473787f0edce68 # v2.85.3
         with:
           tool: git-cliff
 
@@ -211,15 +211,14 @@ jobs:
           if [ -n "$existing_pr" ]; then
             gh pr edit "$existing_pr" \
               --body-file diff-CHANGELOG.md
-            pr_number="$existing_pr"
           else
-            pr_number=$(gh pr create \
+            gh pr create \
               --base main \
               --head "${branch}" \
               --title "chore(release): Release ${release_version}" \
-              --body-file diff-CHANGELOG.md)
+              --body-file diff-CHANGELOG.md
           fi
 
           if [ "${{ inputs.auto_merge }}" = "true" ]; then
-            gh pr merge "$pr_number" --auto --merge
+            gh pr merge "${branch}" --auto --merge
           fi

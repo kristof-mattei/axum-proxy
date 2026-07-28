@@ -49,7 +49,7 @@ jobs:
       fromJSON(needs.repo-has-container.outputs.has_container) == true
     steps:
       - name: Set up Docker
-        uses: docker/setup-docker-action@0234bb73ccb40f0c430b795634f9247e2b5c2d23 # v5.2.0
+        uses: docker/setup-docker-action@77e84dbf09b47d1e29270283c22f16145aa85ca1 # v5.4.0
         with:
           daemon-config: |
             {
@@ -59,10 +59,10 @@ jobs:
             }
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
 
       - name: Log into registry ${{ env.REGISTRY }}
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        uses: docker/login-action@371161bbe7024a29a25c5e19bfcbc0804fe9ad2c # v4.5.2
         with:
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: ${{ env.REGISTRY }}
@@ -70,7 +70,7 @@ jobs:
 
       - name: Log into Docker Hub
         if: env.DOCKERHUB_IMAGE_NAME != ''
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        uses: docker/login-action@371161bbe7024a29a25c5e19bfcbc0804fe9ad2c # v4.5.2
         with:
           registry: docker.io
           username: ${{ vars.DOCKERHUB_USERNAME }}
@@ -103,7 +103,7 @@ jobs:
 
       - name: Set the new TAGs
         id: meta
-        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
           tags: |
@@ -113,7 +113,7 @@ jobs:
       - name: Set the new Docker Hub TAGs
         if: env.DOCKERHUB_IMAGE_NAME != ''
         id: meta-dockerhub
-        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: "docker.io/${{ env.DOCKERHUB_IMAGE_NAME }}"
           tags: |
@@ -136,7 +136,7 @@ jobs:
           done
 
       - name: Attest GHCR image
-        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763 # v4.1.1
+        uses: actions/attest@f7c74d28b9d84cb8768d0b8ca14a4bac6ef463e6 # v4.2.0
         with:
           subject-name: ${{ env.FULL_IMAGE_NAME }}
           subject-digest: ${{ steps.digest.outputs.digest }}
@@ -153,14 +153,14 @@ jobs:
 
       - name: Attest Docker Hub image
         if: env.DOCKERHUB_IMAGE_NAME != ''
-        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763 # v4.1.1
+        uses: actions/attest@f7c74d28b9d84cb8768d0b8ca14a4bac6ef463e6 # v4.2.0
         with:
           subject-name: ${{ env.FULL_DOCKERHUB_IMAGE_NAME }}
           subject-digest: ${{ steps.digest.outputs.digest }}
           push-to-registry: true
 
       - name: Docker Scout (linux/amd64)
-        uses: docker/scout-action@7520205ff60037fdc436b40b6a1d1e55a839ec2d # v1.22.0
+        uses: docker/scout-action@2688993af7bafd6ba8c6a74ec652442be91dd82b # v1.23.1
         with:
           command: cves
           image: "${{ env.FULL_IMAGE_NAME }}@${{ steps.digest.outputs.digest }}"
@@ -169,7 +169,7 @@ jobs:
           dockerhub-password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Docker Scout (linux/arm64)
-        uses: docker/scout-action@7520205ff60037fdc436b40b6a1d1e55a839ec2d # v1.22.0
+        uses: docker/scout-action@2688993af7bafd6ba8c6a74ec652442be91dd82b # v1.23.1
         with:
           command: cves
           image: "${{ env.FULL_IMAGE_NAME }}@${{ steps.digest.outputs.digest }}"
